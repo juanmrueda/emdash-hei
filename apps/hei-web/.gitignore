@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 
+# Figma export output (raw assets before curation)
+figma-export/
+
 # Build output
 dist/
 

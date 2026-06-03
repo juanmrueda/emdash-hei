@@ -2,13 +2,16 @@
 import Icon from "../Icon.astro";
 
 /**
- * Row of stat cards. Variant "big" shows an icon + large green number
- * (e.g. +55 / +700 / +70). Variant "inline" is a compact figure + label.
+ * Row of stat cards. Variant "big" shows an icon + large number (e.g.
+ * +55 / +700 / +70). Each item may use a real icon image (`img`) or a named
+ * inline SVG (`icon`). Big values are two-tone: the symbolic prefix (e.g. "+")
+ * in navy and the figure in brand green.
  */
 interface StatItem {
 	value: string;
 	label: string;
 	icon?: string;
+	img?: string;
 }
 interface Props {
 	node: {
@@ -29,23 +32,39 @@ const ICONS: Record<string, string> = {
 const { node } = Astro.props;
 const variant = node.variant ?? "big";
 const items = node.items ?? [];
+
+// Separa el prefijo simbólico ("+") de la cifra para el efecto dos tonos.
+function split(value: string) {
+	const m = value.match(/^([^0-9]*)(.*)$/);
+	return { prefix: m?.[1] ?? "", figure: m?.[2] ?? value };
+}
 ---
 
 <section class="section stats-section">
 	<div class="container">
 		<div class:list={["stats-grid", `stats-grid--${variant}`]}>
 			{
-				items.map((s) => (
-					<div class:list={["stat-card", `stat-card--${variant}`]}>
-						{variant === "big" && s.icon && (
-							<span class="stat-icon">
-								<Icon name={ICONS[s.icon] || "seal-check"} />
+				items.map((s) => {
+					const { prefix, figure } = split(s.value);
+					return (
+						<div class:list={["stat-card", `stat-card--${variant}`]}>
+							{variant === "big" && (s.img || s.icon) && (
+								<span class="stat-icon">
+									{s.img ? (
+										<img src={s.img} alt="" />
+									) : (
+										<Icon name={ICONS[s.icon || "check"] || "seal-check"} size={30} />
+									)}
+								</span>
+							)}
+							<span class="stat-value">
+								<span class="stat-prefix">{prefix}</span>
+								<span class="stat-figure">{figure}</span>
 							</span>
-						)}
-						<span class="stat-value">{s.value}</span>
-						<span class="stat-label">{s.label}</span>
-					</div>
-				))
+							<span class="stat-label">{s.label}</span>
+						</div>
+					);
+				})
 			}
 		</div>
 	</div>
@@ -69,45 +88,60 @@ const items = node.items ?? [];
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-lg);
 		background: #fff;
-		box-shadow: var(--shadow-sm);
+		box-shadow: var(--shadow);
 		padding: var(--spacing-xl);
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-xs);
+		align-items: center;
+		text-align: center;
+		gap: var(--spacing-sm);
 	}
 
 	.stat-card--big {
-		align-items: flex-start;
-		gap: var(--spacing-sm);
-		padding: var(--spacing-2xl);
+		padding: var(--spacing-2xl) var(--spacing-xl);
+		gap: var(--spacing-md);
 	}
 
 	.stat-icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 48px;
-		height: 48px;
-		border-radius: var(--radius);
-		background: var(--color-primary-50);
 		color: var(--color-primary);
-		font-size: 1.5rem;
-		margin-bottom: var(--spacing-sm);
+	}
+
+	.stat-icon img {
+		width: 64px;
+		height: 64px;
+		object-fit: contain;
 	}
 
 	.stat-value {
-		font-size: var(--font-size-4xl);
 		font-weight: 800;
 		letter-spacing: -0.03em;
-		color: var(--color-primary);
+		line-height: 1;
+	}
+
+	.stat-card--big .stat-value {
+		font-size: var(--font-size-6xl);
 	}
 
 	.stat-card--inline .stat-value {
+		font-size: var(--font-size-4xl);
+	}
+
+	.stat-prefix {
 		color: var(--color-navy);
+	}
+
+	.stat-figure {
+		color: var(--color-primary);
 	}
 
 	.stat-label {
 		font-size: var(--font-size-sm);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
 		color: var(--color-muted);
 	}
 

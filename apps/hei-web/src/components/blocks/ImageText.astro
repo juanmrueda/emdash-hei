@@ -2,14 +2,15 @@
 import Icon from "../Icon.astro";
 
 /**
- * Two-column image + text. Supports a bullet list, inline stats, an image
- * badge (e.g. a founding year), and an optional CTA. The image can sit on
- * the left or right and carries the recurring green "blob" decoration.
+ * Two-column image + text. Supports a bullet list, an image badge (e.g. a
+ * founding year), an optional CTA, and a stat card that overlaps the bottom
+ * of the image. `accent` renders the heading in brand green.
  */
 interface Props {
 	node: {
 		eyebrow?: string;
 		heading: string;
+		accent?: boolean;
 		body?: string;
 		bullets?: string[];
 		image: string;
@@ -26,25 +27,48 @@ const { node } = Astro.props;
 const pos = node.imagePosition ?? "left";
 const hasCta = node.ctaLabel && node.ctaUrl;
 
-// Accept bullets as an array (seed) or a newline-separated string (editor).
 const bullets = Array.isArray(node.bullets)
 	? node.bullets
 	: typeof node.bullets === "string"
 		? (node.bullets as string).split("\n").map((s) => s.trim()).filter(Boolean)
 		: [];
+const stats = node.stats ?? [];
+
+// Cifra de la tarjeta: dígitos en navy, símbolo final (%) en verde.
+function splitStat(value: string) {
+	const m = value.match(/^([\d.,]+)(.*)$/);
+	return { figure: m?.[1] ?? value, suffix: m?.[2] ?? "" };
+}
 ---
 
 <section class="section">
 	<div class:list={["it-grid", "container", { "it-grid--rev": pos === "right" }]}>
-		<div class="it-media">
-			<div class="it-blob" aria-hidden="true"></div>
+		<div class:list={["it-media", { "has-card": stats.length > 0 }]}>
 			<img src={node.image} alt={node.imageAlt || ""} loading="lazy" />
 			{node.badge && <span class="it-badge">{node.badge}</span>}
+			{
+				stats.length > 0 && (
+					<div class="it-statcard">
+						{stats.map((s) => {
+							const { figure, suffix } = splitStat(s.value);
+							return (
+								<div class="it-stat">
+									<span class="it-stat-value">
+										<span class="it-stat-figure">{figure}</span>
+										<span class="it-stat-suffix">{suffix}</span>
+									</span>
+									<span class="it-stat-label">{s.label}</span>
+								</div>
+							);
+						})}
+					</div>
+				)
+			}
 		</div>
 
 		<div class="it-content">
 			{node.eyebrow && <span class="eyebrow">{node.eyebrow}</span>}
-			<h2>{node.heading}</h2>
+			<h2 class:list={["it-heading", { accent: node.accent }]}>{node.heading}</h2>
 			{node.body && <p class="it-body">{node.body}</p>}
 
 			{
@@ -52,24 +76,13 @@ const bullets = Array.isArray(node.bullets)
 					<ul class="it-bullets">
 						{bullets.map((b) => (
 							<li>
-								<Icon name="check-circle" />
+								<span class="it-check">
+									<Icon name="check" size={14} />
+								</span>
 								<span>{b}</span>
 							</li>
 						))}
 					</ul>
-				)
-			}
-
-			{
-				node.stats && node.stats.length > 0 && (
-					<div class="it-stats">
-						{node.stats.map((s) => (
-							<div class="it-stat">
-								<span class="it-stat-value">{s.value}</span>
-								<span class="it-stat-label">{s.label}</span>
-							</div>
-						))}
-					</div>
 				)
 			}
 
@@ -100,24 +113,16 @@ const bullets = Array.isArray(node.bullets)
 		position: relative;
 	}
 
+	/* Deja espacio inferior para la tarjeta de stats sobrepuesta. */
+	.it-media.has-card {
+		margin-bottom: var(--spacing-2xl);
+	}
+
 	.it-media img {
 		width: 100%;
 		border-radius: var(--radius-lg);
 		box-shadow: var(--shadow-lg);
-		position: relative;
-		z-index: 1;
-	}
-
-	.it-blob {
-		position: absolute;
-		width: 62%;
-		height: 62%;
-		left: -6%;
-		bottom: -8%;
-		background: var(--color-primary);
-		opacity: 0.18;
-		border-radius: 48% 52% 56% 44% / 52% 48% 52% 48%;
-		z-index: 0;
+		display: block;
 	}
 
 	.it-badge {
@@ -134,10 +139,58 @@ const bullets = Array.isArray(node.bullets)
 		box-shadow: var(--shadow);
 	}
 
+	/* Tarjeta blanca de cifras sobrepuesta al borde inferior derecho de la imagen. */
+	.it-statcard {
+		position: absolute;
+		right: calc(-1 * var(--spacing-2xl));
+		left: auto;
+		bottom: calc(-1 * var(--spacing-2xl));
+		z-index: 3;
+		display: inline-flex;
+		gap: var(--spacing-xl);
+		background: #fff;
+		border-radius: var(--radius);
+		box-shadow: var(--shadow-lg);
+		padding: var(--spacing-lg) var(--spacing-xl);
+	}
+
+	.it-statcard .it-stat + .it-stat {
+		padding-left: var(--spacing-xl);
+		border-left: 1px solid var(--color-border);
+	}
+
+	.it-stat-value {
+		display: block;
+		font-size: var(--font-size-3xl);
+		font-weight: 800;
+		line-height: 1;
+	}
+
+	.it-stat-figure {
+		color: var(--color-navy);
+	}
+
+	.it-stat-suffix {
+		color: var(--color-primary);
+	}
+
+	.it-stat-label {
+		display: block;
+		margin-top: var(--spacing-xs);
+		font-size: var(--font-size-xs);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: var(--color-muted);
+	}
+
 	.it-content {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-md);
+	}
+
+	.it-heading.accent {
+		color: var(--color-primary);
 	}
 
 	.it-body {
@@ -149,40 +202,27 @@ const bullets = Array.isArray(node.bullets)
 		list-style: none;
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-sm);
+		gap: var(--spacing-md);
 		margin: var(--spacing-xs) 0;
 	}
 
 	.it-bullets li {
 		display: flex;
-		align-items: flex-start;
-		gap: var(--spacing-sm);
+		align-items: center;
+		gap: var(--spacing-md);
 		color: var(--color-text);
 	}
 
-	.it-bullets :global(svg) {
-		color: var(--color-primary);
-		font-size: 1.25rem;
+	.it-check {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 26px;
+		height: 26px;
 		flex-shrink: 0;
-		margin-top: 2px;
-	}
-
-	.it-stats {
-		display: flex;
-		gap: var(--spacing-2xl);
-		margin: var(--spacing-sm) 0;
-	}
-
-	.it-stat-value {
-		display: block;
-		font-size: var(--font-size-3xl);
-		font-weight: 800;
+		border-radius: var(--radius-full);
+		background: var(--color-primary-50);
 		color: var(--color-primary);
-	}
-
-	.it-stat-label {
-		font-size: var(--font-size-sm);
-		color: var(--color-muted);
 	}
 
 	.it-content .btn {
@@ -197,6 +237,14 @@ const bullets = Array.isArray(node.bullets)
 		}
 		.it-grid--rev .it-media {
 			order: 0;
+		}
+		.it-media.has-card {
+			margin-bottom: var(--spacing-3xl);
+		}
+		.it-statcard {
+			left: var(--spacing-md);
+			right: var(--spacing-md);
+			justify-content: space-around;
 		}
 	}
 </style>

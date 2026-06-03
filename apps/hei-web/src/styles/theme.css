@@ -17,10 +17,10 @@
 	--color-surface: #f4f7f9;
 	--color-surface-2: #eef2f5;
 
-	--color-primary: #15bd8a; /* HEI emerald */
-	--color-primary-dark: #0fa376;
-	--color-primary-light: #5fd6b0;
-	--color-primary-50: #e7f8f1;
+	--color-primary: #31d697; /* HEI emerald (oficial) */
+	--color-primary-dark: #20bd82;
+	--color-primary-light: #7fe8c5;
+	--color-primary-50: #e7fbf3;
 
 	--color-accent: #2563eb; /* blue accent (pilares, sostenibilidad) */
 	--color-accent-dark: #1b4fd6;
@@ -59,9 +59,9 @@
 		--color-muted: #5c6b7a;
 		--color-border: #e6ebf0;
 		--color-surface: #f4f7f9;
-		--color-primary: #15bd8a;
-		--color-primary-dark: #0fa376;
-		--color-primary-light: #5fd6b0;
+		--color-primary: #31d697;
+		--color-primary-dark: #20bd82;
+		--color-primary-light: #7fe8c5;
 	}
 }
 

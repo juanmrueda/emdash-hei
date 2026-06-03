@@ -1,66 +1,21 @@
 ---
 /**
- * Grupo HEI wordmark — placeholder until the official SVG is supplied.
- * Renders "hei" in navy with the three-dot motif above. Swap the inner
- * markup for an <img>/<svg> when the brand asset is available.
+ * Grupo HEI wordmark (logo oficial exportado de Figma).
+ * `variant="light"` usa la versión en blanco para fondos oscuros/foto.
  */
 interface Props {
-	/** "light" renders white text for use on dark/photo backgrounds */
 	variant?: "dark" | "light";
 }
 const { variant = "dark" } = Astro.props;
+const src = variant === "light" ? "/logos/hei-white.png" : "/logos/hei.png";
 ---
 
-<span class:list={["hei-logo", variant]}>
-	<span class="hei-dots" aria-hidden="true">
-		<i></i><i></i><i></i>
-	</span>
-	<span class="hei-word">hei</span>
-</span>
+<img class="hei-logo" src={src} alt="Grupo HEI" width="120" height="76" />
 
 <style>
 	.hei-logo {
-		display: inline-flex;
-		flex-direction: column;
-		align-items: flex-start;
-		line-height: 1;
-	}
-
-	.hei-dots {
-		display: flex;
-		gap: 3px;
-		margin-bottom: 3px;
-		padding-left: 2px;
-	}
-
-	.hei-dots i {
-		width: 5px;
-		height: 5px;
-		border-radius: 50%;
+		height: 44px;
+		width: auto;
 		display: block;
-	}
-
-	.hei-dots i:nth-child(1) {
-		background: var(--color-primary);
-	}
-	.hei-dots i:nth-child(2) {
-		background: var(--color-accent);
-	}
-	.hei-dots i:nth-child(3) {
-		background: var(--color-navy);
-	}
-
-	.hei-word {
-		font-size: 1.6rem;
-		font-weight: 800;
-		letter-spacing: -0.04em;
-		color: var(--color-navy);
-	}
-
-	.hei-logo.light .hei-word {
-		color: #fff;
-	}
-	.hei-logo.light .hei-dots i:nth-child(3) {
-		background: #fff;
 	}
 </style>

@@ -29,6 +29,7 @@ const ICONS: Record<string, string> = {
 	shield: "shield-check",
 	plant: "plant",
 	heart: "hand-heart",
+	leaf: "leaf",
 };
 
 const { node } = Astro.props;
@@ -36,11 +37,25 @@ const layout = node.layout ?? "band";
 const hasImage = layout === "card" && !!node.image;
 const hasPrimary = node.primaryCtaLabel && node.primaryCtaUrl;
 const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
+const twoCtas = hasPrimary && hasSecondary;
+
+// Cuerpo en párrafos; resalta un prefijo tipo "Etiqueta:" (Integra: …).
+const bodyLines = (node.body ?? "")
+	.split("\n")
+	.map((l) => l.trim())
+	.filter(Boolean);
+function labelSplit(line: string) {
+	const m = line.match(/^([^:]{1,24}):\s*(.+)$/);
+	return m ? { label: m[1], rest: m[2] } : { label: "", rest: line };
+}
 ---
 
 {
 	layout === "band" ? (
-		<section class="cta-band">
+		<section class:list={["cta-band", { "has-bg": !!node.image }]}>
+			{node.image && (
+				<img class="cta-band-bg" src={node.image} alt={node.imageAlt || ""} loading="lazy" />
+			)}
 			<div class="cta-band-inner container">
 				{node.icon && (
 					<span class="cta-icon">
@@ -73,25 +88,34 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 					<div class="cta-card-content">
 						{node.eyebrow && <span class="cta-eyebrow">{node.eyebrow}</span>}
 						<h2>{node.heading}</h2>
-						{node.body && <p>{node.body}</p>}
-						{(hasPrimary || hasSecondary) && (
+						{bodyLines.map((line) => {
+							const { label, rest } = labelSplit(line);
+							return (
+								<p>
+									{label && <strong>{label}: </strong>}
+									{rest}
+								</p>
+							);
+						})}
+						{twoCtas ? (
 							<div class="cta-actions">
-								{hasPrimary && (
-									<a
-										href={node.primaryCtaUrl}
-										class="btn btn-secondary btn-lg cta-wa"
-									>
-										{node.whatsapp && <Icon name="whatsapp" />}
-										{node.primaryCtaLabel}
-									</a>
-								)}
-								{hasSecondary && (
-									<a href={node.secondaryCtaUrl} class="btn btn-ghost btn-lg">
-										{node.secondaryCtaLabel}
-									</a>
-								)}
+								{/* Dos botones: principal outline, secundario blanco (WhatsApp). */}
+								<a href={node.primaryCtaUrl} class="btn btn-ghost btn-lg">
+									{node.primaryCtaLabel}
+								</a>
+								<a href={node.secondaryCtaUrl} class="btn btn-secondary btn-lg cta-wa">
+									{node.whatsapp && <Icon name="whatsapp" />}
+									{node.secondaryCtaLabel}
+								</a>
 							</div>
-						)}
+						) : hasPrimary ? (
+							<div class="cta-actions">
+								<a href={node.primaryCtaUrl} class="btn btn-secondary btn-lg cta-wa">
+									{node.whatsapp && <Icon name="whatsapp" />}
+									{node.primaryCtaLabel}
+								</a>
+							</div>
+						) : null}
 					</div>
 					{hasImage && (
 						<div class="cta-card-media">
@@ -106,11 +130,37 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 
 <style>
 	.cta-band {
+		position: relative;
+		overflow: hidden;
 		background: linear-gradient(120deg, var(--color-primary), var(--color-primary-dark));
 		color: #fff;
 	}
 
+	/* Foto de fondo + filtro verde (no verde plano). */
+	.cta-band-bg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		z-index: 0;
+	}
+
+	.cta-band.has-bg::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		background: linear-gradient(
+			120deg,
+			rgba(49, 214, 151, 0.92),
+			rgba(32, 189, 130, 0.94)
+		);
+	}
+
 	.cta-band-inner {
+		position: relative;
+		z-index: 2;
 		text-align: center;
 		padding-top: var(--spacing-4xl);
 		padding-bottom: var(--spacing-4xl);

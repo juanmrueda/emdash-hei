@@ -15,6 +15,8 @@ interface Props {
 		image?: string;
 		imageAlt?: string;
 		variant?: "image" | "solid";
+		/** Filtro oscuro sobre la foto (true por defecto; false = foto limpia). */
+		overlay?: boolean;
 		primaryCtaLabel?: string;
 		primaryCtaUrl?: string;
 		secondaryCtaLabel?: string;
@@ -24,6 +26,7 @@ interface Props {
 
 const { node } = Astro.props;
 const variant = node.variant ?? "image";
+const showOverlay = node.overlay !== false;
 
 // Split the headline around the highlighted word, if any.
 let parts: { text: string; hl: boolean }[] = [{ text: node.headline, hl: false }];
@@ -46,7 +49,7 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 			<img class="hero-bg" src={node.image} alt={node.imageAlt || ""} />
 		)
 	}
-	<div class="hero-overlay"></div>
+	{showOverlay && <div class="hero-overlay"></div>}
 	<div class="hero-inner container">
 		<div class="hero-content">
 			{node.eyebrow && <span class="hero-eyebrow">{node.eyebrow}</span>}
@@ -79,7 +82,10 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 		position: relative;
 		display: flex;
 		align-items: center;
-		min-height: 460px;
+		min-height: clamp(560px, 82vh, 760px);
+		/* Sube la sección bajo el header sticky translúcido para que la foto
+		   llegue hasta arriba (el header queda encima, semitransparente). */
+		margin-top: -76px;
 		overflow: hidden;
 		color: #fff;
 	}
@@ -115,7 +121,7 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 	.hero-inner {
 		position: relative;
 		width: 100%;
-		padding-top: var(--spacing-3xl);
+		padding-top: calc(var(--spacing-3xl) + 76px);
 		padding-bottom: var(--spacing-3xl);
 	}
 
@@ -139,6 +145,7 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 		font-weight: 800;
 		line-height: 1.05;
 		letter-spacing: -0.03em;
+		text-shadow: 0 1px 12px rgba(8, 18, 30, 0.35);
 	}
 
 	.hero-headline .hl {
@@ -154,6 +161,7 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 		line-height: 1.6;
 		max-width: 52ch;
 		opacity: 0.92;
+		text-shadow: 0 1px 10px rgba(8, 18, 30, 0.35);
 	}
 
 	.hero-actions {
