@@ -21,7 +21,11 @@ en el frontmatter de `src/components/blocks/<Bloque>.astro`. Todo el contenido v
 - `Astro.cache.set(cacheHint)` en páginas que consultan contenido.
 - Tras tocar `package.json` → `pnpm install`; tras tocar `astro.config.mjs` → reiniciar dev.
 - Indentación con tabs (oxfmt); UI en español.
-- Re-tematizar = `src/styles/theme.css`.
+- Re-tematizar = `src/styles/theme.css`. Verde de marca: **#31D697**.
+- Editar contenido/imágenes en `seed.json` requiere re-sembrar el D1 local
+  (borra `apps/hei-web/.wrangler/` → reinicia dev → pega el `dev-bypass`).
+- Assets reales en `public/logos` y `public/img`; bajarlos con `scripts/figma-export.mjs`
+  (ver ONBOARDING). Logos/fotos del Home ya están; faltan datos de contacto y formularios.
 
 ## Comandos
 

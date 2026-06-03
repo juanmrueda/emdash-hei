@@ -87,14 +87,35 @@ Para inspeccionar el contenido guardado en el D1 local (Node 24 trae `node:sqlit
 ver `apps/hei-web/.wrangler/state/v3/d1/.../*.sqlite`, tabla `ec_pages` (columnas tipadas:
 `title`, `content`, `slug`, `status`, `locale`).
 
-## Trabajo pendiente (ver también MAP.md → "Estado / placeholders")
+## Assets y revisión 1:1 contra Figma
+
+- **Bajar assets de Figma**: `scripts/figma-export.mjs` usa la API REST (necesita
+  `FIGMA_TOKEN` con scope `file_content:read` + el file key).
+  - `--fills` → fotos originales (image fills) e incluso logos que viven como fill. **Confiable.**
+  - `--marked` → nodos con "Export" en Figma. El endpoint `/images` de render se **rate-limitea
+    muy fácil**; si se bloquea, espera bastante o usa otro token (el límite es por token).
+  - Truco: **los image fills suelen SER los logos/íconos**, nombrados por su capa (p. ej.
+    `marcas-...-team-collaboration.png` resultó ser el logo de cendis). Ábrelos antes de asumir.
+  - Lo curado va a `public/logos/` y `public/img/`; el dump crudo a `figma-export/` (gitignored).
+- **Revisión 1:1 sin la API** (cuando esté rate-limited): usa `sharp` (está en el monorepo) para
+  recortar el export de alta resolución `assets/hei-design/<Pantalla> _ Desktop.png` en regiones y
+  verlas en detalle / muestrear colores exactos:
+  ```js
+  const sharp = require("C:/dev/emdash-hei/node_modules/.pnpm/sharp@0.34.5/node_modules/sharp");
+  await sharp(src).extract({ left, top, width, height }).toFile(out);   // recorte
+  const px = await sharp(src).extract({left:x,top:y,width:8,height:8}).raw().toBuffer(); // color RGB
+  ```
+- **Color de marca**: verde oficial **#31D697** (en `theme.css` como `--color-primary`).
+
+## Trabajo pendiente (ver también MAP.md → "Estado")
 
 1. **Formularios**: crear en el admin los forms con slugs `contacto`, `salutia-operacion`,
    `trabaja-perfil`; configurar notificaciones por email (faltan correos destino del cliente) y
    Turnstile (anti-spam). Los bloques `hei.formSection` ya los referencian por slug.
-2. **Assets reales**: logos (hei/cendis/meliora/Salutia), fotos (hoy `picsum.photos`), datos de
-   contacto y número de WhatsApp (`wa.me/...` en `seed.json` y `Base.astro`).
-3. **Deploy** a Cloudflare (D1 + R2; los plugins sandbox requieren cuenta de pago, o comentar
+2. **Datos de contacto reales** (dirección, teléfono, WhatsApp `wa.me/...`) en `Base.astro` y `seed.json`.
+   (Logos y fotos reales **ya están** en `public/`.)
+3. **Pase 1:1 de las 7 pantallas restantes** (solo el Home está afinado a detalle).
+4. **Deploy** a Cloudflare (D1 + R2; los plugins sandbox requieren cuenta de pago, o comentar
    `worker_loaders` en `wrangler.jsonc`).
 
 ## Convenciones

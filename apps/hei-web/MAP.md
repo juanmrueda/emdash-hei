@@ -25,24 +25,29 @@ Petición → src/pages/<slug>.astro → getEmDashEntry("pages", slug)
 
 ```
 apps/hei-web/
-├─ astro.config.mjs            # Integración emdash + plugins (hei-blocks, forms) + fuentes
+├─ astro.config.mjs            # Integración emdash + plugins (hei-blocks, forms) + fuente Inter
 ├─ wrangler.jsonc             # Bindings Cloudflare: DB (D1), MEDIA (R2), LOADER
 ├─ package.json               # name @grupo-hei/web; script dev = astro dev; seed → seed/seed.json
 ├─ seed/seed.json             # ★ TODO el contenido: settings, menús y las 8 páginas en bloques
+├─ public/
+│  ├─ logos/                  # hei.png, hei-white.png, salutia.png, cendis.png, meliora.png (reales)
+│  └─ img/                    # 17 fotos reales (por pantalla) + icons/ (íconos verdes de stats)
+├─ scripts/figma-export.mjs   # Baja assets desde la API de Figma (ver ONBOARDING)
 ├─ src/
-│  ├─ layouts/Base.astro      # Header (logo+nav+¡Hablemos!), footer, <slot/>, SEO, móvil
+│  ├─ layouts/Base.astro      # Header (oscuro translúcido, logo blanco, nav + subrayado activo,
+│  │                          #   ¡HABLEMOS!), footer (esquinas redondeadas), <slot/>, SEO, móvil
 │  ├─ components/
-│  │  ├─ Logo.astro           # Wordmark "hei" placeholder (puntitos). Reemplazar por SVG real.
+│  │  ├─ Logo.astro           # <img> del logo real; variant dark|light (light = blanco)
 │  │  ├─ Icon.astro           # ★ Iconos SVG inline (NO usar astro-iconset; ver ONBOARDING)
 │  │  ├─ HeiBlocks.astro      # ★ Renderer: mapea "hei.*" → componente de bloque
 │  │  └─ blocks/              # Un componente por tipo de bloque
-│  │     ├─ Hero.astro        # hei.hero  (variant image|solid, palabra resaltada)
-│  │     ├─ Stats.astro       # hei.stats (+55/+700/+70)
-│  │     ├─ ImageText.astro   # hei.imageText (imagen + viñetas + stats + badge)
+│  │     ├─ Hero.astro        # hei.hero  (variant image|solid, highlight, overlay on/off, text-shadow)
+│  │     ├─ Stats.astro       # hei.stats (íconos img o SVG; cifra dos tonos prefix/figure)
+│  │     ├─ ImageText.astro   # hei.imageText (accent verde, viñetas circulares, statcard sobrepuesta)
 │  │     ├─ Cards.astro       # hei.cards (grid; color white|blue|green|navy)
 │  │     ├─ Brands.astro      # hei.brands (filas de marca con logo)
 │  │     ├─ LogoCloud.astro   # hei.logoCloud
-│  │     ├─ CtaBand.astro     # hei.ctaBand (layout band|card; whatsapp)
+│  │     ├─ CtaBand.astro     # hei.ctaBand (band|card; band admite foto+filtro verde; 2 CTAs; whatsapp)
 │  │     ├─ Timeline.astro    # hei.timeline (Nuestra Historia)
 │  │     ├─ Channels.astro    # hei.channels (Denuncias)
 │  │     └─ FormSection.astro # hei.formSection (embebe un form por slug)
@@ -50,8 +55,9 @@ apps/hei-web/
 │  │  ├─ index.astro (home) · quienes-somos · marcas · salutia
 │  │  └─ sostenibilidad · trabaja · contacto · denuncias  (+ 404.astro)
 │  ├─ plugins/hei-blocks/index.ts  # ★ Registra los tipos de bloque para el editor del admin
-│  ├─ styles/theme.css        # ★ Paleta y tokens de marca HEI (lo único para re-tematizar)
+│  ├─ styles/theme.css        # ★ Tokens de marca (verde oficial #31D697; lo único para re-tematizar)
 │  └─ live.config.ts          # Boilerplate del loader de emdash (no tocar)
+├─ figma-export/              # (gitignored) dump crudo de Figma: _image-fills/, crops/
 └─ .agents/skills/            # Skills de emdash (building-emdash-site, etc.) — opcional
 ```
 
@@ -79,12 +85,23 @@ apps/hei-web/
 | `/contacto`       | hero · formSection(`contacto`) · ctaBand(band, WhatsApp)       |
 | `/denuncias`      | hero · channels · ctaBand(card, WhatsApp)                      |
 
-## Estado / placeholders a reemplazar
+## Estado
 
-- **Imágenes**: URLs `picsum.photos` en `seed/seed.json` (reemplazar por fotos reales).
-- **Logos**: `Logo.astro` y `brands`/`logoCloud` usan texto; faltan SVGs de hei/cendis/meliora/Salutia.
-- **Datos de contacto** (dirección, teléfono, WhatsApp `wa.me/...`): hardcodeados en `Base.astro` y `seed.json`.
+Hecho:
+- **Logos reales** (hei, Salutia, cendis, meliora) y **17 fotos reales** del Figma en `public/`,
+  referenciadas desde `seed.json`. (cendis/meliora salieron de los image fills.)
+- **Verde oficial #31D697** en los tokens.
+- **Home con pase 1:1** contra el Figma: header oscuro translúcido + logo blanco + subrayado del
+  item activo + ¡HABLEMOS! mayúscula; hero sin filtro (overlay off) y más alto; sección 1968
+  (título verde, viñetas circulares, statcard a la derecha con número navy + "%" verde); stats con
+  íconos verdes y cifras dos tonos; "crea valor" (Integra/Respalda/Escala + Contáctanos + WhatsApp);
+  banda "Crecimiento" con foto+filtro verde; footer redondeado.
+
+Pendiente:
+- **Datos de contacto reales** (dirección, teléfono, WhatsApp `wa.me/...`): aún placeholders en
+  `Base.astro` y `seed.json`.
 - **Formularios**: los bloques `formSection` referencian slugs `contacto`, `salutia-operacion`,
   `trabaja-perfil` que **aún no existen** en el admin; mientras tanto el form se renderiza vacío
   (sin romper). Crearlos en `/_emdash/admin` (plugin de formularios) y definir correos destino.
+- **Pase 1:1 de las otras 7 pantallas** (solo el Home está afinado a detalle).
 - **Deploy** a Cloudflare pendiente (cuenta + dominio).
