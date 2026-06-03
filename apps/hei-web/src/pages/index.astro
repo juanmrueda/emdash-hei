@@ -1,0 +1,39 @@
+---
+import { getEmDashEntry } from "emdash";
+import Base from "../layouts/Base.astro";
+import HeiBlocks from "../components/HeiBlocks.astro";
+
+const { entry: page, cacheHint } = await getEmDashEntry("pages", "home");
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const content = page?.data.content;
+---
+
+<Base
+	description="Grupo HEI integra distribución, logística, software y servicio para conectar y respaldar marcas de salud en Guatemala desde 1968."
+>
+	{
+		content ? (
+			<HeiBlocks value={content} />
+		) : (
+			<div class="empty-state">
+				<h1>Grupo HEI</h1>
+				<p>Configura el contenido de inicio en el panel de administración.</p>
+				<a href="/_emdash/admin" class="btn btn-primary">Abrir panel</a>
+			</div>
+		)
+	}
+</Base>
+
+<style>
+	.empty-state {
+		text-align: center;
+		padding: var(--spacing-5xl) var(--spacing-lg);
+		max-width: var(--max-width);
+		margin: 0 auto;
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-lg);
+		align-items: center;
+	}
+</style>

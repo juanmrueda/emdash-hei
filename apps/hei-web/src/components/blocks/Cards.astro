@@ -1,0 +1,238 @@
+---
+import Icon from "../Icon.astro";
+
+/**
+ * Flexible card grid. Each card may carry an icon, title, body text, and/or
+ * a bullet list. Cards can be filled with a brand color (blue/green/navy)
+ * for emphasis (e.g. the Pilares grid).
+ */
+interface CardItem {
+	icon?: string;
+	title: string;
+	text?: string;
+	bullets?: string[];
+	color?: "white" | "blue" | "green" | "navy";
+}
+interface Props {
+	node: {
+		eyebrow?: string;
+		heading?: string;
+		subheading?: string;
+		columns?: 2 | 3 | 4;
+		align?: "left" | "center";
+		items: CardItem[];
+		surface?: boolean;
+	};
+}
+
+const ICONS: Record<string, string> = {
+	health: "heartbeat",
+	transparency: "hand-heart",
+	future: "hourglass",
+	integration: "stack",
+	trust: "shield-check",
+	capacity: "lightning",
+	growth: "plant",
+	logistics: "truck",
+	network: "users",
+	software: "gear",
+	shield: "shield-check",
+	leaf: "leaf",
+	check: "check-circle",
+	heart: "hand-heart",
+};
+
+const { node } = Astro.props;
+const cols = node.columns ?? 3;
+const align = node.align ?? "center";
+const items = node.items ?? [];
+
+// Bullets may arrive as an array (seed) or newline string (editor).
+const toList = (v: unknown): string[] =>
+	Array.isArray(v)
+		? (v as string[])
+		: typeof v === "string"
+			? v.split("\n").map((s) => s.trim()).filter(Boolean)
+			: [];
+---
+
+<section class:list={["section cards-section", { "cards-surface": node.surface }]}>
+	<div class="container">
+		{
+			(node.eyebrow || node.heading) && (
+				<div class="section-heading">
+					{node.eyebrow && <span class="eyebrow">{node.eyebrow}</span>}
+					{node.heading && <h2>{node.heading}</h2>}
+					<div class="heading-rule" />
+					{node.subheading && <p>{node.subheading}</p>}
+				</div>
+			)
+		}
+
+		<div class:list={["cards-grid", `cols-${cols}`, `align-${align}`]}>
+			{
+				items.map((c) => (
+					<article class:list={["card", `card--${c.color || "white"}`]}>
+						{c.icon && (
+							<span class="card-icon">
+								<Icon name={ICONS[c.icon] || "check-circle"} />
+							</span>
+						)}
+						<h3 class="card-title">{c.title}</h3>
+						{c.text && <p class="card-text">{c.text}</p>}
+						{toList(c.bullets).length > 0 && (
+							<ul class="card-bullets">
+								{toList(c.bullets).map((b) => (
+									<li>
+										<Icon name="check" />
+										<span>{b}</span>
+									</li>
+								))}
+							</ul>
+						)}
+					</article>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.cards-surface {
+		background: var(--color-surface);
+	}
+
+	.cards-grid {
+		display: grid;
+		gap: var(--spacing-lg);
+	}
+
+	.cols-2 {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.cols-3 {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.cols-4 {
+		grid-template-columns: repeat(4, 1fr);
+	}
+
+	.align-center .card {
+		text-align: center;
+		align-items: center;
+	}
+
+	.card {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-sm);
+		padding: var(--spacing-2xl);
+		border-radius: var(--radius-lg);
+		background: #fff;
+		border: 1px solid var(--color-border);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.card--blue {
+		background: var(--color-accent);
+		border-color: transparent;
+		color: #fff;
+	}
+	.card--green {
+		background: var(--color-primary);
+		border-color: transparent;
+		color: #fff;
+	}
+	.card--navy {
+		background: var(--color-navy);
+		border-color: transparent;
+		color: #fff;
+	}
+
+	.card-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 56px;
+		height: 56px;
+		border-radius: var(--radius-full);
+		background: var(--color-primary-50);
+		color: var(--color-primary);
+		font-size: 1.6rem;
+	}
+
+	.align-center .card-icon {
+		color: var(--color-accent);
+		background: #eaf0fe;
+	}
+
+	.card--blue .card-icon,
+	.card--green .card-icon,
+	.card--navy .card-icon {
+		background: rgba(255, 255, 255, 0.18);
+		color: #fff;
+	}
+
+	.card-title {
+		font-size: var(--font-size-xl);
+	}
+
+	.align-center .card-title {
+		color: var(--color-accent);
+	}
+
+	.card--blue .card-title,
+	.card--green .card-title,
+	.card--navy .card-title {
+		color: #fff;
+	}
+
+	.card-text {
+		color: var(--color-muted);
+		font-size: var(--font-size-sm);
+		line-height: 1.6;
+	}
+
+	.card--blue .card-text,
+	.card--green .card-text,
+	.card--navy .card-text {
+		color: rgba(255, 255, 255, 0.88);
+	}
+
+	.card-bullets {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-xs);
+		text-align: start;
+		width: 100%;
+	}
+
+	.card-bullets li {
+		display: flex;
+		gap: var(--spacing-sm);
+		font-size: var(--font-size-sm);
+		color: var(--color-text);
+	}
+
+	.card-bullets :global(svg) {
+		color: var(--color-primary);
+		flex-shrink: 0;
+		margin-top: 3px;
+	}
+
+	@media (max-width: 900px) {
+		.cols-3,
+		.cols-4 {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (max-width: 600px) {
+		.cols-2,
+		.cols-3,
+		.cols-4 {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

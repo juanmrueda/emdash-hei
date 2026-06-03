@@ -1,0 +1,119 @@
+---
+import Icon from "../Icon.astro";
+
+/**
+ * Row of stat cards. Variant "big" shows an icon + large green number
+ * (e.g. +55 / +700 / +70). Variant "inline" is a compact figure + label.
+ */
+interface StatItem {
+	value: string;
+	label: string;
+	icon?: string;
+}
+interface Props {
+	node: {
+		variant?: "big" | "inline";
+		items: StatItem[];
+	};
+}
+
+const ICONS: Record<string, string> = {
+	coverage: "globe",
+	products: "stack",
+	people: "users",
+	check: "seal-check",
+	truck: "truck",
+	health: "heartbeat",
+};
+
+const { node } = Astro.props;
+const variant = node.variant ?? "big";
+const items = node.items ?? [];
+---
+
+<section class="section stats-section">
+	<div class="container">
+		<div class:list={["stats-grid", `stats-grid--${variant}`]}>
+			{
+				items.map((s) => (
+					<div class:list={["stat-card", `stat-card--${variant}`]}>
+						{variant === "big" && s.icon && (
+							<span class="stat-icon">
+								<Icon name={ICONS[s.icon] || "seal-check"} />
+							</span>
+						)}
+						<span class="stat-value">{s.value}</span>
+						<span class="stat-label">{s.label}</span>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.stats-grid {
+		display: grid;
+		gap: var(--spacing-lg);
+	}
+
+	.stats-grid--big {
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+	.stats-grid--inline {
+		grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+	}
+
+	.stat-card {
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		background: #fff;
+		box-shadow: var(--shadow-sm);
+		padding: var(--spacing-xl);
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-xs);
+	}
+
+	.stat-card--big {
+		align-items: flex-start;
+		gap: var(--spacing-sm);
+		padding: var(--spacing-2xl);
+	}
+
+	.stat-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 48px;
+		height: 48px;
+		border-radius: var(--radius);
+		background: var(--color-primary-50);
+		color: var(--color-primary);
+		font-size: 1.5rem;
+		margin-bottom: var(--spacing-sm);
+	}
+
+	.stat-value {
+		font-size: var(--font-size-4xl);
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		color: var(--color-primary);
+	}
+
+	.stat-card--inline .stat-value {
+		color: var(--color-navy);
+	}
+
+	.stat-label {
+		font-size: var(--font-size-sm);
+		color: var(--color-muted);
+	}
+
+	@media (max-width: 768px) {
+		.stats-grid--big {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

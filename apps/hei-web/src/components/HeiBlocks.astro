@@ -1,0 +1,43 @@
+---
+/**
+ * Portable Text renderer for Grupo HEI marketing blocks. Maps each custom
+ * block type to its Astro component and passes it to emdash's PortableText.
+ */
+import type { PortableTextBlock } from "emdash";
+import { PortableText } from "emdash/ui";
+import { blockComponents as formBlocks } from "@emdash-cms/plugin-forms/astro";
+
+import Hero from "./blocks/Hero.astro";
+import Stats from "./blocks/Stats.astro";
+import ImageText from "./blocks/ImageText.astro";
+import Cards from "./blocks/Cards.astro";
+import Brands from "./blocks/Brands.astro";
+import LogoCloud from "./blocks/LogoCloud.astro";
+import CtaBand from "./blocks/CtaBand.astro";
+import Timeline from "./blocks/Timeline.astro";
+import Channels from "./blocks/Channels.astro";
+import FormSection from "./blocks/FormSection.astro";
+
+interface Props {
+	value: PortableTextBlock[];
+}
+
+const { value } = Astro.props;
+
+const heiTypes = {
+	"hei.hero": Hero,
+	"hei.stats": Stats,
+	"hei.imageText": ImageText,
+	"hei.cards": Cards,
+	"hei.brands": Brands,
+	"hei.logoCloud": LogoCloud,
+	"hei.ctaBand": CtaBand,
+	"hei.timeline": Timeline,
+	"hei.channels": Channels,
+	"hei.formSection": FormSection,
+	// Auto-wire the forms plugin block so inline form embeds also render.
+	...formBlocks,
+};
+---
+
+<PortableText value={value} components={{ type: heiTypes }} />

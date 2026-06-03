@@ -1,0 +1,202 @@
+---
+import Icon from "../Icon.astro";
+
+/**
+ * Two-column image + text. Supports a bullet list, inline stats, an image
+ * badge (e.g. a founding year), and an optional CTA. The image can sit on
+ * the left or right and carries the recurring green "blob" decoration.
+ */
+interface Props {
+	node: {
+		eyebrow?: string;
+		heading: string;
+		body?: string;
+		bullets?: string[];
+		image: string;
+		imageAlt?: string;
+		imagePosition?: "left" | "right";
+		badge?: string;
+		stats?: { value: string; label: string }[];
+		ctaLabel?: string;
+		ctaUrl?: string;
+	};
+}
+
+const { node } = Astro.props;
+const pos = node.imagePosition ?? "left";
+const hasCta = node.ctaLabel && node.ctaUrl;
+
+// Accept bullets as an array (seed) or a newline-separated string (editor).
+const bullets = Array.isArray(node.bullets)
+	? node.bullets
+	: typeof node.bullets === "string"
+		? (node.bullets as string).split("\n").map((s) => s.trim()).filter(Boolean)
+		: [];
+---
+
+<section class="section">
+	<div class:list={["it-grid", "container", { "it-grid--rev": pos === "right" }]}>
+		<div class="it-media">
+			<div class="it-blob" aria-hidden="true"></div>
+			<img src={node.image} alt={node.imageAlt || ""} loading="lazy" />
+			{node.badge && <span class="it-badge">{node.badge}</span>}
+		</div>
+
+		<div class="it-content">
+			{node.eyebrow && <span class="eyebrow">{node.eyebrow}</span>}
+			<h2>{node.heading}</h2>
+			{node.body && <p class="it-body">{node.body}</p>}
+
+			{
+				bullets.length > 0 && (
+					<ul class="it-bullets">
+						{bullets.map((b) => (
+							<li>
+								<Icon name="check-circle" />
+								<span>{b}</span>
+							</li>
+						))}
+					</ul>
+				)
+			}
+
+			{
+				node.stats && node.stats.length > 0 && (
+					<div class="it-stats">
+						{node.stats.map((s) => (
+							<div class="it-stat">
+								<span class="it-stat-value">{s.value}</span>
+								<span class="it-stat-label">{s.label}</span>
+							</div>
+						))}
+					</div>
+				)
+			}
+
+			{
+				hasCta && (
+					<a href={node.ctaUrl} class="btn btn-primary">
+						{node.ctaLabel}
+					</a>
+				)
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.it-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--spacing-4xl);
+		align-items: center;
+	}
+
+	.it-grid--rev .it-media {
+		order: 2;
+	}
+
+	.it-media {
+		position: relative;
+	}
+
+	.it-media img {
+		width: 100%;
+		border-radius: var(--radius-lg);
+		box-shadow: var(--shadow-lg);
+		position: relative;
+		z-index: 1;
+	}
+
+	.it-blob {
+		position: absolute;
+		width: 62%;
+		height: 62%;
+		left: -6%;
+		bottom: -8%;
+		background: var(--color-primary);
+		opacity: 0.18;
+		border-radius: 48% 52% 56% 44% / 52% 48% 52% 48%;
+		z-index: 0;
+	}
+
+	.it-badge {
+		position: absolute;
+		z-index: 2;
+		top: var(--spacing-lg);
+		left: calc(-1 * var(--spacing-md));
+		background: var(--color-primary);
+		color: #fff;
+		font-weight: 800;
+		font-size: var(--font-size-lg);
+		padding: var(--spacing-sm) var(--spacing-lg);
+		border-radius: var(--radius-full);
+		box-shadow: var(--shadow);
+	}
+
+	.it-content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-md);
+	}
+
+	.it-body {
+		color: var(--color-muted);
+		font-size: var(--font-size-lg);
+	}
+
+	.it-bullets {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-sm);
+		margin: var(--spacing-xs) 0;
+	}
+
+	.it-bullets li {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--spacing-sm);
+		color: var(--color-text);
+	}
+
+	.it-bullets :global(svg) {
+		color: var(--color-primary);
+		font-size: 1.25rem;
+		flex-shrink: 0;
+		margin-top: 2px;
+	}
+
+	.it-stats {
+		display: flex;
+		gap: var(--spacing-2xl);
+		margin: var(--spacing-sm) 0;
+	}
+
+	.it-stat-value {
+		display: block;
+		font-size: var(--font-size-3xl);
+		font-weight: 800;
+		color: var(--color-primary);
+	}
+
+	.it-stat-label {
+		font-size: var(--font-size-sm);
+		color: var(--color-muted);
+	}
+
+	.it-content .btn {
+		align-self: flex-start;
+		margin-top: var(--spacing-sm);
+	}
+
+	@media (max-width: 860px) {
+		.it-grid {
+			grid-template-columns: 1fr;
+			gap: var(--spacing-2xl);
+		}
+		.it-grid--rev .it-media {
+			order: 0;
+		}
+	}
+</style>

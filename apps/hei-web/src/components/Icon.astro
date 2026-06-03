@@ -1,0 +1,68 @@
+---
+/**
+ * Self-contained inline-SVG icon set for Grupo HEI.
+ *
+ * Replaces astro-iconset to avoid the Vite dep-optimizer breaking SSR under
+ * the Cloudflare/workerd dev runner. Icons are simple 24×24 line glyphs that
+ * inherit `currentColor`. Add new glyphs to ICONS as needed.
+ */
+interface Props {
+	name: string;
+	size?: number;
+}
+
+const { name, size = 24 } = Astro.props;
+
+const ICONS: Record<string, string> = {
+	check: '<path d="M5 12.5l4.5 4.5L19 7"/>',
+	"check-circle":
+		'<circle cx="12" cy="12" r="9"/><path d="M8 12.2l2.8 2.8L16 9"/>',
+	globe:
+		'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 2.6 15.4 0 18M12 3c-2.6 2.6-2.6 15.4 0 18"/>',
+	stack: '<path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/>',
+	users:
+		'<circle cx="9" cy="9" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M15.5 6.4a3 3 0 0 1 0 5.2M20.5 19a5 5 0 0 0-3.8-4.8"/>',
+	"seal-check":
+		'<path d="M12 2.6l2.5 1.7 3-.1 .9 2.9 2.5 1.7-1 2.9 1 2.9-2.5 1.7-.9 2.9-3-.1L12 21.4l-2.5-1.7-3 .1-.9-2.9L3.1 15.2l1-2.9-1-2.9 2.5-1.7 .9-2.9 3 .1z"/><path d="M8.6 12l2.4 2.4 4.4-4.6"/>',
+	truck:
+		'<path d="M3 6.5h11v9H3z"/><path d="M14 9.5h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.7"/><circle cx="17.5" cy="18" r="1.7"/>',
+	heartbeat:
+		'<path d="M20.8 8.6a4.5 4.5 0 0 0-8.8-1.3A4.5 4.5 0 0 0 3.2 8.6c0 4 4.5 7 8.8 10.4 4.3-3.4 8.8-6.4 8.8-10.4z"/>',
+	"hand-heart":
+		'<path d="M20.8 9.1a4.7 4.7 0 0 0-8.8-1.4A4.7 4.7 0 0 0 3.2 9.1c0 4.2 4.6 7.2 8.8 10.7 4.2-3.5 8.8-6.5 8.8-10.7z"/>',
+	hourglass:
+		'<path d="M7 3h10M7 21h10M8 3c0 4 8 5 8 9s-8 5-8 9M16 3c0 4-8 5-8 9s8 5 8 9"/>',
+	lightning: '<path d="M13 2L5 13h6l-1 9 8-12h-6l1-8z"/>',
+	plant:
+		'<path d="M12 21v-8"/><path d="M12 13c0-3 2-5.5 6.5-5.5 0 3.2-2.2 5.5-6.5 5.5z"/><path d="M12 14.5c0-2.6-2-4.8-5.5-4.8 0 2.7 2 4.8 5.5 4.8z"/>',
+	gear:
+		'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1"/>',
+	"shield-check":
+		'<path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/>',
+	leaf:
+		'<path d="M5 19c0-8 6-13 14-13 0 8-6 13-14 13z"/><path d="M5.5 18.5c3-5 6-7.5 10-9.5"/>',
+	sparkle:
+		'<path d="M12 3l1.8 6.2L20 11l-6.2 1.8L12 19l-1.8-6.2L4 11l6.2-1.8L12 3z"/>',
+	chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+	phone:
+		'<path d="M6 3h3l2 5-2 1.5a11 11 0 0 0 5 5L16 12l5 2v3a2 2 0 0 1-2.2 2A16 16 0 0 1 4 5.2 2 2 0 0 1 6 3z"/>',
+	envelope: '<path d="M3 6h18v12H3z"/><path d="M3 7l9 6 9-6"/>',
+	whatsapp:
+		'<path d="M4 20l1.3-3.9A7.5 7.5 0 1 1 8.9 18L4 20z"/><path d="M9 9c0 3 3 6 6 6 1-.6 1.1-1.6 .4-2.1L14 12l-1 1c-1-.5-1.9-1.4-2.4-2.4l1-1-.9-1.4C10 8 9 8 9 9z"/>',
+};
+
+const inner = ICONS[name] ?? ICONS.check;
+---
+
+<svg
+	width={size}
+	height={size}
+	viewBox="0 0 24 24"
+	fill="none"
+	stroke="currentColor"
+	stroke-width="1.7"
+	stroke-linecap="round"
+	stroke-linejoin="round"
+	aria-hidden="true"
+	set:html={inner}
+></svg>

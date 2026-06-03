@@ -1,0 +1,174 @@
+---
+/**
+ * Hero block. Two variants:
+ *  - "image": full-width photo background with dark overlay (most pages)
+ *  - "solid": solid HEI-green background (e.g. Salutia landing)
+ *
+ * `highlight` colors the first matching substring inside the headline.
+ */
+interface Props {
+	node: {
+		eyebrow?: string;
+		headline: string;
+		highlight?: string;
+		subheadline?: string;
+		image?: string;
+		imageAlt?: string;
+		variant?: "image" | "solid";
+		primaryCtaLabel?: string;
+		primaryCtaUrl?: string;
+		secondaryCtaLabel?: string;
+		secondaryCtaUrl?: string;
+	};
+}
+
+const { node } = Astro.props;
+const variant = node.variant ?? "image";
+
+// Split the headline around the highlighted word, if any.
+let parts: { text: string; hl: boolean }[] = [{ text: node.headline, hl: false }];
+if (node.highlight && node.headline.includes(node.highlight)) {
+	const [before, ...rest] = node.headline.split(node.highlight);
+	parts = [
+		{ text: before, hl: false },
+		{ text: node.highlight, hl: true },
+		{ text: rest.join(node.highlight), hl: false },
+	];
+}
+
+const hasPrimary = node.primaryCtaLabel && node.primaryCtaUrl;
+const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
+---
+
+<section class:list={["hero", `hero--${variant}`]}>
+	{
+		variant === "image" && node.image && (
+			<img class="hero-bg" src={node.image} alt={node.imageAlt || ""} />
+		)
+	}
+	<div class="hero-overlay"></div>
+	<div class="hero-inner container">
+		<div class="hero-content">
+			{node.eyebrow && <span class="hero-eyebrow">{node.eyebrow}</span>}
+			<h1 class="hero-headline">
+				{parts.map((p) => (p.hl ? <span class="hl">{p.text}</span> : p.text))}
+			</h1>
+			{node.subheadline && <p class="hero-sub">{node.subheadline}</p>}
+			{
+				(hasPrimary || hasSecondary) && (
+					<div class="hero-actions">
+						{hasPrimary && (
+							<a href={node.primaryCtaUrl} class="btn btn-primary btn-lg">
+								{node.primaryCtaLabel}
+							</a>
+						)}
+						{hasSecondary && (
+							<a href={node.secondaryCtaUrl} class="btn btn-ghost btn-lg">
+								{node.secondaryCtaLabel}
+							</a>
+						)}
+					</div>
+				)
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.hero {
+		position: relative;
+		display: flex;
+		align-items: center;
+		min-height: 460px;
+		overflow: hidden;
+		color: #fff;
+	}
+
+	.hero--image {
+		background: var(--color-navy);
+	}
+
+	.hero--solid {
+		background: linear-gradient(120deg, var(--color-primary), var(--color-primary-dark));
+		min-height: 380px;
+	}
+
+	.hero-bg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.hero--image .hero-overlay {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			90deg,
+			rgba(8, 18, 30, 0.82) 0%,
+			rgba(8, 18, 30, 0.55) 50%,
+			rgba(8, 18, 30, 0.25) 100%
+		);
+	}
+
+	.hero-inner {
+		position: relative;
+		width: 100%;
+		padding-top: var(--spacing-3xl);
+		padding-bottom: var(--spacing-3xl);
+	}
+
+	.hero-content {
+		max-width: 640px;
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-lg);
+	}
+
+	.hero-eyebrow {
+		font-size: var(--font-size-sm);
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		opacity: 0.85;
+	}
+
+	.hero-headline {
+		font-size: var(--font-size-6xl);
+		font-weight: 800;
+		line-height: 1.05;
+		letter-spacing: -0.03em;
+	}
+
+	.hero-headline .hl {
+		color: var(--color-primary-light);
+	}
+
+	.hero--solid .hero-headline .hl {
+		color: #fff;
+	}
+
+	.hero-sub {
+		font-size: var(--font-size-lg);
+		line-height: 1.6;
+		max-width: 52ch;
+		opacity: 0.92;
+	}
+
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--spacing-md);
+		margin-top: var(--spacing-sm);
+	}
+
+	@media (max-width: 768px) {
+		.hero-headline {
+			font-size: var(--font-size-4xl);
+		}
+		.hero--image .hero-overlay {
+			background: rgba(8, 18, 30, 0.66);
+		}
+	}
+</style>

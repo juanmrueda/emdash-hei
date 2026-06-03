@@ -43,6 +43,9 @@ uploads/
 .idea/
 .wrangler
 
+# local pnpm shim installed via corepack (see apps/hei-web/ONBOARDING.md)
+.corepack-bin/
+
 # Playwright E2E testing
 playwright-report/
 test-results/

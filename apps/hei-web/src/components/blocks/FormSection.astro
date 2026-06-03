@@ -1,0 +1,121 @@
+---
+import { blockComponents } from "@emdash-cms/plugin-forms/astro";
+import "@emdash-cms/plugin-forms/styles";
+
+/**
+ * Section that pairs a heading/intro with an embedded CMS form, optionally
+ * alongside an image. The form is created in the admin and referenced by its
+ * id/slug; if it doesn't exist yet the form area simply renders empty.
+ */
+interface Props {
+	node: {
+		eyebrow?: string;
+		heading?: string;
+		body?: string;
+		formId: string;
+		image?: string;
+		imageAlt?: string;
+		imagePosition?: "left" | "right";
+		surface?: boolean;
+	};
+}
+
+const FormEmbed = blockComponents["emdash-form"];
+const { node } = Astro.props;
+const pos = node.imagePosition ?? "right";
+const hasImage = !!node.image;
+---
+
+<section class:list={["section", { "fs-surface": node.surface }]}>
+	<div class="container">
+		<div class:list={["fs-grid", { single: !hasImage, "fs-grid--rev": pos === "left" }]}>
+			<div class="fs-content">
+				{node.eyebrow && <span class="eyebrow">{node.eyebrow}</span>}
+				{node.heading && <h2>{node.heading}</h2>}
+				{node.body && <p class="fs-body">{node.body}</p>}
+				<div class="fs-form">
+					<FormEmbed node={{ formId: node.formId }} />
+				</div>
+			</div>
+
+			{
+				hasImage && (
+					<div class="fs-media">
+						<div class="fs-blob" aria-hidden="true" />
+						<img src={node.image} alt={node.imageAlt || ""} loading="lazy" />
+					</div>
+				)
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.fs-surface {
+		background: var(--color-surface);
+	}
+
+	.fs-grid {
+		display: grid;
+		grid-template-columns: 1.1fr 0.9fr;
+		gap: var(--spacing-4xl);
+		align-items: center;
+	}
+
+	.fs-grid.single {
+		grid-template-columns: minmax(0, 720px);
+		justify-content: center;
+	}
+
+	.fs-grid--rev .fs-media {
+		order: -1;
+	}
+
+	.fs-content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-md);
+	}
+
+	.fs-body {
+		color: var(--color-muted);
+		font-size: var(--font-size-lg);
+	}
+
+	.fs-form {
+		margin-top: var(--spacing-sm);
+	}
+
+	.fs-media {
+		position: relative;
+	}
+
+	.fs-media img {
+		width: 100%;
+		border-radius: var(--radius-lg);
+		box-shadow: var(--shadow-lg);
+		position: relative;
+		z-index: 1;
+	}
+
+	.fs-blob {
+		position: absolute;
+		width: 60%;
+		height: 60%;
+		left: -6%;
+		bottom: -8%;
+		background: var(--color-primary);
+		opacity: 0.18;
+		border-radius: 48% 52% 56% 44% / 52% 48% 52% 48%;
+	}
+
+	@media (max-width: 860px) {
+		.fs-grid {
+			grid-template-columns: 1fr;
+			gap: var(--spacing-2xl);
+		}
+		.fs-grid--rev .fs-media {
+			order: 0;
+		}
+	}
+</style>

@@ -1,0 +1,214 @@
+---
+import Icon from "../Icon.astro";
+
+/**
+ * Green call-to-action band. Two layouts:
+ *  - "band": full-bleed, centered text + CTA (optional top icon)
+ *  - "card": rounded green card, optionally with an image on the right
+ */
+interface Props {
+	node: {
+		layout?: "band" | "card";
+		icon?: string;
+		eyebrow?: string;
+		heading: string;
+		body?: string;
+		image?: string;
+		imageAlt?: string;
+		primaryCtaLabel?: string;
+		primaryCtaUrl?: string;
+		secondaryCtaLabel?: string;
+		secondaryCtaUrl?: string;
+		whatsapp?: boolean;
+	};
+}
+
+const ICONS: Record<string, string> = {
+	sparkle: "sparkle",
+	chat: "chat",
+	shield: "shield-check",
+	plant: "plant",
+	heart: "hand-heart",
+};
+
+const { node } = Astro.props;
+const layout = node.layout ?? "band";
+const hasImage = layout === "card" && !!node.image;
+const hasPrimary = node.primaryCtaLabel && node.primaryCtaUrl;
+const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
+---
+
+{
+	layout === "band" ? (
+		<section class="cta-band">
+			<div class="cta-band-inner container">
+				{node.icon && (
+					<span class="cta-icon">
+						<Icon name={ICONS[node.icon] || "sparkle"} />
+					</span>
+				)}
+				{node.eyebrow && <span class="cta-eyebrow">{node.eyebrow}</span>}
+				<h2>{node.heading}</h2>
+				{node.body && <p>{node.body}</p>}
+				{(hasPrimary || hasSecondary) && (
+					<div class="cta-actions">
+						{hasPrimary && (
+							<a href={node.primaryCtaUrl} class="btn btn-secondary btn-lg">
+								{node.primaryCtaLabel}
+							</a>
+						)}
+						{hasSecondary && (
+							<a href={node.secondaryCtaUrl} class="btn btn-ghost btn-lg">
+								{node.secondaryCtaLabel}
+							</a>
+						)}
+					</div>
+				)}
+			</div>
+		</section>
+	) : (
+		<section class="section">
+			<div class="container">
+				<div class:list={["cta-card", { "has-image": hasImage }]}>
+					<div class="cta-card-content">
+						{node.eyebrow && <span class="cta-eyebrow">{node.eyebrow}</span>}
+						<h2>{node.heading}</h2>
+						{node.body && <p>{node.body}</p>}
+						{(hasPrimary || hasSecondary) && (
+							<div class="cta-actions">
+								{hasPrimary && (
+									<a
+										href={node.primaryCtaUrl}
+										class="btn btn-secondary btn-lg cta-wa"
+									>
+										{node.whatsapp && <Icon name="whatsapp" />}
+										{node.primaryCtaLabel}
+									</a>
+								)}
+								{hasSecondary && (
+									<a href={node.secondaryCtaUrl} class="btn btn-ghost btn-lg">
+										{node.secondaryCtaLabel}
+									</a>
+								)}
+							</div>
+						)}
+					</div>
+					{hasImage && (
+						<div class="cta-card-media">
+							<img src={node.image} alt={node.imageAlt || ""} loading="lazy" />
+						</div>
+					)}
+				</div>
+			</div>
+		</section>
+	)
+}
+
+<style>
+	.cta-band {
+		background: linear-gradient(120deg, var(--color-primary), var(--color-primary-dark));
+		color: #fff;
+	}
+
+	.cta-band-inner {
+		text-align: center;
+		padding-top: var(--spacing-4xl);
+		padding-bottom: var(--spacing-4xl);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-md);
+	}
+
+	.cta-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 56px;
+		height: 56px;
+		border-radius: var(--radius-full);
+		background: rgba(255, 255, 255, 0.18);
+		font-size: 1.6rem;
+		margin-bottom: var(--spacing-sm);
+	}
+
+	.cta-band h2,
+	.cta-card h2 {
+		color: #fff;
+		max-width: 22ch;
+	}
+
+	.cta-band p {
+		max-width: 60ch;
+		opacity: 0.92;
+	}
+
+	.cta-eyebrow {
+		font-size: var(--font-size-sm);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		opacity: 0.85;
+	}
+
+	.cta-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--spacing-md);
+		justify-content: center;
+		margin-top: var(--spacing-sm);
+	}
+
+	/* Card layout */
+	.cta-card {
+		background: linear-gradient(120deg, var(--color-primary), var(--color-primary-dark));
+		border-radius: var(--radius-lg);
+		color: #fff;
+		overflow: hidden;
+		display: grid;
+		grid-template-columns: 1fr;
+	}
+
+	.cta-card.has-image {
+		grid-template-columns: 1.1fr 0.9fr;
+	}
+
+	.cta-card-content {
+		padding: var(--spacing-3xl);
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-md);
+		align-items: flex-start;
+	}
+
+	.cta-card.has-image .cta-actions,
+	.cta-card-content .cta-actions {
+		justify-content: flex-start;
+	}
+
+	.cta-card p {
+		opacity: 0.92;
+		max-width: 48ch;
+	}
+
+	.cta-card-media img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.cta-wa :global(svg) {
+		font-size: 1.2rem;
+		color: var(--color-primary);
+	}
+
+	@media (max-width: 768px) {
+		.cta-card.has-image {
+			grid-template-columns: 1fr;
+		}
+		.cta-card-media {
+			order: -1;
+			max-height: 220px;
+		}
+	}
+</style>

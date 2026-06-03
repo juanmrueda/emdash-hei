@@ -1,0 +1,19 @@
+---
+import { getEmDashEntry } from "emdash";
+import Base from "../layouts/Base.astro";
+import HeiBlocks from "../components/HeiBlocks.astro";
+
+const { entry: page, cacheHint } = await getEmDashEntry("pages", "contacto");
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+const content = page?.data.content;
+---
+
+<Base title={page?.data.title ?? "Contacto"}>
+	{
+		content ? (
+			<HeiBlocks value={content} />
+		) : (
+			<p class="container section">Contenido pendiente.</p>
+		)
+	}
+</Base>
