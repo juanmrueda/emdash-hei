@@ -17,6 +17,8 @@ interface Props {
 		variant?: "image" | "solid";
 		/** Filtro oscuro sobre la foto (true por defecto; false = foto limpia). */
 		overlay?: boolean;
+		/** Hero alto y sin esquina redondeada (ej. Home). Por defecto es banner. */
+		full?: boolean;
 		primaryCtaLabel?: string;
 		primaryCtaUrl?: string;
 		secondaryCtaLabel?: string;
@@ -26,7 +28,8 @@ interface Props {
 
 const { node } = Astro.props;
 const variant = node.variant ?? "image";
-const showOverlay = node.overlay !== false;
+// Sin filtro por defecto en todos los heros; solo si overlay === true.
+const showOverlay = node.overlay === true;
 
 // Split the headline around the highlighted word, if any.
 let parts: { text: string; hl: boolean }[] = [{ text: node.headline, hl: false }];
@@ -43,7 +46,7 @@ const hasPrimary = node.primaryCtaLabel && node.primaryCtaUrl;
 const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 ---
 
-<section class:list={["hero", `hero--${variant}`]}>
+<section class:list={["hero", `hero--${variant}`, { "hero--full": node.full }]}>
 	{
 		variant === "image" && node.image && (
 			<img class="hero-bg" src={node.image} alt={node.imageAlt || ""} />
@@ -82,12 +85,19 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 		position: relative;
 		display: flex;
 		align-items: center;
-		min-height: clamp(560px, 82vh, 760px);
+		min-height: clamp(400px, 56vh, 560px);
 		/* Sube la sección bajo el header sticky translúcido para que la foto
 		   llegue hasta arriba (el header queda encima, semitransparente). */
 		margin-top: -76px;
 		overflow: hidden;
 		color: #fff;
+		border-radius: 0 0 32px 32px;
+	}
+
+	/* Home: hero alto y a sangre (sin esquina redondeada). */
+	.hero--full {
+		min-height: clamp(560px, 82vh, 760px);
+		border-radius: 0;
 	}
 
 	.hero--image {
@@ -121,8 +131,8 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 	.hero-inner {
 		position: relative;
 		width: 100%;
-		padding-top: calc(var(--spacing-3xl) + 76px);
-		padding-bottom: var(--spacing-3xl);
+		padding-top: calc(var(--spacing-2xl) + 76px);
+		padding-bottom: var(--spacing-2xl);
 	}
 
 	.hero-content {
@@ -145,7 +155,7 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 		font-weight: 800;
 		line-height: 1.05;
 		letter-spacing: -0.03em;
-		text-shadow: 0 1px 12px rgba(8, 18, 30, 0.35);
+		text-shadow: 0 2px 20px rgba(8, 18, 30, 0.5);
 	}
 
 	.hero-headline .hl {
@@ -160,8 +170,8 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 		font-size: var(--font-size-lg);
 		line-height: 1.6;
 		max-width: 52ch;
-		opacity: 0.92;
-		text-shadow: 0 1px 10px rgba(8, 18, 30, 0.35);
+		opacity: 0.95;
+		text-shadow: 0 1px 14px rgba(8, 18, 30, 0.5);
 	}
 
 	.hero-actions {

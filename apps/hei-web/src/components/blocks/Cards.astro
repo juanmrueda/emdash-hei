@@ -2,9 +2,9 @@
 import Icon from "../Icon.astro";
 
 /**
- * Flexible card grid. Each card may carry an icon, title, body text, and/or
- * a bullet list. Cards can be filled with a brand color (blue/green/navy)
- * for emphasis (e.g. the Pilares grid).
+ * Card grid. Modo normal (cols-N) para grids uniformes (Tres ejes, features),
+ * y modo "bento" para layouts asimétricos (Pilares): cada tarjeta puede tener
+ * span ancho/angosto, imagen de fondo y una decoración de semicírculo.
  */
 interface CardItem {
 	icon?: string;
@@ -12,14 +12,19 @@ interface CardItem {
 	text?: string;
 	bullets?: string[];
 	color?: "white" | "blue" | "green" | "navy";
+	span?: "wide" | "narrow";
+	image?: string;
+	decoration?: boolean;
 }
 interface Props {
 	node: {
 		eyebrow?: string;
 		heading?: string;
+		headingColor?: "green";
 		subheading?: string;
 		columns?: 2 | 3 | 4;
 		align?: "left" | "center";
+		bento?: boolean;
 		items: CardItem[];
 		surface?: boolean;
 	};
@@ -36,18 +41,21 @@ const ICONS: Record<string, string> = {
 	logistics: "truck",
 	network: "users",
 	software: "gear",
-	shield: "shield-check",
+	shield: "shield",
 	leaf: "leaf",
 	check: "check-circle",
 	heart: "hand-heart",
+	bulb: "bulb",
+	handshake: "handshake",
+	gauge: "gauge",
 };
 
 const { node } = Astro.props;
 const cols = node.columns ?? 3;
 const align = node.align ?? "center";
+const bento = !!node.bento;
 const items = node.items ?? [];
 
-// Bullets may arrive as an array (seed) or newline string (editor).
 const toList = (v: unknown): string[] =>
 	Array.isArray(v)
 		? (v as string[])
@@ -60,36 +68,51 @@ const toList = (v: unknown): string[] =>
 	<div class="container">
 		{
 			(node.eyebrow || node.heading) && (
-				<div class="section-heading">
+				<div class:list={["section-heading", { "sh-left": align === "left" }]}>
 					{node.eyebrow && <span class="eyebrow">{node.eyebrow}</span>}
-					{node.heading && <h2>{node.heading}</h2>}
+					{node.heading && (
+						<h2 class:list={{ "h-green": node.headingColor === "green" }}>{node.heading}</h2>
+					)}
 					<div class="heading-rule" />
 					{node.subheading && <p>{node.subheading}</p>}
 				</div>
 			)
 		}
 
-		<div class:list={["cards-grid", `cols-${cols}`, `align-${align}`]}>
+		<div class:list={["cards-grid", bento ? "bento" : `cols-${cols}`, `align-${align}`]}>
 			{
 				items.map((c) => (
-					<article class:list={["card", `card--${c.color || "white"}`]}>
+					<article
+						class:list={[
+							"card",
+							`card--${c.color || "white"}`,
+							bento && c.span === "wide" && "span-wide",
+							bento && c.span === "narrow" && "span-narrow",
+							c.image && "has-img",
+							c.decoration && "has-deco",
+						]}
+					>
+						{c.image && <img class="card-bg" src={c.image} alt="" loading="lazy" />}
+						{c.decoration && <span class="card-deco" aria-hidden="true" />}
 						{c.icon && (
 							<span class="card-icon">
-								<Icon name={ICONS[c.icon] || "check-circle"} />
+								<Icon name={ICONS[c.icon] || "check-circle"} size={28} />
 							</span>
 						)}
-						<h3 class="card-title">{c.title}</h3>
-						{c.text && <p class="card-text">{c.text}</p>}
-						{toList(c.bullets).length > 0 && (
-							<ul class="card-bullets">
-								{toList(c.bullets).map((b) => (
-									<li>
-										<Icon name="check" />
-										<span>{b}</span>
-									</li>
-								))}
-							</ul>
-						)}
+						<div class="card-body">
+							<h3 class="card-title">{c.title}</h3>
+							{c.text && <p class="card-text">{c.text}</p>}
+							{toList(c.bullets).length > 0 && (
+								<ul class="card-bullets">
+									{toList(c.bullets).map((b) => (
+										<li>
+											<Icon name="check" />
+											<span>{b}</span>
+										</li>
+									))}
+								</ul>
+							)}
+						</div>
 					</article>
 				))
 			}
@@ -100,6 +123,19 @@ const toList = (v: unknown): string[] =>
 <style>
 	.cards-surface {
 		background: var(--color-surface);
+	}
+
+	/* Heading alineado a la izquierda. */
+	.section-heading.sh-left {
+		text-align: start;
+		max-width: 640px;
+		margin-inline: 0;
+	}
+	.section-heading.sh-left .heading-rule {
+		margin-inline: 0;
+	}
+	.h-green {
+		color: var(--color-primary);
 	}
 
 	.cards-grid {
@@ -117,20 +153,47 @@ const toList = (v: unknown): string[] =>
 		grid-template-columns: repeat(4, 1fr);
 	}
 
+	/* Bento: 3 columnas; wide ocupa 2, narrow 1. Filas según contenido. */
+	.cards-grid.bento {
+		grid-template-columns: repeat(3, 1fr);
+		grid-auto-rows: auto;
+	}
+	.bento .span-wide {
+		grid-column: span 2;
+	}
+	.bento .span-narrow {
+		grid-column: span 1;
+	}
+
 	.align-center .card {
 		text-align: center;
 		align-items: center;
 	}
 
 	.card {
+		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-sm);
+		gap: var(--spacing-md);
 		padding: var(--spacing-2xl);
 		border-radius: var(--radius-lg);
 		background: #fff;
 		border: 1px solid var(--color-border);
 		box-shadow: var(--shadow-sm);
+		overflow: hidden;
+	}
+
+	/* Bento: ícono arriba, contenido abajo; altura moderada. */
+	.bento .card {
+		min-height: 210px;
+		padding: var(--spacing-xl);
+		justify-content: space-between;
+		gap: var(--spacing-xl);
+	}
+	.bento .card-body {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-sm);
 	}
 
 	.card--blue {
@@ -149,6 +212,44 @@ const toList = (v: unknown): string[] =>
 		color: #fff;
 	}
 
+	/* Tarjeta con imagen de fondo + filtro verde (Crecimiento). */
+	.card-bg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		z-index: 0;
+	}
+	.card.has-img::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		background: linear-gradient(120deg, rgba(49, 214, 151, 0.8), rgba(32, 189, 130, 0.84));
+	}
+	/* El contenido va sobre el filtro, pero NO la imagen de fondo. */
+	.card.has-img > *:not(.card-bg) {
+		position: relative;
+		z-index: 2;
+	}
+
+	/* Decoración: semicírculo verde claro arriba-derecha (Integración). */
+	.card-deco {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 150px;
+		height: 150px;
+		background: var(--color-primary-50);
+		border-bottom-left-radius: 100%;
+		z-index: 0;
+	}
+	.has-deco > *:not(.card-deco) {
+		position: relative;
+		z-index: 1;
+	}
+
 	.card-icon {
 		display: inline-flex;
 		align-items: center;
@@ -158,7 +259,6 @@ const toList = (v: unknown): string[] =>
 		border-radius: var(--radius-full);
 		background: var(--color-primary-50);
 		color: var(--color-primary);
-		font-size: 1.6rem;
 	}
 
 	.align-center .card-icon {
@@ -170,6 +270,18 @@ const toList = (v: unknown): string[] =>
 	.card--green .card-icon,
 	.card--navy .card-icon {
 		background: rgba(255, 255, 255, 0.18);
+		color: #fff;
+	}
+
+	/* Bento: tarjeta blanca → círculo verde sólido; coloreadas → contorno. */
+	.bento .card--white .card-icon {
+		background: var(--color-primary);
+		color: #fff;
+	}
+	.bento .card--blue .card-icon,
+	.bento .card--green .card-icon {
+		background: transparent;
+		border: 2px solid rgba(255, 255, 255, 0.65);
 		color: #fff;
 	}
 
@@ -196,7 +308,7 @@ const toList = (v: unknown): string[] =>
 	.card--blue .card-text,
 	.card--green .card-text,
 	.card--navy .card-text {
-		color: rgba(255, 255, 255, 0.88);
+		color: rgba(255, 255, 255, 0.9);
 	}
 
 	.card-bullets {
@@ -225,6 +337,18 @@ const toList = (v: unknown): string[] =>
 		.cols-3,
 		.cols-4 {
 			grid-template-columns: repeat(2, 1fr);
+		}
+		/* Bento → apila en una columna en pantallas medianas/chicas. */
+		.cards-grid.bento {
+			grid-template-columns: 1fr;
+			grid-auto-rows: auto;
+		}
+		.bento .span-wide,
+		.bento .span-narrow {
+			grid-column: span 1;
+		}
+		.bento .card {
+			min-height: 200px;
 		}
 	}
 

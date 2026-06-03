@@ -121,7 +121,8 @@
 							"primaryCtaUrl": "/quienes-somos",
 							"secondaryCtaLabel": "Nuestras marcas",
 							"secondaryCtaUrl": "/marcas",
-							"overlay": false
+							"overlay": false,
+							"full": true
 						},
 						{
 							"_type": "hei.imageText",
@@ -240,9 +241,7 @@
 							"subheadline": "Grupo HEI articula marcas, sistemas y servicios para respaldar a quienes hacen posible la salud en Guatemala.",
 							"image": "/img/quienes-hero.png",
 							"imageAlt": "Personas de Grupo HEI",
-							"variant": "image",
-							"primaryCtaLabel": "Nuestras marcas",
-							"primaryCtaUrl": "/marcas"
+							"variant": "image"
 						},
 						{
 							"_type": "hei.timeline",
@@ -276,36 +275,44 @@
 						{
 							"_type": "hei.cards",
 							"_key": "q-pilares",
-							"eyebrow": "Lo que nos sostiene",
 							"heading": "Pilares",
 							"columns": 2,
 							"align": "left",
 							"items": [
 								{
-									"icon": "integration",
+									"icon": "bulb",
 									"title": "Integración",
-									"text": "Una estructura que conecta marcas, recursos y decisiones para operar como un solo sistema.",
-									"color": "white"
+									"color": "white",
+									"span": "wide",
+									"decoration": true,
+									"text": "Una estructura que conecta marcas, recursos y decisiones."
 								},
 								{
-									"icon": "trust",
+									"icon": "shield",
 									"title": "Confianza",
-									"text": "Una forma de operar con foco en cumplimiento, ética y resolución del servicio.",
-									"color": "blue"
+									"color": "blue",
+									"span": "narrow",
+									"text": "Una forma de operar con foco en cumplimiento, ética y relaciones de largo plazo."
 								},
 								{
-									"icon": "capacity",
+									"icon": "handshake",
 									"title": "Capacidad",
-									"text": "La experiencia de salud, distribución y soluciones para atender retos reales.",
-									"color": "green"
+									"color": "green",
+									"span": "narrow",
+									"text": "Un ecosistema con experiencia en salud, distribución y soluciones para laboratorios."
 								},
 								{
-									"icon": "growth",
+									"icon": "gauge",
 									"title": "Crecimiento",
-									"text": "Una visión que prioriza relaciones duraderas y la creación de valor de largo plazo.",
-									"color": "green"
+									"color": "green",
+									"span": "wide",
+									"image": "/img/pilar-crecimiento.png",
+									"text": "Una visión que permite crear nuevas marcas, servicios y oportunidades."
 								}
-							]
+							],
+							"headingColor": "green",
+							"subheading": "Guiamos la evolución del sector a través de principios claros que articulan soluciones logísticas avanzadas, tecnología inteligente y un modelo operativo escalable.",
+							"bento": true
 						}
 					]
 				}

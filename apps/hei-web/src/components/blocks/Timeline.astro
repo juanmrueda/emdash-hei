@@ -1,7 +1,8 @@
 ---
 /**
- * "Nuestra Historia" style block: an image with an optional year badge on
- * one side and a stack of titled milestones on the other.
+ * "Nuestra Historia": imagen con insignia de año (círculo, arriba a la
+ * derecha) y una lista de hitos con riel vertical. La sección lleva un fondo
+ * de líneas diagonales sutiles.
  */
 interface Milestone {
 	title: string;
@@ -22,7 +23,7 @@ const { node } = Astro.props;
 const items = node.items ?? [];
 ---
 
-<section class="section">
+<section class="section tl-section">
 	<div class="container">
 		{
 			(node.eyebrow || node.heading) && (
@@ -36,7 +37,6 @@ const items = node.items ?? [];
 
 		<div class="tl-grid">
 			<div class="tl-media">
-				<div class="tl-blob" aria-hidden="true"></div>
 				<img src={node.image} alt={node.imageAlt || ""} loading="lazy" />
 				{node.badge && <span class="tl-badge">{node.badge}</span>}
 			</div>
@@ -59,6 +59,18 @@ const items = node.items ?? [];
 </section>
 
 <style>
+	/* Fondo de líneas diagonales sutiles. */
+	.tl-section {
+		background-color: #fff;
+		background-image: repeating-linear-gradient(
+			135deg,
+			rgba(14, 27, 42, 0.035) 0,
+			rgba(14, 27, 42, 0.035) 1px,
+			transparent 1px,
+			transparent 12px
+		);
+	}
+
 	.tl-grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -74,44 +86,50 @@ const items = node.items ?? [];
 		width: 100%;
 		border-radius: var(--radius-lg);
 		box-shadow: var(--shadow-lg);
-		position: relative;
-		z-index: 1;
+		display: block;
 	}
 
-	.tl-blob {
-		position: absolute;
-		width: 60%;
-		height: 60%;
-		right: -6%;
-		bottom: -8%;
-		background: var(--color-primary);
-		opacity: 0.18;
-		border-radius: 48% 52% 56% 44% / 52% 48% 52% 48%;
-	}
-
+	/* Insignia de año: círculo verde, arriba a la derecha (sobresale). */
 	.tl-badge {
 		position: absolute;
 		z-index: 2;
-		top: var(--spacing-lg);
-		left: calc(-1 * var(--spacing-md));
+		top: calc(-1 * var(--spacing-lg));
+		right: calc(-1 * var(--spacing-lg));
+		width: 84px;
+		height: 84px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		background: var(--color-primary);
 		color: #fff;
 		font-weight: 800;
-		padding: var(--spacing-sm) var(--spacing-lg);
-		border-radius: var(--radius-full);
+		font-size: var(--font-size-lg);
 		box-shadow: var(--shadow);
 	}
 
+	/* Lista de hitos con riel vertical. */
 	.tl-items {
+		position: relative;
 		list-style: none;
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-xl);
+		gap: var(--spacing-2xl);
+	}
+
+	.tl-items::before {
+		content: "";
+		position: absolute;
+		left: 6px;
+		top: 8px;
+		bottom: 8px;
+		width: 2px;
+		background: var(--color-border);
 	}
 
 	.tl-item {
 		display: flex;
-		gap: var(--spacing-md);
+		gap: var(--spacing-lg);
 		position: relative;
 	}
 
@@ -119,13 +137,18 @@ const items = node.items ?? [];
 		width: 14px;
 		height: 14px;
 		border-radius: 50%;
-		background: var(--color-primary);
+		background: var(--color-muted);
+		border: 3px solid #fff;
+		box-sizing: content-box;
 		flex-shrink: 0;
-		margin-top: 6px;
+		margin-top: 4px;
+		margin-left: -3px;
+		z-index: 1;
 	}
 
 	.tl-item h3 {
 		font-size: var(--font-size-xl);
+		color: var(--color-primary);
 		margin-bottom: var(--spacing-xs);
 	}
 
@@ -136,7 +159,7 @@ const items = node.items ?? [];
 	@media (max-width: 860px) {
 		.tl-grid {
 			grid-template-columns: 1fr;
-			gap: var(--spacing-2xl);
+			gap: var(--spacing-3xl);
 		}
 	}
 </style>
