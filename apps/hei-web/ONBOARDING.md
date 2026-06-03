@@ -107,16 +107,25 @@ ver `apps/hei-web/.wrangler/state/v3/d1/.../*.sqlite`, tabla `ec_pages` (columna
   ```
 - **Color de marca**: verde oficial **#31D697** (en `theme.css` como `--color-primary`).
 
-## Trabajo pendiente (ver también MAP.md → "Estado")
+## Trabajo pendiente (ver también MAP.md → "Estado / avance")
 
-1. **Formularios**: crear en el admin los forms con slugs `contacto`, `salutia-operacion`,
-   `trabaja-perfil`; configurar notificaciones por email (faltan correos destino del cliente) y
-   Turnstile (anti-spam). Los bloques `hei.formSection` ya los referencian por slug.
-2. **Datos de contacto reales** (dirección, teléfono, WhatsApp `wa.me/...`) en `Base.astro` y `seed.json`.
+1. **Pase 1:1 de 6 pantallas**: Home ✅ y Quiénes somos ✅ ya están afinados; faltan Marcas,
+   Salutia, Sostenibilidad, Trabaja, Contacto y Denuncias.
+2. **Formularios**: crear en el admin los forms `contacto`, `salutia-operacion`, `trabaja-perfil`;
+   notificaciones por email (faltan correos destino del cliente) + Turnstile (anti-spam). Los
+   bloques `hei.formSection` ya los referencian por slug.
+3. **Datos de contacto reales** (dirección, teléfono, WhatsApp `wa.me/...`) en `Base.astro` y `seed.json`.
    (Logos y fotos reales **ya están** en `public/`.)
-3. **Pase 1:1 de las 7 pantallas restantes** (solo el Home está afinado a detalle).
 4. **Deploy** a Cloudflare (D1 + R2; los plugins sandbox requieren cuenta de pago, o comentar
-   `worker_loaders` en `wrangler.jsonc`).
+   `worker_loaders` en `wrangler.jsonc`). Definir: contenido por admin vs seed (ver más abajo).
+
+> **CI / GitHub Actions**: los workflows heredados de emdash fueron eliminados (este fork solo
+> hospea el sitio HEI). Si necesitas CI/deploy, agrega un workflow propio en `.github/workflows/`.
+
+> **Modelo de contenido en producción**: el `seed.json` solo siembra una BD vacía. En prod el
+> contenido vive en D1 y se edita por el admin; re-deployar NO lo sobrescribe (no se puede "borrar
+> y re-sembrar" como en local sin perder datos/forms). Decidir antes de deployar: contenido por
+> admin (recomendado) o mantener seed como fuente.
 
 ## Convenciones
 

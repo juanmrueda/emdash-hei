@@ -41,10 +41,10 @@ apps/hei-web/
 │  │  ├─ Icon.astro           # ★ Iconos SVG inline (NO usar astro-iconset; ver ONBOARDING)
 │  │  ├─ HeiBlocks.astro      # ★ Renderer: mapea "hei.*" → componente de bloque
 │  │  └─ blocks/              # Un componente por tipo de bloque
-│  │     ├─ Hero.astro        # hei.hero  (variant image|solid, highlight, overlay on/off, text-shadow)
+│  │     ├─ Hero.astro        # hei.hero (image|solid, highlight, overlay off por defecto, full=alto sin radius)
 │  │     ├─ Stats.astro       # hei.stats (íconos img o SVG; cifra dos tonos prefix/figure)
 │  │     ├─ ImageText.astro   # hei.imageText (accent verde, viñetas circulares, statcard sobrepuesta)
-│  │     ├─ Cards.astro       # hei.cards (grid; color white|blue|green|navy)
+│  │     ├─ Cards.astro       # hei.cards (grid cols-N | bento; color white|blue|green|navy; img/decoración)
 │  │     ├─ Brands.astro      # hei.brands (filas de marca con logo)
 │  │     ├─ LogoCloud.astro   # hei.logoCloud
 │  │     ├─ CtaBand.astro     # hei.ctaBand (band|card; band admite foto+filtro verde; 2 CTAs; whatsapp)
@@ -85,23 +85,38 @@ apps/hei-web/
 | `/contacto`       | hero · formSection(`contacto`) · ctaBand(band, WhatsApp)       |
 | `/denuncias`      | hero · channels · ctaBand(card, WhatsApp)                      |
 
-## Estado
+## Estado / avance (actualizado)
 
-Hecho:
-- **Logos reales** (hei, Salutia, cendis, meliora) y **17 fotos reales** del Figma en `public/`,
-  referenciadas desde `seed.json`. (cendis/meliora salieron de los image fills.)
-- **Verde oficial #31D697** en los tokens.
-- **Home con pase 1:1** contra el Figma: header oscuro translúcido + logo blanco + subrayado del
-  item activo + ¡HABLEMOS! mayúscula; hero sin filtro (overlay off) y más alto; sección 1968
-  (título verde, viñetas circulares, statcard a la derecha con número navy + "%" verde); stats con
-  íconos verdes y cifras dos tonos; "crea valor" (Integra/Respalda/Escala + Contáctanos + WhatsApp);
-  banda "Crecimiento" con foto+filtro verde; footer redondeado.
+Base global lista: assets reales (logos hei/Salutia/cendis/meliora + 17 fotos en `public/`),
+verde de marca **#31D697**, header oscuro translúcido (logo blanco, subrayado del activo,
+¡HABLEMOS!), footer redondeado, heros **sin filtro** (banner + radius; Home con `full` = alto sin
+radius). Los workflows de CI heredados de emdash fueron **eliminados** (este fork solo hospeda el
+sitio); el deploy tendrá su propio workflow.
 
-Pendiente:
-- **Datos de contacto reales** (dirección, teléfono, WhatsApp `wa.me/...`): aún placeholders en
+Pase 1:1 contra Figma, por pantalla:
+
+| Pantalla | Estado |
+| --- | --- |
+| Home (`/`) | ✅ 1:1 afinado |
+| Quiénes somos (`/quienes-somos`) | ✅ 1:1 afinado (Nuestra Historia con líneas + 1968 en círculo; Pilares en bento) |
+| Marcas (`/marcas`) | ⬜ pendiente 1:1 |
+| Salutia (`/salutia`) | ⬜ pendiente 1:1 |
+| Ética y sostenibilidad (`/sostenibilidad`) | ⬜ pendiente 1:1 |
+| Trabaja con nosotros (`/trabaja`) | ⬜ pendiente 1:1 |
+| Contacto (`/contacto`) | ⬜ pendiente 1:1 |
+| Denuncias (`/denuncias`) | ⬜ pendiente 1:1 |
+
+Todas las páginas ya están **construidas y renderizando** con contenido; lo pendiente es el
+afinado visual 1:1 de las 6 restantes.
+
+Pendiente transversal:
+- **Datos de contacto reales** (dirección, teléfono, WhatsApp `wa.me/...`): placeholders en
   `Base.astro` y `seed.json`.
-- **Formularios**: los bloques `formSection` referencian slugs `contacto`, `salutia-operacion`,
-  `trabaja-perfil` que **aún no existen** en el admin; mientras tanto el form se renderiza vacío
-  (sin romper). Crearlos en `/_emdash/admin` (plugin de formularios) y definir correos destino.
-- **Pase 1:1 de las otras 7 pantallas** (solo el Home está afinado a detalle).
-- **Deploy** a Cloudflare pendiente (cuenta + dominio).
+- **Formularios**: los `formSection` referencian `contacto`, `salutia-operacion`, `trabaja-perfil`
+  que **aún no existen** en el admin (el form se renderiza vacío sin romper). Crearlos en
+  `/_emdash/admin` (plugin de formularios) + correos destino.
+- **Deploy** a Cloudflare (cuenta + dominio + workflow propio o integración Git de Cloudflare).
+
+> Cómo correr y revisar: ver [ONBOARDING.md](./ONBOARDING.md). El sitio en local: `localhost:4321`.
+> El **método 1:1**: recortar el Figma de `assets/hei-design/<Pantalla> _ Desktop.png` con `sharp`
+> y comparar (la API de Figma se rate-limitea); detalle en ONBOARDING.

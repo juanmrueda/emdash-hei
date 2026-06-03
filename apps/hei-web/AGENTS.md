@@ -25,7 +25,9 @@ en el frontmatter de `src/components/blocks/<Bloque>.astro`. Todo el contenido v
 - Editar contenido/imágenes en `seed.json` requiere re-sembrar el D1 local
   (borra `apps/hei-web/.wrangler/` → reinicia dev → pega el `dev-bypass`).
 - Assets reales en `public/logos` y `public/img`; bajarlos con `scripts/figma-export.mjs`
-  (ver ONBOARDING). Logos/fotos del Home ya están; faltan datos de contacto y formularios.
+  (ver ONBOARDING). Avance 1:1: Home ✅ y Quiénes somos ✅; faltan 6 pantallas, datos de
+  contacto, formularios y deploy (ver MAP.md → "Estado / avance").
+- CI: los workflows de emdash fueron eliminados (fork solo del sitio). No esperes Actions.
 
 ## Comandos
 
