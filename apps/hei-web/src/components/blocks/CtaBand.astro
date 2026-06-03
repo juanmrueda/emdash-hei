@@ -20,6 +20,8 @@ interface Props {
 		secondaryCtaLabel?: string;
 		secondaryCtaUrl?: string;
 		whatsapp?: boolean;
+		/** Punto focal de la imagen (object-position), ej. "center 25%". */
+		focal?: string;
 	};
 }
 
@@ -119,7 +121,12 @@ function labelSplit(line: string) {
 					</div>
 					{hasImage && (
 						<div class="cta-card-media">
-							<img src={node.image} alt={node.imageAlt || ""} loading="lazy" />
+							<img
+								src={node.image}
+								alt={node.imageAlt || ""}
+								loading="lazy"
+								style={node.focal ? `object-position: ${node.focal}` : undefined}
+							/>
 						</div>
 					)}
 				</div>

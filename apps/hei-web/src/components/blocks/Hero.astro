@@ -19,6 +19,8 @@ interface Props {
 		overlay?: boolean;
 		/** Hero alto y sin esquina redondeada (ej. Home). Por defecto es banner. */
 		full?: boolean;
+		/** Punto focal de la foto (object-position), ej. "center 25%". */
+		focal?: string;
 		primaryCtaLabel?: string;
 		primaryCtaUrl?: string;
 		secondaryCtaLabel?: string;
@@ -49,7 +51,12 @@ const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
 <section class:list={["hero", `hero--${variant}`, { "hero--full": node.full }]}>
 	{
 		variant === "image" && node.image && (
-			<img class="hero-bg" src={node.image} alt={node.imageAlt || ""} />
+			<img
+				class="hero-bg"
+				src={node.image}
+				alt={node.imageAlt || ""}
+				style={node.focal ? `object-position: ${node.focal}` : undefined}
+			/>
 		)
 	}
 	{showOverlay && <div class="hero-overlay"></div>}

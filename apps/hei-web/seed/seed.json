@@ -241,7 +241,8 @@
 							"subheadline": "Grupo HEI articula marcas, sistemas y servicios para respaldar a quienes hacen posible la salud en Guatemala.",
 							"image": "/img/quienes-hero.png",
 							"imageAlt": "Personas de Grupo HEI",
-							"variant": "image"
+							"variant": "image",
+							"focal": "center 25%"
 						},
 						{
 							"_type": "hei.timeline",
@@ -270,7 +271,8 @@
 							"image": "/img/quienes-eco.png",
 							"imageAlt": "Atención al cliente",
 							"primaryCtaLabel": "Ver marcas",
-							"primaryCtaUrl": "/marcas"
+							"primaryCtaUrl": "/marcas",
+							"focal": "center 20%"
 						},
 						{
 							"_type": "hei.cards",
