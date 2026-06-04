@@ -334,7 +334,8 @@
 							"subheadline": "Grupo HEI conecta marcas especializadas bajo una misma estructura corporativa, con foco y respaldo compartido.",
 							"image": "/img/marcas-hero.png",
 							"imageAlt": "Profesional revisando información",
-							"variant": "image"
+							"variant": "image",
+							"focal": "center top"
 						},
 						{
 							"_type": "hei.brands",
@@ -397,18 +398,23 @@
 					"title": "Salutia",
 					"content": [
 						{
-							"_type": "hei.hero",
+							"_type": "hei.ctaBand",
 							"_key": "s-hero",
-							"variant": "solid",
-							"eyebrow": "Salutia",
-							"headline": "Opera sin montar toda la estructura",
-							"subheadline": "Salutia ofrece a laboratorios y farmacéuticas la infraestructura B2B para operar con mayor control sin invertir en logística propia.",
+							"layout": "card",
+							"heading": "Opera sin montar toda la estructura",
+							"body": "Salutia ayuda a laboratorios y farmacéuticas a resolver logística, red de servicio y software con respaldo del ecosistema Grupo HEI.",
+							"image": "/img/salutia-form.png",
+							"imageAlt": "Logística Salutia",
 							"primaryCtaLabel": "Ver soluciones",
-							"primaryCtaUrl": "#soluciones"
+							"primaryCtaUrl": "#soluciones",
+							"secondaryCtaLabel": "Hablar con Salutia",
+							"secondaryCtaUrl": "/contacto",
+							"heroCard": true
 						},
 						{
 							"_type": "hei.cards",
 							"_key": "s-features",
+							"id": "soluciones",
 							"heading": "Menos fricción, más control operativo",
 							"subheading": "Un laboratorio no necesita montar toda la infraestructura propia para crecer. Salutia aporta la operación para que cada marca opere con mayor control.",
 							"columns": 3,
@@ -432,14 +438,23 @@
 							]
 						},
 						{
+							"_type": "hei.cards",
+							"_key": "s-b2b-heading",
+							"heading": "Una solución B2B dentro de Grupo HEI",
+							"subheading": "Salutia combina enfoque especializado con el respaldo de un ecosistema corporativo vinculado al sector salud.",
+							"columns": 3,
+							"align": "center",
+							"items": [],
+							"surface": false
+						},
+						{
 							"_type": "hei.formSection",
 							"_key": "s-form",
-							"eyebrow": "Una solución B2B dentro de Grupo HEI",
 							"heading": "Conversemos sobre tu operación",
 							"body": "Cuéntanos sobre tu laboratorio o farmacéutica y armamos la mejor ruta para tu equipo de ventas.",
 							"formId": "salutia-operacion",
-							"image": "/img/salutia-form.png",
-							"imageAlt": "Laboratorio",
+							"image": "/img/salutia-b2b.jpg",
+							"imageAlt": "Científicas en laboratorio",
 							"imagePosition": "right",
 							"surface": true
 						},
@@ -451,7 +466,10 @@
 							"heading": "Simplificamos la operación logística en el sector salud",
 							"body": "Con Salutia, las marcas crecen apoyadas en la infraestructura y el respaldo de Grupo HEI.",
 							"primaryCtaLabel": "Hablar con Salutia",
-							"primaryCtaUrl": "/contacto"
+							"primaryCtaUrl": "/contacto",
+							"image": "/img/salutia-cta.jpg",
+							"imageAlt": "Doctor y paciente",
+							"photoStyle": true
 						}
 					]
 				}
@@ -506,7 +524,8 @@
 							"image": "/img/sostenibilidad-accion.png",
 							"imageAlt": "Ponente en un evento",
 							"primaryCtaLabel": "Contactar al grupo",
-							"primaryCtaUrl": "/contacto"
+							"primaryCtaUrl": "/contacto",
+							"focal": "center top"
 						}
 					]
 				}
@@ -534,16 +553,25 @@
 							"heading": "Equipos que hacen posible el sistema",
 							"subheading": "Cada marca y cada servicio se sostienen en personas comprometidas con la salud y con el trabajo bien hecho.",
 							"columns": 2,
-							"align": "left",
+							"align": "center",
 							"items": [
+								{
+									"image": "/img/home-base.png",
+									"imageTop": true,
+									"imageOnly": true,
+									"rowSpan": true,
+									"title": ""
+								},
 								{
 									"icon": "heart",
 									"title": "Cultura",
+									"titleColor": "green",
 									"text": "Equipos que hacen posible el sistema. Cada marca y cada servicio se sostienen en personas comprometidas con la calidad y el servicio."
 								},
 								{
 									"icon": "trust",
 									"title": "Valores",
+									"titleColor": "green",
 									"bullets": [
 										"Responsabilidad",
 										"Aprendizaje",
@@ -560,7 +588,7 @@
 							"heading": "Oportunidades disponibles",
 							"subheading": "Conoce las vacantes activas de Grupo HEI y sus marcas.",
 							"columns": 2,
-							"align": "left",
+							"align": "center",
 							"items": [
 								{
 									"icon": "logistics",
@@ -602,7 +630,8 @@
 							"subheadline": "Este canal dirige solicitudes de alianzas, proveeduría, nuevos negocios y asuntos corporativos al equipo correspondiente.",
 							"image": "/img/contacto-hero.png",
 							"imageAlt": "Ejecutiva sonriendo",
-							"variant": "image"
+							"variant": "image",
+							"focal": "center top"
 						},
 						{
 							"_type": "hei.formSection",
@@ -625,7 +654,10 @@
 							"body": "Escríbenos para recibir asesoría técnica y comercial sin complicaciones. Protegemos la confidencialidad de tus datos mientras te ofrecemos soluciones a la medida.",
 							"primaryCtaLabel": "Vía WhatsApp",
 							"primaryCtaUrl": "https://wa.me/50200000000",
-							"whatsapp": true
+							"whatsapp": true,
+							"image": "/img/contacto-form.png",
+							"imageAlt": "Ejecutiva atendiendo llamada",
+							"focal": "center top"
 						}
 					]
 				}
@@ -645,7 +677,8 @@
 							"subheadline": "Grupo HEI habilita un canal para reportar situaciones que puedan afectar la ética, la transparencia y la integridad del ecosistema.",
 							"image": "/img/denuncias-hero.png",
 							"imageAlt": "Personas en oficina",
-							"variant": "image"
+							"variant": "image",
+							"focal": "center top"
 						},
 						{
 							"_type": "hei.channels",

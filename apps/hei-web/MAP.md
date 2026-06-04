@@ -87,36 +87,52 @@ apps/hei-web/
 
 ## Estado / avance (actualizado)
 
-Base global lista: assets reales (logos hei/Salutia/cendis/meliora + 17 fotos en `public/`),
+Base global lista: assets reales (logos hei/Salutia/cendis/meliora + fotos en `public/`),
 verde de marca **#31D697**, header oscuro translúcido (logo blanco, subrayado del activo,
 ¡HABLEMOS!), footer redondeado, heros **sin filtro** (banner + radius; Home con `full` = alto sin
 radius). Los workflows de CI heredados de emdash fueron **eliminados** (este fork solo hospeda el
-sitio); el deploy tendrá su propio workflow.
+sitio); el deploy apunta al subdominio **grupohei.ipalmera.com** (Cloudflare Workers).
 
 Pase 1:1 contra Figma, por pantalla:
 
 | Pantalla | Estado |
 | --- | --- |
 | Home (`/`) | ✅ 1:1 afinado |
-| Quiénes somos (`/quienes-somos`) | ✅ 1:1 afinado (Nuestra Historia con líneas + 1968 en círculo; Pilares en bento) |
-| Marcas (`/marcas`) | ⬜ pendiente 1:1 |
-| Salutia (`/salutia`) | ⬜ pendiente 1:1 |
-| Ética y sostenibilidad (`/sostenibilidad`) | ⬜ pendiente 1:1 |
-| Trabaja con nosotros (`/trabaja`) | ⬜ pendiente 1:1 |
-| Contacto (`/contacto`) | ⬜ pendiente 1:1 |
-| Denuncias (`/denuncias`) | ⬜ pendiente 1:1 |
+| Quiénes somos (`/quienes-somos`) | ✅ 1:1 afinado |
+| Marcas (`/marcas`) | ✅ 1:1 afinado (focal `center top` en hero) |
+| Salutia (`/salutia`) | ✅ 1:1 afinado (hero ctaBand card + `heroCard`, fotos salutia-b2b/cta) |
+| Ética y sostenibilidad (`/sostenibilidad`) | ✅ 1:1 afinado (ícono thumbs-up Transparencia; focal ctaBand) |
+| Trabaja con nosotros (`/trabaja`) | ✅ 1:1 afinado (foto Cultura `imageTop+rowSpan`; form `trabaja-perfil` creado) |
+| Contacto (`/contacto`) | ✅ 1:1 afinado (focal hero; ctaBand foto+filtro verde; form `contacto` creado) |
+| Denuncias (`/denuncias`) | ✅ 1:1 afinado (focal hero; foto channels `etica-foto.png`; fondo líneas en Channels) |
 
-Todas las páginas ya están **construidas y renderizando** con contenido; lo pendiente es el
-afinado visual 1:1 de las 6 restantes.
+## Componentes extendidos (cambios respecto al scaffold inicial)
+
+| Componente | Extensiones añadidas |
+| --- | --- |
+| `Hero.astro` | `focal` (object-position por bloque) |
+| `Cards.astro` | `imageTop`, `imageOnly`, `rowSpan` (foto col izq spanning 2 filas); `titleColor`; `cards-compact` (sin items = solo heading); ícono `thumbs-up` |
+| `CtaBand.astro` | `heroCard` (margin-top hero + padding); `photoStyle` (foto sin filtro, texto izq); `focal` en card media |
+| `Channels.astro` | Fondo de líneas diagonales (igual que Timeline) |
+| `FormSection.astro` | Estilos HEI: inputs pill, fondo gris, borde gris suave, botón verde; grid 2 col; `::file-selector-button` estilizado |
+| `Icon.astro` | `thumbs-up` SVG añadido |
+| `Base.astro` | `parentMap` para marcar Marcas activo cuando se está en `/salutia` |
+
+## Formularios creados en el admin
+
+| Slug | Página | Campos principales |
+| --- | --- | --- |
+| `trabaja-perfil` | `/trabaja` | Nombre, Email, Teléfono, Área interés, LinkedIn, CV (file) |
+| `contacto` | `/contacto` | Nombre, Empresa, Cargo, Email, Motivo (select), Teléfono, Mensaje |
+| `salutia-operacion` | `/salutia` | Lab/Farma, País, Tipo productos, Necesidad, Volumen, Nombre contacto, Cargo, Correo corp., Teléfono |
 
 Pendiente transversal:
 - **Datos de contacto reales** (dirección, teléfono, WhatsApp `wa.me/...`): placeholders en
   `Base.astro` y `seed.json`.
-- **Formularios**: los `formSection` referencian `contacto`, `salutia-operacion`, `trabaja-perfil`
-  que **aún no existen** en el admin (el form se renderiza vacío sin romper). Crearlos en
-  `/_emdash/admin` (plugin de formularios) + correos destino.
-- **Deploy** a Cloudflare (cuenta + dominio + workflow propio o integración Git de Cloudflare).
+- **Correos destino** de los 3 formularios: configurar en el admin (Settings de cada form).
+- **Deploy** a `grupohei.ipalmera.com`: D1 + R2 en Cloudflare, `wrangler login`, seed inicial en producción.
 
-> Cómo correr y revisar: ver [ONBOARDING.md](./ONBOARDING.md). El sitio en local: `localhost:4321`.
+> Cómo correr y revisar: ver [ONBOARDING.md](./ONBOARDING.md). El sitio en local: `localhost:4322`.
 > El **método 1:1**: recortar el Figma de `assets/hei-design/<Pantalla> _ Desktop.png` con `sharp`
 > y comparar (la API de Figma se rate-limitea); detalle en ONBOARDING.
+> **Acceso admin en dev**: `/_emdash/api/auth/dev-bypass?redirect=/_emdash/admin`

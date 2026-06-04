@@ -34,7 +34,7 @@ const items = node.items ?? [];
 const pos = node.imagePosition ?? "left";
 ---
 
-<section class="section">
+<section class="section ch-section">
 	<div class="container">
 		{
 			(node.eyebrow || node.heading) && (
@@ -73,6 +73,18 @@ const pos = node.imagePosition ?? "left";
 </section>
 
 <style>
+	.ch-section {
+		position: relative;
+		background-color: var(--color-surface, #f4f7f9);
+		background-image: repeating-linear-gradient(
+			135deg,
+			rgba(14, 27, 42, 0.035) 0,
+			rgba(14, 27, 42, 0.035) 1px,
+			transparent 1px,
+			transparent 12px
+		);
+	}
+
 	.ch-grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr;

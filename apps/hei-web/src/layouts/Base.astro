@@ -26,8 +26,13 @@ const [menu, footerCompany] = await Promise.all([
 ]);
 
 const currentPath = Astro.url.pathname;
+// Páginas hijo que activan un ítem del menú padre
+const parentMap: Record<string, string> = {
+	"/salutia": "/marcas",
+};
+const effectivePath = parentMap[currentPath] ?? currentPath;
 const isActive = (url: string) =>
-	url === "/" ? currentPath === "/" : currentPath.startsWith(url);
+	url === "/" ? effectivePath === "/" : effectivePath.startsWith(url);
 
 const pageCtx = createPublicPageContext({
 	Astro,

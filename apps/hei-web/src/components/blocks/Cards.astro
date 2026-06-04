@@ -8,12 +8,16 @@ import Icon from "../Icon.astro";
  */
 interface CardItem {
 	icon?: string;
-	title: string;
+	title?: string;
+	titleColor?: "green";
 	text?: string;
 	bullets?: string[];
 	color?: "white" | "blue" | "green" | "navy";
 	span?: "wide" | "narrow";
 	image?: string;
+	imageTop?: boolean;
+	imageOnly?: boolean;
+	rowSpan?: boolean;
 	decoration?: boolean;
 }
 interface Props {
@@ -32,7 +36,7 @@ interface Props {
 
 const ICONS: Record<string, string> = {
 	health: "heartbeat",
-	transparency: "hand-heart",
+	transparency: "thumbs-up",
 	future: "hourglass",
 	integration: "stack",
 	trust: "shield-check",
@@ -64,7 +68,7 @@ const toList = (v: unknown): string[] =>
 			: [];
 ---
 
-<section class:list={["section cards-section", { "cards-surface": node.surface }]}>
+<section class:list={["section cards-section", { "cards-surface": node.surface, "cards-compact": items.length === 0 }]}>
 	<div class="container">
 		{
 			(node.eyebrow || node.heading) && (
@@ -88,31 +92,41 @@ const toList = (v: unknown): string[] =>
 							`card--${c.color || "white"}`,
 							bento && c.span === "wide" && "span-wide",
 							bento && c.span === "narrow" && "span-narrow",
-							c.image && "has-img",
+							c.image && !c.imageTop && "has-img",
+							c.image && c.imageTop && "has-img-top",
+							c.image && c.imageTop && c.imageOnly && "img-only",
+							c.rowSpan && "row-span",
 							c.decoration && "has-deco",
 						]}
 					>
-						{c.image && <img class="card-bg" src={c.image} alt="" loading="lazy" />}
-						{c.decoration && <span class="card-deco" aria-hidden="true" />}
-						{c.icon && (
+						{c.image && !c.imageTop && <img class="card-bg" src={c.image} alt="" loading="lazy" />}
+						{c.image && c.imageTop && <img class="card-img-top" src={c.image} alt="" loading="lazy" />}
+						{!c.imageOnly && c.decoration && <span class="card-deco" aria-hidden="true" />}
+						{!c.imageOnly && c.icon && (
 							<span class="card-icon">
 								<Icon name={ICONS[c.icon] || "check-circle"} size={28} />
 							</span>
 						)}
-						<div class="card-body">
-							<h3 class="card-title">{c.title}</h3>
-							{c.text && <p class="card-text">{c.text}</p>}
-							{toList(c.bullets).length > 0 && (
-								<ul class="card-bullets">
-									{toList(c.bullets).map((b) => (
-										<li>
-											<Icon name="check" />
-											<span>{b}</span>
-										</li>
-									))}
-								</ul>
-							)}
-						</div>
+						{!c.imageOnly && (
+							<div class="card-body">
+								{c.title && (
+									<h3 class:list={["card-title", c.titleColor === "green" && "title-green"]}>
+										{c.title}
+									</h3>
+								)}
+								{c.text && <p class="card-text">{c.text}</p>}
+								{toList(c.bullets).length > 0 && (
+									<ul class="card-bullets">
+										{toList(c.bullets).map((b) => (
+											<li>
+												<Icon name="check" />
+												<span>{b}</span>
+											</li>
+										))}
+									</ul>
+								)}
+							</div>
+						)}
 					</article>
 				))
 			}
@@ -123,6 +137,12 @@ const toList = (v: unknown): string[] =>
 <style>
 	.cards-surface {
 		background: var(--color-surface);
+	}
+
+	/* Sección solo-heading (sin cards): padding reducido */
+	.cards-compact {
+		padding-top: var(--spacing-sm);
+		padding-bottom: var(--spacing-sm);
 	}
 
 	/* Heading alineado a la izquierda. */
@@ -210,6 +230,45 @@ const toList = (v: unknown): string[] =>
 		background: var(--color-navy);
 		border-color: transparent;
 		color: #fff;
+	}
+
+	/* Tarjeta con imagen arriba y texto abajo. */
+	.card.has-img-top {
+		padding: 0;
+		overflow: hidden;
+	}
+	.card-img-top {
+		width: 100%;
+		height: 220px;
+		object-fit: cover;
+		object-position: center top;
+		display: block;
+		flex-shrink: 0;
+	}
+	.card.has-img-top > .card-icon,
+	.card.has-img-top > .card-body {
+		padding: var(--spacing-lg);
+	}
+	.card.has-img-top > .card-icon {
+		padding-bottom: 0;
+	}
+
+	/* Tarjeta solo-foto: la imagen llena toda la altura. */
+	.card.img-only {
+		padding: 0;
+	}
+	.card.img-only .card-img-top {
+		height: 100%;
+		object-position: center top;
+	}
+
+	/* Tarjeta que ocupa 2 filas del grid. */
+	.row-span {
+		grid-row: span 2;
+	}
+
+	.title-green {
+		color: var(--color-primary) !important;
 	}
 
 	/* Tarjeta con imagen de fondo + filtro verde (Crecimiento). */

@@ -9,6 +9,8 @@ import Icon from "../Icon.astro";
 interface Props {
 	node: {
 		layout?: "band" | "card";
+		heroCard?: boolean;
+		photoStyle?: boolean;
 		icon?: string;
 		eyebrow?: string;
 		heading: string;
@@ -54,7 +56,7 @@ function labelSplit(line: string) {
 
 {
 	layout === "band" ? (
-		<section class:list={["cta-band", { "has-bg": !!node.image }]}>
+		<section class:list={["cta-band", { "has-bg": !!node.image, "photo-style": node.photoStyle }]}>
 			{node.image && (
 				<img class="cta-band-bg" src={node.image} alt={node.imageAlt || ""} loading="lazy" />
 			)}
@@ -84,7 +86,7 @@ function labelSplit(line: string) {
 			</div>
 		</section>
 	) : (
-		<section class="section">
+		<section class:list={["section", { "section--hero-card": node.heroCard }]}>
 			<div class="container">
 				<div class:list={["cta-card", { "has-image": hasImage }]}>
 					<div class="cta-card-content">
@@ -165,6 +167,18 @@ function labelSplit(line: string) {
 		);
 	}
 
+	/* Foto visible sin filtro — texto sobre la foto directamente */
+	.cta-band.photo-style {
+		background: var(--color-navy);
+	}
+	.cta-band.photo-style.has-bg::after {
+		display: none;
+	}
+	.cta-band.photo-style .cta-band-inner {
+		text-align: start;
+		align-items: flex-start;
+	}
+
 	.cta-band-inner {
 		position: relative;
 		z-index: 2;
@@ -218,6 +232,13 @@ function labelSplit(line: string) {
 		gap: var(--spacing-md);
 		justify-content: center;
 		margin-top: var(--spacing-sm);
+	}
+
+	/* Hero card: pegado al header como los otros heros */
+	.section--hero-card {
+		margin-top: -76px;
+		padding-top: calc(76px + var(--spacing-xl));
+		padding-bottom: 0;
 	}
 
 	/* Card layout */
