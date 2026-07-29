@@ -17,6 +17,10 @@ import CtaBand from "./blocks/CtaBand.astro";
 import Timeline from "./blocks/Timeline.astro";
 import Channels from "./blocks/Channels.astro";
 import FormSection from "./blocks/FormSection.astro";
+import Pilares from "./blocks/Pilares.astro";
+import TresEjes from "./blocks/TresEjes.astro";
+import Cultura from "./blocks/Cultura.astro";
+import Oportunidades from "./blocks/Oportunidades.astro";
 
 interface Props {
 	value: PortableTextBlock[];
@@ -35,6 +39,10 @@ const heiTypes = {
 	"hei.timeline": Timeline,
 	"hei.channels": Channels,
 	"hei.formSection": FormSection,
+	"hei.pilares": Pilares,
+	"hei.tresejes": TresEjes,
+	"hei.cultura": Cultura,
+	"hei.oportunidades": Oportunidades,
 	// Auto-wire the forms plugin block so inline form embeds also render.
 	...formBlocks,
 };

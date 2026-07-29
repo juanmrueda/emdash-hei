@@ -1,0 +1,109 @@
+---
+import { mediaUrl } from "../../lib/media";
+
+interface PilarItem {
+	icon?: string;
+	image?: unknown;
+	title?: string;
+	text?: string;
+	textColor?: string;
+	color?: string;
+	gradientColor?: string;
+	decoration?: boolean;
+}
+
+interface Props {
+	node: {
+		eyebrow?: string;
+		heading?: string;
+		subheading?: string;
+		items: PilarItem[];
+	};
+}
+
+const ICONS: Record<string, string> = {
+	health: "/wp/iconos/salud.png",
+	transparency: "/wp/iconos/transparencia.png",
+	future: "/wp/iconos/futuro.png",
+	logistics: "/wp/iconos/ico-logistica.png",
+	network: "/wp/iconos/ico-servicio.png",
+	software: "/wp/iconos/ico-software.png",
+	shield: "/wp/iconos/transparencia.png",
+	growth: "/wp/iconos/futuro.png",
+	gauge: "/wp/iconos/ico-software.png",
+};
+
+const iconSrc = (card: PilarItem) =>
+	card.icon ? (mediaUrl(card.icon) || ICONS[card.icon]) : undefined;
+
+const bgStyle = (card: PilarItem) => {
+	const img = mediaUrl(card.image);
+	if (!img) return undefined;
+	return `background-image:url('${img}');`;
+};
+
+const toGradient = (hex: string) => {
+	const h = hex.replace("#", "");
+	if (h.length < 6) return undefined;
+	const r = parseInt(h.substring(0, 2), 16);
+	const g = parseInt(h.substring(2, 4), 16);
+	const b = parseInt(h.substring(4, 6), 16);
+	if (isNaN(r) || isNaN(g) || isNaN(b)) return undefined;
+	return `linear-gradient(90deg,rgba(${r},${g},${b},0.85) 35%,rgba(${r},${g},${b},0) 80%)`;
+};
+
+const isDarkColor = (color?: string): boolean => {
+	if (!color) return false;
+	const c = color.toLowerCase();
+	if (["blue", "navy", "green", "dark", "black"].includes(c)) return true;
+	if (c.startsWith("#")) {
+		const h = c.replace("#", "");
+		if (h.length < 6) return false;
+		const r = parseInt(h.substring(0, 2), 16);
+		const g = parseInt(h.substring(2, 4), 16);
+		const b = parseInt(h.substring(4, 6), 16);
+		if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
+		return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+	}
+	return false;
+};
+
+const { node } = Astro.props;
+const items = node.items ?? [];
+---
+
+<section class="section">
+	<div class="container">
+		{node.heading && <h2 class="text-green">{node.heading}</h2>}
+		{node.subheading && <p class="mt-16 mw-610">{node.subheading}</p>}
+		<div class="pilares-grid">
+			{items.map((card) => {
+				const bg = bgStyle(card);
+				const bgColor = !bg && card.color ? card.color : undefined;
+				const dark = isDarkColor(bg ? undefined : card.color);
+				const classes = ["pilar-card"];
+				if (bg) classes.push("pilar-card--img");
+				if (!bg && dark) classes.push("pilar-card--dark");
+				if (card.decoration) classes.push("pilar-card--decorated");
+				const vars: string[] = [];
+				if (card.gradientColor) {
+					const g = toGradient(card.gradientColor);
+					if (g) vars.push(`--pilar-gradient-overlay:${g}`);
+				}
+				if (card.textColor) vars.push(`--pilar-text-color:${card.textColor}`);
+				const inlineStyle = [
+					bg,
+					bgColor ? `background-color:${bgColor};` : "",
+					vars.length ? vars.join(";") + ";" : "",
+				].filter(Boolean).join("");
+				return (
+					<div class={classes.join(" ")} style={inlineStyle || undefined}>
+						{iconSrc(card) && <div class="pilar-card__icon"><img src={iconSrc(card)} alt="" loading="lazy" /></div>}
+						{card.title && <h3>{card.title}</h3>}
+						{card.text && <p>{card.text}</p>}
+					</div>
+				);
+			})}
+		</div>
+	</div>
+</section>

@@ -1,0 +1,62 @@
+---
+import { mediaUrl } from "../../lib/media";
+
+interface EjeItem {
+	icon?: string;
+	title?: string;
+	subtitle?: string;
+	text?: string;
+}
+
+interface Props {
+	node: {
+		eyebrow?: string;
+		heading?: string;
+		subheading?: string;
+		items: EjeItem[];
+	};
+}
+
+const ICONS: Record<string, string> = {
+	health: "/wp/iconos/salud.png",
+	transparency: "/wp/iconos/transparencia.png",
+	future: "/wp/iconos/futuro.png",
+	logistics: "/wp/iconos/ico-logistica.png",
+	network: "/wp/iconos/ico-servicio.png",
+	software: "/wp/iconos/ico-software.png",
+	shield: "/wp/iconos/transparencia.png",
+	growth: "/wp/iconos/futuro.png",
+	gauge: "/wp/iconos/ico-software.png",
+};
+
+const iconSrc = (card: EjeItem) =>
+	card.icon ? (mediaUrl(card.icon) || ICONS[card.icon]) : undefined;
+
+const { node } = Astro.props;
+const items = node.items ?? [];
+---
+
+<section class="section bg-white">
+	<div class="container">
+		{node.heading && (
+			<div class="section-header">
+				<h2>{node.heading}</h2>
+				<div class="section-header__line"></div>
+				{node.subheading && <p>{node.subheading}</p>}
+			</div>
+		)}
+		<div class="cards-grid">
+			{items.map((card) => {
+				const img = iconSrc(card);
+				return (
+					<div class="card">
+						{img && <img src={img} alt={card.title || ""} class="card__icon" loading="lazy" />}
+						{card.title && <h3 class="card__title" style="color:var(--blue);">{card.title}</h3>}
+						{card.subtitle && <p class="card__body" style="font-weight:600;margin-bottom:8px;">{card.subtitle}</p>}
+						{card.text && <p class="card__body">{card.text}</p>}
+					</div>
+				);
+			})}
+		</div>
+	</div>
+</section>

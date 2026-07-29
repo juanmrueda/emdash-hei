@@ -8,6 +8,7 @@ export interface SiteSettings {
 	// Identity
 	title: string;
 	tagline?: string;
+	brandColor?: string;
 	logo?: { mediaId: string; alt?: string; url?: string };
 	favicon?: { mediaId: string; url?: string };
 

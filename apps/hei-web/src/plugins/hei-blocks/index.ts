@@ -6,38 +6,15 @@
  *
  *  - No object-group element: nested object shapes are flattened to sibling
  *    fields (e.g. a CTA becomes primaryCtaLabel / primaryCtaUrl).
- *  - Repeater sub-fields are scalar only (text_input, number_input, select,
- *    toggle). Lists of strings (bullets) are entered as one multiline field
- *    and split on newline at render time.
- *  - No media picker yet — image fields are URL strings entered by hand.
+ *  - Lists of strings (bullets) are entered as one multiline field and split
+ *    on newline at render time.
+ *  - Image fields use the media picker and still accept existing URL strings.
  *
  * Site-side rendering goes through src/components/HeiBlocks.astro.
  */
 
 import { definePlugin } from "emdash";
 import type { PluginDefinition } from "emdash";
-
-const CARD_COLORS = [
-	{ label: "Blanco", value: "white" },
-	{ label: "Verde", value: "green" },
-	{ label: "Azul", value: "blue" },
-	{ label: "Navy", value: "navy" },
-];
-
-const CARD_ICONS = [
-	{ label: "Salud", value: "health" },
-	{ label: "Transparencia", value: "transparency" },
-	{ label: "Futuro", value: "future" },
-	{ label: "Integración", value: "integration" },
-	{ label: "Confianza", value: "trust" },
-	{ label: "Capacidad", value: "capacity" },
-	{ label: "Crecimiento", value: "growth" },
-	{ label: "Logística", value: "logistics" },
-	{ label: "Red de servicio", value: "network" },
-	{ label: "Software", value: "software" },
-	{ label: "Escudo", value: "shield" },
-	{ label: "Hoja", value: "leaf" },
-];
 
 const definition: PluginDefinition = {
 	id: "hei-blocks",
@@ -55,7 +32,12 @@ const definition: PluginDefinition = {
 					{ type: "text_input", action_id: "headline", label: "Titular" },
 					{ type: "text_input", action_id: "highlight", label: "Palabra resaltada" },
 					{ type: "text_input", action_id: "subheadline", label: "Subtítulo", multiline: true },
-					{ type: "text_input", action_id: "image", label: "Imagen de fondo (URL)" },
+					{
+						type: "media_picker",
+						action_id: "image",
+						label: "Imagen de fondo",
+						mime_type_filter: "image/",
+					},
 					{ type: "text_input", action_id: "imageAlt", label: "Texto alternativo" },
 					{
 						type: "select",
@@ -99,6 +81,12 @@ const definition: PluginDefinition = {
 							{ type: "text_input", action_id: "value", label: "Valor" },
 							{ type: "text_input", action_id: "label", label: "Etiqueta" },
 							{ type: "text_input", action_id: "icon", label: "Ícono (clave)" },
+							{
+								type: "media_picker",
+								action_id: "img",
+								label: "Imagen / ícono",
+								mime_type_filter: "image/",
+							},
 						],
 					},
 				],
@@ -119,7 +107,7 @@ const definition: PluginDefinition = {
 						label: "Viñetas (una por línea)",
 						multiline: true,
 					},
-					{ type: "text_input", action_id: "image", label: "Imagen (URL)" },
+					{ type: "media_picker", action_id: "image", label: "Imagen", mime_type_filter: "image/" },
 					{ type: "text_input", action_id: "imageAlt", label: "Texto alternativo" },
 					{
 						type: "select",
@@ -128,6 +116,18 @@ const definition: PluginDefinition = {
 						options: [
 							{ label: "Izquierda", value: "left" },
 							{ label: "Derecha", value: "right" },
+						],
+					},
+					{
+						type: "repeater",
+						action_id: "stats",
+						label: "Estadísticas flotantes",
+						item_label: "Estadística",
+						min_items: 0,
+						max_items: 4,
+						fields: [
+							{ type: "text_input", action_id: "value", label: "Valor (ej. 100%)" },
+							{ type: "text_input", action_id: "label", label: "Etiqueta" },
 						],
 					},
 					{ type: "text_input", action_id: "badge", label: "Insignia (ej. 1968)" },
@@ -145,6 +145,15 @@ const definition: PluginDefinition = {
 					{ type: "text_input", action_id: "eyebrow", label: "Antetítulo" },
 					{ type: "text_input", action_id: "heading", label: "Título de sección" },
 					{ type: "text_input", action_id: "subheading", label: "Subtítulo", multiline: true },
+					{
+						type: "select",
+						action_id: "layout",
+						label: "Estilo de tarjetas",
+						options: [
+							{ label: "Servicios (con intro y fondo blanco)", value: "service" },
+							{ label: "Tarjetas estándar", value: "default" },
+						],
+					},
 					{
 						type: "select",
 						action_id: "columns",
@@ -168,12 +177,141 @@ const definition: PluginDefinition = {
 					{
 						type: "repeater",
 						action_id: "items",
-						label: "Tarjetas",
-						item_label: "Tarjeta",
+						label: "Ítems",
+						item_label: "Ítem",
 						min_items: 1,
 						max_items: 8,
 						fields: [
-							{ type: "select", action_id: "icon", label: "Ícono", options: CARD_ICONS },
+							{
+								type: "media_picker",
+								action_id: "icon",
+								label: "Ícono",
+								mime_type_filter: "image/",
+							},
+							{
+								type: "media_picker",
+								action_id: "image",
+								label: "Imagen de fondo",
+								mime_type_filter: "image/",
+							},
+							{ type: "text_input", action_id: "title", label: "Título" },
+							{ type: "text_input", action_id: "text", label: "Texto", multiline: true },
+							{
+								type: "text_input",
+								action_id: "color",
+								label: "Color de fondo (ej. #31D697 o white)",
+							},
+							{
+								type: "text_input",
+								action_id: "gradientColor",
+								label: "Color degradado (ej. #08242C)",
+							},
+						],
+					},
+				],
+			},
+
+			{
+				type: "hei.pilares",
+				label: "Pilares",
+				category: "Secciones",
+				description: "Tarjetas de pilares con ícono, color y fondo",
+				fields: [
+					{ type: "text_input", action_id: "eyebrow", label: "Antetítulo" },
+					{ type: "text_input", action_id: "heading", label: "Título" },
+					{ type: "text_input", action_id: "subheading", label: "Subtítulo", multiline: true },
+					{
+						type: "repeater",
+						action_id: "items",
+						label: "Pilares",
+						item_label: "Pilar",
+						min_items: 1,
+						max_items: 8,
+						fields: [
+							{
+								type: "media_picker",
+								action_id: "icon",
+								label: "Ícono",
+								mime_type_filter: "image/",
+							},
+							{
+								type: "media_picker",
+								action_id: "image",
+								label: "Imagen de fondo",
+								mime_type_filter: "image/",
+							},
+							{ type: "text_input", action_id: "title", label: "Título" },
+							{ type: "text_input", action_id: "text", label: "Texto", multiline: true },
+							{
+								type: "text_input",
+								action_id: "textColor",
+								label: "Color de texto (vacío = blanco sobre imagen, o hereda del color de fondo)",
+							},
+							{
+								type: "text_input",
+								action_id: "color",
+								label: "Color de fondo (ej. #31D697 o white)",
+							},
+							{
+								type: "text_input",
+								action_id: "gradientColor",
+								label: "Color degradado del overlay (ej. #08242C, vacío = el verde por defecto)",
+							},
+							{ type: "toggle", action_id: "decoration", label: "Decoración esquina" },
+						],
+					},
+				],
+			},
+
+			{
+				type: "hei.tresejes",
+				label: "Tres Ejes",
+				category: "Secciones",
+				description: "Tarjetas de ejes con ícono, título, subtítulo y texto",
+				fields: [
+					{ type: "text_input", action_id: "eyebrow", label: "Antetítulo" },
+					{ type: "text_input", action_id: "heading", label: "Título" },
+					{ type: "text_input", action_id: "subheading", label: "Subtítulo", multiline: true },
+					{
+						type: "repeater",
+						action_id: "items",
+						label: "Ejes",
+						item_label: "Eje",
+						min_items: 1,
+						max_items: 8,
+						fields: [
+							{
+								type: "media_picker",
+								action_id: "icon",
+								label: "Ícono",
+								mime_type_filter: "image/",
+							},
+							{ type: "text_input", action_id: "title", label: "Título" },
+							{ type: "text_input", action_id: "subtitle", label: "Subtítulo" },
+							{ type: "text_input", action_id: "text", label: "Texto", multiline: true },
+						],
+					},
+				],
+			},
+
+			{
+				type: "hei.cultura",
+				label: "Cultura y Valores",
+				category: "Secciones",
+				description: "Split con imagen y lista de valores",
+				fields: [
+					{ type: "text_input", action_id: "heading", label: "Título" },
+					{ type: "text_input", action_id: "subheading", label: "Subtítulo", multiline: true },
+					{ type: "media_picker", action_id: "image", label: "Imagen", mime_type_filter: "image/" },
+					{ type: "text_input", action_id: "imageAlt", label: "Texto alternativo" },
+					{
+						type: "repeater",
+						action_id: "items",
+						label: "Valores",
+						item_label: "Valor",
+						min_items: 1,
+						max_items: 6,
+						fields: [
 							{ type: "text_input", action_id: "title", label: "Título" },
 							{ type: "text_input", action_id: "text", label: "Texto", multiline: true },
 							{
@@ -182,9 +320,19 @@ const definition: PluginDefinition = {
 								label: "Viñetas (una por línea)",
 								multiline: true,
 							},
-							{ type: "select", action_id: "color", label: "Color", options: CARD_COLORS },
 						],
 					},
+				],
+			},
+
+			{
+				type: "hei.oportunidades",
+				label: "Oportunidades",
+				category: "Secciones",
+				description: "Lista dinámica de oportunidades desde la colección",
+				fields: [
+					{ type: "text_input", action_id: "heading", label: "Título" },
+					{ type: "text_input", action_id: "subheading", label: "Subtítulo", multiline: true },
 				],
 			},
 
@@ -206,9 +354,15 @@ const definition: PluginDefinition = {
 						max_items: 8,
 						fields: [
 							{ type: "text_input", action_id: "name", label: "Nombre" },
-							{ type: "text_input", action_id: "logo", label: "Logo (URL)" },
+							{
+								type: "media_picker",
+								action_id: "logo",
+								label: "Logo",
+								mime_type_filter: "image/",
+							},
 							{ type: "text_input", action_id: "eyebrow", label: "Antetítulo" },
 							{ type: "text_input", action_id: "heading", label: "Título" },
+							{ type: "text_input", action_id: "text", label: "Texto", multiline: true },
 							{
 								type: "text_input",
 								action_id: "bullets",
@@ -238,7 +392,12 @@ const definition: PluginDefinition = {
 						max_items: 10,
 						fields: [
 							{ type: "text_input", action_id: "name", label: "Nombre" },
-							{ type: "text_input", action_id: "logo", label: "Logo (URL)" },
+							{
+								type: "media_picker",
+								action_id: "logo",
+								label: "Logo",
+								mime_type_filter: "image/",
+							},
 							{ type: "text_input", action_id: "url", label: "Enlace (URL)" },
 						],
 					},
@@ -261,16 +420,28 @@ const definition: PluginDefinition = {
 						],
 					},
 					{ type: "text_input", action_id: "icon", label: "Ícono (clave)" },
+					{
+						type: "media_picker",
+						action_id: "iconImage",
+						label: "Ícono de imagen",
+						mime_type_filter: "image/",
+					},
 					{ type: "text_input", action_id: "eyebrow", label: "Antetítulo" },
 					{ type: "text_input", action_id: "heading", label: "Título" },
 					{ type: "text_input", action_id: "body", label: "Texto", multiline: true },
-					{ type: "text_input", action_id: "image", label: "Imagen (URL, solo tarjeta)" },
+					{
+						type: "media_picker",
+						action_id: "image",
+						label: "Imagen (solo tarjeta)",
+						mime_type_filter: "image/",
+					},
 					{ type: "text_input", action_id: "imageAlt", label: "Texto alternativo" },
 					{ type: "text_input", action_id: "primaryCtaLabel", label: "CTA principal — texto" },
 					{ type: "text_input", action_id: "primaryCtaUrl", label: "CTA principal — URL" },
 					{ type: "text_input", action_id: "secondaryCtaLabel", label: "CTA secundario — texto" },
 					{ type: "text_input", action_id: "secondaryCtaUrl", label: "CTA secundario — URL" },
 					{ type: "toggle", action_id: "whatsapp", label: "Ícono de WhatsApp en CTA" },
+				{ type: "toggle", action_id: "heroCard", label: "Hero card (separación del header, para primera sección)" },
 				],
 			},
 
@@ -282,7 +453,7 @@ const definition: PluginDefinition = {
 				fields: [
 					{ type: "text_input", action_id: "eyebrow", label: "Antetítulo" },
 					{ type: "text_input", action_id: "heading", label: "Título" },
-					{ type: "text_input", action_id: "image", label: "Imagen (URL)" },
+					{ type: "media_picker", action_id: "image", label: "Imagen", mime_type_filter: "image/" },
 					{ type: "text_input", action_id: "imageAlt", label: "Texto alternativo" },
 					{ type: "text_input", action_id: "badge", label: "Insignia (ej. 1968)" },
 					{
@@ -309,7 +480,7 @@ const definition: PluginDefinition = {
 					{ type: "text_input", action_id: "eyebrow", label: "Antetítulo" },
 					{ type: "text_input", action_id: "heading", label: "Título" },
 					{ type: "text_input", action_id: "subheading", label: "Subtítulo", multiline: true },
-					{ type: "text_input", action_id: "image", label: "Imagen (URL)" },
+					{ type: "media_picker", action_id: "image", label: "Imagen", mime_type_filter: "image/" },
 					{ type: "text_input", action_id: "imageAlt", label: "Texto alternativo" },
 					{
 						type: "select",
@@ -356,7 +527,7 @@ const definition: PluginDefinition = {
 					{ type: "text_input", action_id: "heading", label: "Título" },
 					{ type: "text_input", action_id: "body", label: "Texto", multiline: true },
 					{ type: "text_input", action_id: "formId", label: "ID/slug del formulario" },
-					{ type: "text_input", action_id: "image", label: "Imagen (URL)" },
+					{ type: "media_picker", action_id: "image", label: "Imagen", mime_type_filter: "image/" },
 					{ type: "text_input", action_id: "imageAlt", label: "Texto alternativo" },
 					{
 						type: "select",

@@ -1,18 +1,11 @@
 ---
-import Icon from "../Icon.astro";
-
-/**
- * Row of stat cards. Variant "big" shows an icon + large number (e.g.
- * +55 / +700 / +70). Each item may use a real icon image (`img`) or a named
- * inline SVG (`icon`). Big values are two-tone: the symbolic prefix (e.g. "+")
- * in navy and the figure in brand green.
- */
 interface StatItem {
 	value: string;
 	label: string;
 	icon?: string;
 	img?: string;
 }
+
 interface Props {
 	node: {
 		variant?: "big" | "inline";
@@ -20,48 +13,30 @@ interface Props {
 	};
 }
 
-const ICONS: Record<string, string> = {
-	coverage: "globe",
-	products: "stack",
-	people: "users",
-	check: "seal-check",
-	truck: "truck",
-	health: "heartbeat",
-};
-
 const { node } = Astro.props;
-const variant = node.variant ?? "big";
 const items = node.items ?? [];
 
-// Separa el prefijo simbólico ("+") de la cifra para el efecto dos tonos.
 function split(value: string) {
-	const m = value.match(/^([^0-9]*)(.*)$/);
-	return { prefix: m?.[1] ?? "", figure: m?.[2] ?? value };
+	const m = value.trim().match(/^([^\d]*)([\d,.]+)(.*)$/);
+	return { prefix: m?.[1] ?? "", figure: m?.[2] ?? value, suffix: m?.[3] ?? "" };
 }
 ---
 
-<section class="section stats-section">
+<section class="section bg-white home">
 	<div class="container">
-		<div class:list={["stats-grid", `stats-grid--${variant}`]}>
+		<div class="cards-grid">
 			{
-				items.map((s) => {
-					const { prefix, figure } = split(s.value);
+				items.map((item) => {
+					const stat = split(item.value);
 					return (
-						<div class:list={["stat-card", `stat-card--${variant}`]}>
-							{variant === "big" && (s.img || s.icon) && (
-								<span class="stat-icon">
-									{s.img ? (
-										<img src={s.img} alt="" />
-									) : (
-										<Icon name={ICONS[s.icon || "check"] || "seal-check"} size={30} />
-									)}
-								</span>
-							)}
-							<span class="stat-value">
-								<span class="stat-prefix">{prefix}</span>
-								<span class="stat-figure">{figure}</span>
-							</span>
-							<span class="stat-label">{s.label}</span>
+						<div class="card">
+							{item.img && <img src={item.img} alt={item.label} class="card__icon" loading="lazy" />}
+							<div class="card__num">
+								<span class="card-num-prefix">{stat.prefix}</span>
+								<span class="card-num-value">{stat.figure}</span>
+								{stat.suffix && <span class="card-num-suffix">{stat.suffix}</span>}
+							</div>
+							<div class="card__label">{item.label}</div>
 						</div>
 					);
 				})
@@ -69,85 +44,3 @@ function split(value: string) {
 		</div>
 	</div>
 </section>
-
-<style>
-	.stats-grid {
-		display: grid;
-		gap: var(--spacing-lg);
-	}
-
-	.stats-grid--big {
-		grid-template-columns: repeat(3, 1fr);
-	}
-
-	.stats-grid--inline {
-		grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-	}
-
-	.stat-card {
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-lg);
-		background: #fff;
-		box-shadow: var(--shadow);
-		padding: var(--spacing-xl);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-		gap: var(--spacing-sm);
-	}
-
-	.stat-card--big {
-		padding: var(--spacing-2xl) var(--spacing-xl);
-		gap: var(--spacing-md);
-	}
-
-	.stat-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--color-primary);
-	}
-
-	.stat-icon img {
-		width: 64px;
-		height: 64px;
-		object-fit: contain;
-	}
-
-	.stat-value {
-		font-weight: 800;
-		letter-spacing: -0.03em;
-		line-height: 1;
-	}
-
-	.stat-card--big .stat-value {
-		font-size: var(--font-size-6xl);
-	}
-
-	.stat-card--inline .stat-value {
-		font-size: var(--font-size-4xl);
-	}
-
-	.stat-prefix {
-		color: var(--color-navy);
-	}
-
-	.stat-figure {
-		color: var(--color-primary);
-	}
-
-	.stat-label {
-		font-size: var(--font-size-sm);
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-		color: var(--color-muted);
-	}
-
-	@media (max-width: 768px) {
-		.stats-grid--big {
-			grid-template-columns: 1fr;
-		}
-	}
-</style>

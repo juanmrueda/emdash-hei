@@ -1,20 +1,15 @@
 ---
-import Icon from "../Icon.astro";
-
-/**
- * Brand portfolio rows (Marcas page). Each row shows the brand logo on one
- * side and a descriptive block on the other. Falls back to a styled wordmark
- * when no logo image is supplied yet.
- */
 interface BrandItem {
 	name: string;
 	logo?: string;
 	eyebrow?: string;
 	heading: string;
-	bullets?: string[];
+	text?: string;
+	bullets?: string[] | string;
 	ctaLabel?: string;
 	ctaUrl?: string;
 }
+
 interface Props {
 	node: {
 		eyebrow?: string;
@@ -26,159 +21,66 @@ interface Props {
 
 const { node } = Astro.props;
 const items = node.items ?? [];
-
-// Bullets may arrive as an array (seed) or newline string (editor).
-const toList = (v: unknown): string[] =>
-	Array.isArray(v)
-		? (v as string[])
-		: typeof v === "string"
-			? v.split("\n").map((s) => s.trim()).filter(Boolean)
+const toList = (value: unknown): string[] =>
+	Array.isArray(value)
+		? (value as string[])
+		: typeof value === "string"
+			? value.split("\n").map((s) => s.trim()).filter(Boolean)
 			: [];
+
+const defaultText: Record<string, string> = {
+	cendis:
+		"CENDIS distribuye y comercializa productos medicos y farmaceuticos en Guatemala. Su trayectoria, cobertura y portafolio la convierten en la base operativa del ecosistema.",
+	meliora:
+		"Meliora forma parte de Grupo HEI y representa una linea de crecimiento dentro del ecosistema de salud.",
+	Salutia:
+		"Salutia apoya a laboratorios y farmaceuticas que necesitan operar con mayor control sin montar toda la infraestructura propia.",
+	salutia:
+		"Salutia apoya a laboratorios y farmaceuticas que necesitan operar con mayor control sin montar toda la infraestructura propia.",
+};
 ---
 
-<section class="section">
-	<div class="container">
-		{
-			(node.eyebrow || node.heading) && (
-				<div class="section-heading">
-					{node.eyebrow && <span class="eyebrow">{node.eyebrow}</span>}
-					{node.heading && <h2>{node.heading}</h2>}
-					<div class="heading-rule" />
-					{node.subheading && <p>{node.subheading}</p>}
-				</div>
-			)
-		}
+{
+	(node.heading || node.subheading) && (
+		<section class="intro-section" style="background:var(--bg);">
+			<div class="container">
+				{node.heading && <h2>{node.heading}</h2>}
+				<div class="section-header__line" style="margin:12px auto 20px;"></div>
+				{node.subheading && <p>{node.subheading}</p>}
+			</div>
+		</section>
+	)
+}
 
-		<div class="brand-rows">
-			{
-				items.map((b, i) => (
-					<article class:list={["brand-row", { rev: i % 2 === 1 }]}>
-						<div class="brand-logo">
-							{b.logo ? (
-								<img src={b.logo} alt={b.name} loading="lazy" />
-							) : (
-								<span class="brand-wordmark">{b.name}</span>
-							)}
-						</div>
-						<div class="brand-info">
-							{b.eyebrow && <span class="eyebrow">{b.eyebrow}</span>}
-							<h3>{b.heading}</h3>
-							{toList(b.bullets).length > 0 && (
-								<ul class="brand-bullets">
-									{toList(b.bullets).map((x) => (
-										<li>
-											<Icon name="check-circle" />
-											<span>{x}</span>
-										</li>
-									))}
-								</ul>
-							)}
-							{b.ctaLabel && b.ctaUrl && (
-								<a href={b.ctaUrl} class="btn btn-primary">
-									{b.ctaLabel}
-								</a>
-							)}
-						</div>
-					</article>
-				))
-			}
-		</div>
-	</div>
-</section>
-
-<style>
-	.brand-rows {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-2xl);
-	}
-
-	.brand-row {
-		display: grid;
-		grid-template-columns: 1fr 1.3fr;
-		gap: var(--spacing-3xl);
-		align-items: center;
-		padding: var(--spacing-2xl) 0;
-		border-top: 1px solid var(--color-border);
-	}
-
-	.brand-row:first-child {
-		border-top: none;
-	}
-
-	.brand-row.rev .brand-logo {
-		order: 2;
-	}
-
-	.brand-logo {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		min-height: 120px;
-	}
-
-	.brand-logo img {
-		max-height: 80px;
-		width: auto;
-	}
-
-	.brand-wordmark {
-		font-size: var(--font-size-4xl);
-		font-weight: 800;
-		letter-spacing: -0.04em;
-		color: var(--color-navy);
-	}
-
-	.brand-info {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-md);
-	}
-
-	.brand-info h3 {
-		color: var(--color-primary);
-		font-size: var(--font-size-2xl);
-	}
-
-	.brand-bullets {
-		list-style: none;
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-sm);
-	}
-
-	.brand-bullets li {
-		display: flex;
-		gap: var(--spacing-sm);
-		color: var(--color-text);
-		font-size: var(--font-size-sm);
-	}
-
-	.brand-bullets :global(svg) {
-		color: var(--color-primary);
-		flex-shrink: 0;
-		margin-top: 2px;
-	}
-
-	.brand-info .btn {
-		align-self: flex-start;
-		margin-top: var(--spacing-xs);
-	}
-
-	@media (max-width: 768px) {
-		.brand-row {
-			grid-template-columns: 1fr;
-			gap: var(--spacing-lg);
-			text-align: center;
-		}
-		.brand-row.rev .brand-logo {
-			order: 0;
-		}
-		.brand-info {
-			align-items: center;
-		}
-		.brand-bullets {
-			text-align: start;
-		}
-	}
-</style>
+{
+	items.map((brand, index) => (
+		<section class="marca-section" style={index % 2 ? "background:var(--bg);" : undefined}>
+			<div class="marca-logo-box">
+				{brand.logo && <img src={brand.logo} alt={brand.name} loading="lazy" />}
+			</div>
+			<div class="marca-content">
+				<h2>{brand.heading}</h2>
+				<p>{brand.text || brand.eyebrow || defaultText[brand.name] || ""}</p>
+				{toList(brand.bullets).length > 0 && (
+					<ul class="bullet-list">
+						{toList(brand.bullets).map((bullet) => (
+							<li>
+								<span class="bullet-icon" aria-hidden="true">
+									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M5 13L9 17L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+									</svg>
+								</span>
+								<span>{bullet}</span>
+							</li>
+						))}
+					</ul>
+				)}
+				{brand.ctaLabel && brand.ctaUrl && (
+					<a href={brand.ctaUrl} class="btn btn-primary mt-24">
+						{brand.ctaLabel}
+					</a>
+				)}
+			</div>
+		</section>
+	))
+}

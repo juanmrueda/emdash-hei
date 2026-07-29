@@ -1,11 +1,16 @@
 ---
-import { getEmDashEntry } from "emdash";
+import { getEmDashCollection, getEmDashEntry } from "emdash";
 import Base from "../layouts/Base.astro";
 import HeiBlocks from "../components/HeiBlocks.astro";
+import { withDynamicOpportunities } from "../lib/dynamic-content";
 
 const { entry: page, cacheHint } = await getEmDashEntry("pages", "trabaja");
+const { entries: opportunities } = await getEmDashCollection("opportunities", {
+	status: "published",
+	orderBy: { position: "asc" },
+});
 if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
-const content = page?.data.content;
+const content = withDynamicOpportunities(page?.data.content, opportunities);
 ---
 
 <Base title={page?.data.title ?? "Trabaja con nosotros"}>

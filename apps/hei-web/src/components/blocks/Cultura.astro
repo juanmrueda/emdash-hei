@@ -1,0 +1,65 @@
+---
+import { mediaUrl } from "../../lib/media";
+
+interface ValorItem {
+	title?: string;
+	text?: string;
+	bullets?: string[] | string;
+}
+
+interface Props {
+	node: {
+		heading?: string;
+		subheading?: string;
+		image?: unknown;
+		imageAlt?: string;
+		items: ValorItem[];
+	};
+}
+
+const toList = (value: unknown): string[] =>
+	Array.isArray(value)
+		? (value as string[])
+		: typeof value === "string"
+			? value.split("\n").map((s) => s.trim()).filter(Boolean)
+			: [];
+
+const { node } = Astro.props;
+const items = node.items ?? [];
+const img = mediaUrl(node.image);
+---
+
+<section class="intro-section">
+	<div class="container">
+		{node.heading && <h2>{node.heading}</h2>}
+		<div class="section-header__line" style="margin:12px auto 20px;"></div>
+		{node.subheading && <p>{node.subheading}</p>}
+	</div>
+</section>
+<section class="splithome bg-white">
+	<div class="col-1-1">
+		{img && <div class="split__img" style={`border-radius:28px;background-image:url('${img}');`}></div>}
+		<div class="split__body split__body--white">
+			{items.map((card, index) => (
+				<>
+					{card.title && <h2 class:list={["text-green", { "mt-24": index > 0 }]}>{card.title}</h2>}
+					{card.text && <p>{card.text}</p>}
+					{toList(card.bullets).length > 0 && (
+						<ul class="bullet-list mt-16">
+							{toList(card.bullets).map((bullet) => (
+								<li>
+									<span class="bullet-icon" aria-hidden="true">
+										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+											<path d="M5 13L9 17L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+										</svg>
+									</span>
+									<span>{bullet}</span>
+								</li>
+							))}
+						</ul>
+					)}
+				</>
+			))}
+		</div>
+	</div>
+</section>

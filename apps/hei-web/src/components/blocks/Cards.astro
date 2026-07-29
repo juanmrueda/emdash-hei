@@ -1,31 +1,37 @@
 ---
-import Icon from "../Icon.astro";
+import { mediaUrl } from "../../lib/media";
 
-/**
- * Card grid. Modo normal (cols-N) para grids uniformes (Tres ejes, features),
- * y modo "bento" para layouts asimétricos (Pilares): cada tarjeta puede tener
- * span ancho/angosto, imagen de fondo y una decoración de semicírculo.
- */
 interface CardItem {
 	icon?: string;
+	iconUrl?: string;
 	title?: string;
+	subtitle?: string;
 	titleColor?: "green";
 	text?: string;
-	bullets?: string[];
-	color?: "white" | "blue" | "green" | "navy";
+	bullets?: string[] | string;
+	category?: string[] | string;
+	categories?: string[] | string;
+	applyUrl?: string;
+	applyLabel?: string;
+	color?: string;
 	span?: "wide" | "narrow";
-	image?: string;
+	image?: unknown;
+	gradientColor?: string;
 	imageTop?: boolean;
 	imageOnly?: boolean;
 	rowSpan?: boolean;
 	decoration?: boolean;
 }
+
 interface Props {
 	node: {
+		_key?: string;
+		id?: string;
 		eyebrow?: string;
 		heading?: string;
 		headingColor?: "green";
 		subheading?: string;
+		layout?: "service" | "default";
 		columns?: 2 | 3 | 4;
 		align?: "left" | "center";
 		bento?: boolean;
@@ -34,388 +40,297 @@ interface Props {
 	};
 }
 
-const ICONS: Record<string, string> = {
-	health: "heartbeat",
-	transparency: "thumbs-up",
-	future: "hourglass",
-	integration: "stack",
-	trust: "shield-check",
-	capacity: "lightning",
-	growth: "plant",
-	logistics: "truck",
-	network: "users",
-	software: "gear",
-	shield: "shield",
-	leaf: "leaf",
-	check: "check-circle",
-	heart: "hand-heart",
-	bulb: "bulb",
-	handshake: "handshake",
-	gauge: "gauge",
+const iconSrc = (card: CardItem) =>
+	card.iconUrl || mediaUrl(card.icon) || (card.icon ? ICONS[card.icon] : undefined);
+
+const bgStyle = (card: CardItem) => {
+	const img = mediaUrl(card.image);
+	if (!img) return undefined;
+	// If gradientColor is set, layer it on top of the bg image
+	const gradient = card.gradientColor
+		? `linear-gradient(${card.gradientColor}, ${card.gradientColor})`
+		: "";
+	return gradient
+		? `background-image:${gradient},url('${img}');`
+		: `background-image:url('${img}');`;
 };
 
 const { node } = Astro.props;
-const cols = node.columns ?? 3;
-const align = node.align ?? "center";
-const bento = !!node.bento;
 const items = node.items ?? [];
+const key = node._key ?? "";
 
-const toList = (v: unknown): string[] =>
-	Array.isArray(v)
-		? (v as string[])
-		: typeof v === "string"
-			? v.split("\n").map((s) => s.trim()).filter(Boolean)
+const ICONS: Record<string, string> = {
+	health: "/wp/iconos/salud.png",
+	transparency: "/wp/iconos/transparencia.png",
+	future: "/wp/iconos/futuro.png",
+	logistics: "/wp/iconos/ico-logistica.png",
+	network: "/wp/iconos/ico-servicio.png",
+	software: "/wp/iconos/ico-software.png",
+	shield: "/wp/iconos/transparencia.png",
+	growth: "/wp/iconos/futuro.png",
+	gauge: "/wp/iconos/ico-software.png",
+};
+
+const isDarkColor = (color?: string): boolean => {
+	if (!color) return false;
+	const c = color.toLowerCase();
+	if (["blue", "navy", "green", "dark", "black"].includes(c)) return true;
+	if (c.startsWith("#")) {
+		const h = c.replace("#", "");
+		if (h.length < 6) return false;
+		const r = parseInt(h.substring(0, 2), 16);
+		const g = parseInt(h.substring(2, 4), 16);
+		const b = parseInt(h.substring(4, 6), 16);
+		if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
+		return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+	}
+	return false;
+};
+
+const toList = (value: unknown): string[] =>
+	Array.isArray(value)
+		? (value as string[])
+		: typeof value === "string"
+			? value.split("\n").map((s) => s.trim()).filter(Boolean)
 			: [];
+
+const isPilares = key === "q-pilares" || node.bento;
+const isCulture = key === "t-cultura";
+const isJobs = key === "t-oportunidades";
+const isIntroOnly = items.length === 0;
+const isServiceGrid = node.layout === "service" || key.startsWith("s-") || key.startsWith("cendi-") || key.startsWith("meliora-");
+
+const slugify = (value: string): string =>
+	value
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-+|-+$/g, "");
+
+const categoryLabels = (value: unknown): string[] => {
+	if (Array.isArray(value)) return value.flatMap(categoryLabels);
+	if (typeof value !== "string") return [];
+	return value
+		.split(/[,\n|]+/)
+		.map((label) => label.trim())
+		.filter(Boolean);
+};
+
+const getJobCategories = (job: CardItem) =>
+	categoryLabels(job.categories ?? job.category)
+		.map((label) => ({ label, slug: slugify(label) }))
+		.filter((category) => category.slug);
+
+const jobCategories = (() => {
+	const bySlug = new Map<string, { label: string; slug: string }>();
+	for (const job of items) {
+		for (const category of getJobCategories(job)) {
+			if (!bySlug.has(category.slug)) bySlug.set(category.slug, category);
+		}
+	}
+	return [...bySlug.values()];
+})();
+
+const jobListId = `${key || "jobs"}-cards`;
 ---
 
-<section class:list={["section cards-section", { "cards-surface": node.surface, "cards-compact": items.length === 0 }]}>
-	<div class="container">
-		{
-			(node.eyebrow || node.heading) && (
-				<div class:list={["section-heading", { "sh-left": align === "left" }]}>
-					{node.eyebrow && <span class="eyebrow">{node.eyebrow}</span>}
-					{node.heading && (
-						<h2 class:list={{ "h-green": node.headingColor === "green" }}>{node.heading}</h2>
-					)}
-					<div class="heading-rule" />
+{
+	isPilares ? (
+		<section class="section">
+			<div class="container">
+				{node.heading && <h2 class="text-green">{node.heading}</h2>}
+				{node.subheading && <p class="mt-16 mw-610">{node.subheading}</p>}
+				<div class="pilares-grid">
+					{items.map((card) => {
+						const bg = bgStyle(card);
+						const bgColor = !bg && card.color ? card.color : undefined;
+						const dark = isDarkColor(bg ? undefined : card.color);
+						const classes = ["pilar-card"];
+						if (bg) classes.push("pilar-card--img");
+						if (!bg && dark) classes.push("pilar-card--dark");
+						if (card.decoration) classes.push("pilar-card--decorated");
+						return (
+							<div class={classes.join(" ")} style={bg || (bgColor ? `background-color:${bgColor};` : undefined)}>
+								{iconSrc(card) && <div class="pilar-card__icon"><img src={iconSrc(card)} alt="" loading="lazy" /></div>}
+								{card.title && <h3>{card.title}</h3>}
+								{card.text && <p>{card.text}</p>}
+							</div>
+						);
+					})}
+				</div>
+			</div>
+		</section>
+	) : isCulture ? (
+		<>
+			<section class="intro-section">
+				<div class="container">
+					{node.heading && <h2>{node.heading}</h2>}
+					<div class="section-header__line" style="margin:12px auto 20px;"></div>
 					{node.subheading && <p>{node.subheading}</p>}
 				</div>
-			)
-		}
-
-		<div class:list={["cards-grid", bento ? "bento" : `cols-${cols}`, `align-${align}`]}>
-			{
-				items.map((c) => (
-					<article
-						class:list={[
-							"card",
-							`card--${c.color || "white"}`,
-							bento && c.span === "wide" && "span-wide",
-							bento && c.span === "narrow" && "span-narrow",
-							c.image && !c.imageTop && "has-img",
-							c.image && c.imageTop && "has-img-top",
-							c.image && c.imageTop && c.imageOnly && "img-only",
-							c.rowSpan && "row-span",
-							c.decoration && "has-deco",
-						]}
-					>
-						{c.image && !c.imageTop && <img class="card-bg" src={c.image} alt="" loading="lazy" />}
-						{c.image && c.imageTop && <img class="card-img-top" src={c.image} alt="" loading="lazy" />}
-						{!c.imageOnly && c.decoration && <span class="card-deco" aria-hidden="true" />}
-						{!c.imageOnly && c.icon && (
-							<span class="card-icon">
-								<Icon name={ICONS[c.icon] || "check-circle"} size={28} />
-							</span>
-						)}
-						{!c.imageOnly && (
-							<div class="card-body">
-								{c.title && (
-									<h3 class:list={["card-title", c.titleColor === "green" && "title-green"]}>
-										{c.title}
-									</h3>
-								)}
-								{c.text && <p class="card-text">{c.text}</p>}
-								{toList(c.bullets).length > 0 && (
-									<ul class="card-bullets">
-										{toList(c.bullets).map((b) => (
+			</section>
+			<section class="splithome bg-white">
+				<div class="col-1-1">
+					{items[0]?.image && <div class="split__img" style={`border-radius:28px;background-image:url('${items[0].image}');`}></div>}
+					<div class="split__body split__body--white">
+						{items.slice(1).map((card, index) => (
+							<>
+								{card.title && <h2 class:list={["text-green", { "mt-24": index > 0 }]}>{card.title}</h2>}
+								{card.text && <p>{card.text}</p>}
+								{toList(card.bullets).length > 0 && (
+									<ul class="bullet-list mt-16">
+										{toList(card.bullets).map((bullet) => (
 											<li>
-												<Icon name="check" />
-												<span>{b}</span>
+												<span class="bullet-icon" aria-hidden="true">
+													<svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M5 13L9 17L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+													</svg>
+												</span>
+												<span>{bullet}</span>
 											</li>
 										))}
 									</ul>
 								)}
+							</>
+						))}
+					</div>
+				</div>
+			</section>
+		</>
+	) : isJobs ? (
+		<section class="section bg-white">
+			<div class="container">
+				<div class="section-header">
+					{node.heading && <h2>{node.heading}</h2>}
+					<div class="section-header__line"></div>
+					{node.subheading && <p>{node.subheading}</p>}
+				</div>
+				{jobCategories.length > 0 && (
+					<div class="tabs tabscenter" data-hei-job-tabs data-target={jobListId}>
+						<button class="tab-btn active" type="button" data-cat="all" aria-pressed="true">Todos</button>
+						{jobCategories.map((category) => (
+							<button class="tab-btn" type="button" data-cat={category.slug} aria-pressed="false">
+								{category.label}
+							</button>
+						))}
+					</div>
+				)}
+				<div class="job-cards" id={jobListId}>
+					{items.map((job) => {
+						const categories = getJobCategories(job);
+						const categorySlugs = categories.map((category) => category.slug).join(" ");
+						const jobIcon = iconSrc(job);
+
+						return (
+							<div class="job-card" data-cats={categorySlugs || "all"}>
+								<div class="job-card__badge">
+									{jobIcon && <img src={jobIcon} alt="" loading="lazy" />}
+								</div>
+								{job.title && <h3 class="job-card__title">{job.title}</h3>}
+								{job.subtitle && <p class="job-card__subtitle">{job.subtitle}</p>}
+								{job.text && <p class="job-card__desc">{job.text}</p>}
+								{job.applyUrl ? (
+									<a href={job.applyUrl} class="btn btn-primary mt-24">
+										{job.applyLabel || "Quiero aplicar"}
+									</a>
+								) : (
+									<button class="btn btn-primary mt-24" disabled>Quiero aplicar</button>
+								)}
 							</div>
-						)}
-					</article>
-				))
-			}
-		</div>
-	</div>
-</section>
+						);
+					})}
+				</div>
+			</div>
+			<script is:inline>
+				(() => {
+					document.querySelectorAll("[data-hei-job-tabs]").forEach((tabsContainer) => {
+						const targetId = tabsContainer.getAttribute("data-target");
+						const cardsContainer = targetId ? document.getElementById(targetId) : null;
+						if (!cardsContainer) return;
 
-<style>
-	.cards-surface {
-		background: var(--color-surface);
-	}
+						tabsContainer.addEventListener("click", (event) => {
+							const button = event.target.closest(".tab-btn");
+							if (!button) return;
 
-	/* Sección solo-heading (sin cards): padding reducido */
-	.cards-compact {
-		padding-top: var(--spacing-sm);
-		padding-bottom: var(--spacing-sm);
-	}
+							tabsContainer.querySelectorAll(".tab-btn").forEach((tab) => {
+								tab.classList.remove("active");
+								tab.setAttribute("aria-pressed", "false");
+							});
+							button.classList.add("active");
+							button.setAttribute("aria-pressed", "true");
 
-	/* Heading alineado a la izquierda. */
-	.section-heading.sh-left {
-		text-align: start;
-		max-width: 640px;
-		margin-inline: 0;
-	}
-	.section-heading.sh-left .heading-rule {
-		margin-inline: 0;
-	}
-	.h-green {
-		color: var(--color-primary);
-	}
-
-	.cards-grid {
-		display: grid;
-		gap: var(--spacing-lg);
-	}
-
-	.cols-2 {
-		grid-template-columns: repeat(2, 1fr);
-	}
-	.cols-3 {
-		grid-template-columns: repeat(3, 1fr);
-	}
-	.cols-4 {
-		grid-template-columns: repeat(4, 1fr);
-	}
-
-	/* Bento: 3 columnas; wide ocupa 2, narrow 1. Filas según contenido. */
-	.cards-grid.bento {
-		grid-template-columns: repeat(3, 1fr);
-		grid-auto-rows: auto;
-	}
-	.bento .span-wide {
-		grid-column: span 2;
-	}
-	.bento .span-narrow {
-		grid-column: span 1;
-	}
-
-	.align-center .card {
-		text-align: center;
-		align-items: center;
-	}
-
-	.card {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-md);
-		padding: var(--spacing-2xl);
-		border-radius: var(--radius-lg);
-		background: #fff;
-		border: 1px solid var(--color-border);
-		box-shadow: var(--shadow-sm);
-		overflow: hidden;
-	}
-
-	/* Bento: ícono arriba, contenido abajo; altura moderada. */
-	.bento .card {
-		min-height: 210px;
-		padding: var(--spacing-xl);
-		justify-content: space-between;
-		gap: var(--spacing-xl);
-	}
-	.bento .card-body {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-sm);
-	}
-
-	.card--blue {
-		background: var(--color-accent);
-		border-color: transparent;
-		color: #fff;
-	}
-	.card--green {
-		background: var(--color-primary);
-		border-color: transparent;
-		color: #fff;
-	}
-	.card--navy {
-		background: var(--color-navy);
-		border-color: transparent;
-		color: #fff;
-	}
-
-	/* Tarjeta con imagen arriba y texto abajo. */
-	.card.has-img-top {
-		padding: 0;
-		overflow: hidden;
-	}
-	.card-img-top {
-		width: 100%;
-		height: 220px;
-		object-fit: cover;
-		object-position: center top;
-		display: block;
-		flex-shrink: 0;
-	}
-	.card.has-img-top > .card-icon,
-	.card.has-img-top > .card-body {
-		padding: var(--spacing-lg);
-	}
-	.card.has-img-top > .card-icon {
-		padding-bottom: 0;
-	}
-
-	/* Tarjeta solo-foto: la imagen llena toda la altura. */
-	.card.img-only {
-		padding: 0;
-	}
-	.card.img-only .card-img-top {
-		height: 100%;
-		object-position: center top;
-	}
-
-	/* Tarjeta que ocupa 2 filas del grid. */
-	.row-span {
-		grid-row: span 2;
-	}
-
-	.title-green {
-		color: var(--color-primary) !important;
-	}
-
-	/* Tarjeta con imagen de fondo + filtro verde (Crecimiento). */
-	.card-bg {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		z-index: 0;
-	}
-	.card.has-img::after {
-		content: "";
-		position: absolute;
-		inset: 0;
-		z-index: 1;
-		background: linear-gradient(120deg, rgba(49, 214, 151, 0.8), rgba(32, 189, 130, 0.84));
-	}
-	/* El contenido va sobre el filtro, pero NO la imagen de fondo. */
-	.card.has-img > *:not(.card-bg) {
-		position: relative;
-		z-index: 2;
-	}
-
-	/* Decoración: semicírculo verde claro arriba-derecha (Integración). */
-	.card-deco {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 150px;
-		height: 150px;
-		background: var(--color-primary-50);
-		border-bottom-left-radius: 100%;
-		z-index: 0;
-	}
-	.has-deco > *:not(.card-deco) {
-		position: relative;
-		z-index: 1;
-	}
-
-	.card-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 56px;
-		height: 56px;
-		border-radius: var(--radius-full);
-		background: var(--color-primary-50);
-		color: var(--color-primary);
-	}
-
-	.align-center .card-icon {
-		color: var(--color-accent);
-		background: #eaf0fe;
-	}
-
-	.card--blue .card-icon,
-	.card--green .card-icon,
-	.card--navy .card-icon {
-		background: rgba(255, 255, 255, 0.18);
-		color: #fff;
-	}
-
-	/* Bento: tarjeta blanca → círculo verde sólido; coloreadas → contorno. */
-	.bento .card--white .card-icon {
-		background: var(--color-primary);
-		color: #fff;
-	}
-	.bento .card--blue .card-icon,
-	.bento .card--green .card-icon {
-		background: transparent;
-		border: 2px solid rgba(255, 255, 255, 0.65);
-		color: #fff;
-	}
-
-	.card-title {
-		font-size: var(--font-size-xl);
-	}
-
-	.align-center .card-title {
-		color: var(--color-accent);
-	}
-
-	.card--blue .card-title,
-	.card--green .card-title,
-	.card--navy .card-title {
-		color: #fff;
-	}
-
-	.card-text {
-		color: var(--color-muted);
-		font-size: var(--font-size-sm);
-		line-height: 1.6;
-	}
-
-	.card--blue .card-text,
-	.card--green .card-text,
-	.card--navy .card-text {
-		color: rgba(255, 255, 255, 0.9);
-	}
-
-	.card-bullets {
-		list-style: none;
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-xs);
-		text-align: start;
-		width: 100%;
-	}
-
-	.card-bullets li {
-		display: flex;
-		gap: var(--spacing-sm);
-		font-size: var(--font-size-sm);
-		color: var(--color-text);
-	}
-
-	.card-bullets :global(svg) {
-		color: var(--color-primary);
-		flex-shrink: 0;
-		margin-top: 3px;
-	}
-
-	@media (max-width: 900px) {
-		.cols-3,
-		.cols-4 {
-			grid-template-columns: repeat(2, 1fr);
-		}
-		/* Bento → apila en una columna en pantallas medianas/chicas. */
-		.cards-grid.bento {
-			grid-template-columns: 1fr;
-			grid-auto-rows: auto;
-		}
-		.bento .span-wide,
-		.bento .span-narrow {
-			grid-column: span 1;
-		}
-		.bento .card {
-			min-height: 200px;
-		}
-	}
-
-	@media (max-width: 600px) {
-		.cols-2,
-		.cols-3,
-		.cols-4 {
-			grid-template-columns: 1fr;
-		}
-	}
-</style>
+							const activeCategory = button.getAttribute("data-cat");
+							cardsContainer.querySelectorAll(".job-card").forEach((card) => {
+								const categories = (card.getAttribute("data-cats") || "").split(/\s+/);
+								const visible = activeCategory === "all" || categories.includes(activeCategory);
+								card.style.display = visible ? "" : "none";
+							});
+						});
+					});
+				})();
+			</script>
+		</section>
+	) : isIntroOnly ? (
+		<section class="intro-section top0">
+			<div class="container">
+				{node.heading && <h2>{node.heading}</h2>}
+				<div class="section-header__line" style="margin:12px auto 20px;"></div>
+				{node.subheading && <p>{node.subheading}</p>}
+			</div>
+		</section>
+	) : isServiceGrid ? (
+		<>
+			<section class="intro-section">
+				<div class="container">
+					{node.heading && <h2>{node.heading}</h2>}
+					<div class="section-header__line" style="margin:12px auto 20px;"></div>
+					{node.subheading && <p>{node.subheading}</p>}
+				</div>
+			</section>
+			<section class="section bg-white home" id={node.id || "servicios"}>
+				<div class="container">
+					<div class="cards-grid">
+						{items.map((card) => {
+							const img = iconSrc(card);
+							return (
+								<div class="service-card">
+									<div class="service-card__icon-wrap">
+										{img && <img src={img} alt={card.title || ""} loading="lazy" />}
+									</div>
+									{card.title && <h3>{card.title}</h3>}
+									{card.text && <p>{card.text}</p>}
+								</div>
+							);
+						})}
+					</div>
+				</div>
+			</section>
+		</>
+	) : (
+		<section class="section bg-white home" id={node.id}>
+			<div class="container">
+				{node.heading && (
+					<div class="section-header">
+						<h2>{node.heading}</h2>
+						<div class="section-header__line"></div>
+						{node.subheading && <p>{node.subheading}</p>}
+					</div>
+				)}
+				<div class="cards-grid">
+					{items.map((card) => {
+						const img = iconSrc(card);
+						return (
+							<div class="card">
+								{img && <img src={img} alt={card.title || ""} class="card__icon" loading="lazy" />}
+								{card.title && <h3 class="card__title" style="color:var(--blue);">{card.title}</h3>}
+								{card.subtitle && <p class="card__body" style="font-weight:600;margin-bottom:8px;">{card.subtitle}</p>}
+								{card.text && <p class="card__body">{card.text}</p>}
+							</div>
+						);
+					})}
+				</div>
+			</div>
+		</section>
+	)
+}

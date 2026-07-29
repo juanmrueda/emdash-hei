@@ -1,7 +1,7 @@
 # MAP — Sitio Grupo HEI (`apps/hei-web`)
 
 Mapa del proyecto para orientarte rápido. **No necesitas leer el resto del monorepo `emdash`**
-(este repo es el código fuente del CMS emdash; este sitio solo lo *consume*). Lee únicamente
+(este repo es el código fuente del CMS emdash; este sitio solo lo _consume_). Lee únicamente
 lo que aparece aquí y en [ONBOARDING.md](./ONBOARDING.md).
 
 ## Qué es
@@ -74,16 +74,16 @@ apps/hei-web/
 
 ## Páginas y su composición (resumen)
 
-| Ruta              | Bloques principales                                              |
-| ----------------- | --------------------------------------------------------------- |
-| `/`               | hero · imageText(1968) · stats · ctaBand(card) · logoCloud · ctaBand(band) |
-| `/quienes-somos`  | hero · timeline · ctaBand(card) · cards(Pilares)                |
-| `/marcas`         | hero · brands(cendis/meliora/Salutia)                          |
-| `/salutia`        | hero(solid) · cards · formSection(`salutia-operacion`) · ctaBand |
-| `/sostenibilidad` | hero · cards(Tres ejes) · ctaBand(card)                        |
+| Ruta              | Bloques principales                                                                  |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| `/`               | hero · imageText(1968) · stats · ctaBand(card) · logoCloud · ctaBand(band)           |
+| `/quienes-somos`  | hero · timeline · ctaBand(card) · cards(Pilares)                                     |
+| `/marcas`         | hero · brands(cendis/meliora/Salutia)                                                |
+| `/salutia`        | hero(solid) · cards · formSection(`salutia-operacion`) · ctaBand                     |
+| `/sostenibilidad` | hero · cards(Tres ejes) · ctaBand(card)                                              |
 | `/trabaja`        | hero · cards(Cultura/Valores) · cards(Oportunidades) · formSection(`trabaja-perfil`) |
-| `/contacto`       | hero · formSection(`contacto`) · ctaBand(band, WhatsApp)       |
-| `/denuncias`      | hero · channels · ctaBand(card, WhatsApp)                      |
+| `/contacto`       | hero · formSection(`contacto`) · ctaBand(band, WhatsApp)                             |
+| `/denuncias`      | hero · channels · ctaBand(card, WhatsApp)                                            |
 
 ## Estado / avance (actualizado)
 
@@ -95,38 +95,39 @@ sitio); el deploy apunta al subdominio **grupohei.ipalmera.com** (Cloudflare Wor
 
 Pase 1:1 contra Figma, por pantalla:
 
-| Pantalla | Estado |
-| --- | --- |
-| Home (`/`) | ✅ 1:1 afinado |
-| Quiénes somos (`/quienes-somos`) | ✅ 1:1 afinado |
-| Marcas (`/marcas`) | ✅ 1:1 afinado (focal `center top` en hero) |
-| Salutia (`/salutia`) | ✅ 1:1 afinado (hero ctaBand card + `heroCard`, fotos salutia-b2b/cta) |
-| Ética y sostenibilidad (`/sostenibilidad`) | ✅ 1:1 afinado (ícono thumbs-up Transparencia; focal ctaBand) |
-| Trabaja con nosotros (`/trabaja`) | ✅ 1:1 afinado (foto Cultura `imageTop+rowSpan`; form `trabaja-perfil` creado) |
-| Contacto (`/contacto`) | ✅ 1:1 afinado (focal hero; ctaBand foto+filtro verde; form `contacto` creado) |
-| Denuncias (`/denuncias`) | ✅ 1:1 afinado (focal hero; foto channels `etica-foto.png`; fondo líneas en Channels) |
+| Pantalla                                   | Estado                                                                                |
+| ------------------------------------------ | ------------------------------------------------------------------------------------- |
+| Home (`/`)                                 | ✅ 1:1 afinado                                                                        |
+| Quiénes somos (`/quienes-somos`)           | ✅ 1:1 afinado                                                                        |
+| Marcas (`/marcas`)                         | ✅ 1:1 afinado (focal `center top` en hero)                                           |
+| Salutia (`/salutia`)                       | ✅ 1:1 afinado (hero ctaBand card + `heroCard`, fotos salutia-b2b/cta)                |
+| Ética y sostenibilidad (`/sostenibilidad`) | ✅ 1:1 afinado (ícono thumbs-up Transparencia; focal ctaBand)                         |
+| Trabaja con nosotros (`/trabaja`)          | ✅ 1:1 afinado (foto Cultura `imageTop+rowSpan`; form `trabaja-perfil` creado)        |
+| Contacto (`/contacto`)                     | ✅ 1:1 afinado (focal hero; ctaBand foto+filtro verde; form `contacto` creado)        |
+| Denuncias (`/denuncias`)                   | ✅ 1:1 afinado (focal hero; foto channels `etica-foto.png`; fondo líneas en Channels) |
 
 ## Componentes extendidos (cambios respecto al scaffold inicial)
 
-| Componente | Extensiones añadidas |
-| --- | --- |
-| `Hero.astro` | `focal` (object-position por bloque) |
-| `Cards.astro` | `imageTop`, `imageOnly`, `rowSpan` (foto col izq spanning 2 filas); `titleColor`; `cards-compact` (sin items = solo heading); ícono `thumbs-up` |
-| `CtaBand.astro` | `heroCard` (margin-top hero + padding); `photoStyle` (foto sin filtro, texto izq); `focal` en card media |
-| `Channels.astro` | Fondo de líneas diagonales (igual que Timeline) |
-| `FormSection.astro` | Estilos HEI: inputs pill, fondo gris, borde gris suave, botón verde; grid 2 col; `::file-selector-button` estilizado |
-| `Icon.astro` | `thumbs-up` SVG añadido |
-| `Base.astro` | `parentMap` para marcar Marcas activo cuando se está en `/salutia` |
+| Componente          | Extensiones añadidas                                                                                                                            |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Hero.astro`        | `focal` (object-position por bloque)                                                                                                            |
+| `Cards.astro`       | `imageTop`, `imageOnly`, `rowSpan` (foto col izq spanning 2 filas); `titleColor`; `cards-compact` (sin items = solo heading); ícono `thumbs-up` |
+| `CtaBand.astro`     | `heroCard` (margin-top hero + padding); `photoStyle` (foto sin filtro, texto izq); `focal` en card media                                        |
+| `Channels.astro`    | Fondo de líneas diagonales (igual que Timeline)                                                                                                 |
+| `FormSection.astro` | Estilos HEI: inputs pill, fondo gris, borde gris suave, botón verde; grid 2 col; `::file-selector-button` estilizado                            |
+| `Icon.astro`        | `thumbs-up` SVG añadido                                                                                                                         |
+| `Base.astro`        | `parentMap` para marcar Marcas activo cuando se está en `/salutia`                                                                              |
 
 ## Formularios creados en el admin
 
-| Slug | Página | Campos principales |
-| --- | --- | --- |
-| `trabaja-perfil` | `/trabaja` | Nombre, Email, Teléfono, Área interés, LinkedIn, CV (file) |
-| `contacto` | `/contacto` | Nombre, Empresa, Cargo, Email, Motivo (select), Teléfono, Mensaje |
-| `salutia-operacion` | `/salutia` | Lab/Farma, País, Tipo productos, Necesidad, Volumen, Nombre contacto, Cargo, Correo corp., Teléfono |
+| Slug                | Página      | Campos principales                                                                                  |
+| ------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| `trabaja-perfil`    | `/trabaja`  | Nombre, Email, Teléfono, Área interés, LinkedIn, CV (file)                                          |
+| `contacto`          | `/contacto` | Nombre, Empresa, Cargo, Email, Motivo (select), Teléfono, Mensaje                                   |
+| `salutia-operacion` | `/salutia`  | Lab/Farma, País, Tipo productos, Necesidad, Volumen, Nombre contacto, Cargo, Correo corp., Teléfono |
 
 Pendiente transversal:
+
 - **Datos de contacto reales** (dirección, teléfono, WhatsApp `wa.me/...`): placeholders en
   `Base.astro` y `seed.json`.
 - **Correos destino** de los 3 formularios: configurar en el admin (Settings de cada form).

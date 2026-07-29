@@ -5,7 +5,7 @@ código fuente del CMS **emdash**; el sitio solo lo consume.
 
 ## ⚠️ Lee solo lo necesario (no leas todo el repo)
 
-NO recorras todo el monorepo `emdash` (packages/*, demos/*, etc.). Para entender y trabajar el
+NO recorras todo el monorepo `emdash` (packages/_, demos/_, etc.). Para entender y trabajar el
 sitio basta con, en este orden:
 
 1. **`apps/hei-web/MAP.md`** — mapa del proyecto y dónde está cada cosa.
@@ -44,7 +44,7 @@ cd apps\hei-web
 pnpm exec astro dev --port 4321
 ```
 
-Sitio: http://localhost:4321 — Admin del CMS: http://localhost:4321/_emdash/admin
+Sitio: http://localhost:4321 — Admin del CMS: http://localhost:4321/\_emdash/admin
 
 ### ★ Cargar el contenido demo (las 8 páginas)
 
@@ -102,8 +102,8 @@ ver `apps/hei-web/.wrangler/state/v3/d1/.../*.sqlite`, tabla `ec_pages` (columna
   verlas en detalle / muestrear colores exactos:
   ```js
   const sharp = require("C:/dev/emdash-hei/node_modules/.pnpm/sharp@0.34.5/node_modules/sharp");
-  await sharp(src).extract({ left, top, width, height }).toFile(out);   // recorte
-  const px = await sharp(src).extract({left:x,top:y,width:8,height:8}).raw().toBuffer(); // color RGB
+  await sharp(src).extract({ left, top, width, height }).toFile(out); // recorte
+  const px = await sharp(src).extract({ left: x, top: y, width: 8, height: 8 }).raw().toBuffer(); // color RGB
   ```
 - **Color de marca**: verde oficial **#31D697** (en `theme.css` como `--color-primary`).
 

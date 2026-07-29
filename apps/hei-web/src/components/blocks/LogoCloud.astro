@@ -1,13 +1,10 @@
 ---
-/**
- * Row of brand logos with an eyebrow caption (Home "una base estratégica").
- * Renders styled wordmarks until real logo images are supplied.
- */
 interface LogoItem {
 	name: string;
 	logo?: string;
 	url?: string;
 }
+
 interface Props {
 	node: {
 		eyebrow?: string;
@@ -19,67 +16,16 @@ const { node } = Astro.props;
 const items = node.items ?? [];
 ---
 
-<section class="section logocloud">
+<section class="marcas-strip">
 	<div class="container">
-		{node.eyebrow && <p class="logocloud-eyebrow">{node.eyebrow}</p>}
-		<div class="logocloud-row">
+		{node.eyebrow && <p class="marcas-strip__title">{node.eyebrow}</p>}
+		<div class="marcas-strip__logos">
 			{
-				items.map((b) => {
-					const inner = b.logo ? (
-						<img src={b.logo} alt={b.name} loading="lazy" />
-					) : (
-						<span class="logocloud-word">{b.name}</span>
-					);
-					return b.url ? (
-						<a href={b.url} class="logocloud-item">
-							{inner}
-						</a>
-					) : (
-						<span class="logocloud-item">{inner}</span>
-					);
+				items.map((item) => {
+					const image = item.logo && <img src={item.logo} alt={item.name} loading="lazy" />;
+					return item.url ? <a href={item.url}>{image}</a> : <span>{image}</span>;
 				})
 			}
 		</div>
 	</div>
 </section>
-
-<style>
-	.logocloud {
-		text-align: center;
-	}
-
-	.logocloud-eyebrow {
-		font-size: var(--font-size-sm);
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--color-muted);
-		margin-bottom: var(--spacing-xl);
-	}
-
-	.logocloud-row {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: center;
-		gap: var(--spacing-3xl);
-	}
-
-	.logocloud-item img {
-		max-height: 40px;
-		width: auto;
-		opacity: 0.8;
-		transition: opacity var(--transition-fast);
-	}
-
-	.logocloud-item:hover img {
-		opacity: 1;
-	}
-
-	.logocloud-word {
-		font-size: var(--font-size-2xl);
-		font-weight: 800;
-		letter-spacing: -0.03em;
-		color: var(--color-navy);
-		opacity: 0.75;
-	}
-</style>

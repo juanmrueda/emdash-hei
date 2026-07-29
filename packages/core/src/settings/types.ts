@@ -61,6 +61,9 @@ export interface SiteSettings {
 	// URLs
 	url?: string;
 
+	// Brand
+	brandColor?: string;
+
 	// Display
 	postsPerPage: number;
 	dateFormat: string;

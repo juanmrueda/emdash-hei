@@ -164,6 +164,27 @@ export function GeneralSettings() {
 							onChange={(e) => handleChange("tagline", e.target.value)}
 							description={t`A short description of your site`}
 						/>
+						<div>
+							<Label>{t`Brand Color`}</Label>
+							<div className="mt-2 flex gap-3">
+								<input
+									type="color"
+									value={formData.brandColor || "#31d697"}
+									onChange={(e) => handleChange("brandColor", e.target.value)}
+									className="h-10 w-14 cursor-pointer rounded border bg-kumo-base p-1"
+									aria-label={t`Brand Color`}
+								/>
+								<input
+									type="text"
+									value={formData.brandColor || "#31d697"}
+									onChange={(e) => handleChange("brandColor", e.target.value)}
+									className="flex-1 rounded border bg-kumo-base px-3 py-2 text-sm font-mono"
+									placeholder="#31d697"
+									pattern="^#[0-9a-fA-F]{6}$"
+								/>
+							</div>
+							<p className="mt-1 text-xs text-kumo-subtle">{t`Primary brand color used across the site (hex, e.g. #31d697)`}</p>
+						</div>
 						<Input
 							label={t`Site URL`}
 							type="url"

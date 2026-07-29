@@ -1,18 +1,11 @@
 ---
-import Icon from "../Icon.astro";
-
-/**
- * Two-column image + text. Supports a bullet list, an image badge (e.g. a
- * founding year), an optional CTA, and a stat card that overlaps the bottom
- * of the image. `accent` renders the heading in brand green.
- */
 interface Props {
 	node: {
 		eyebrow?: string;
 		heading: string;
 		accent?: boolean;
 		body?: string;
-		bullets?: string[];
+		bullets?: string[] | string;
 		image: string;
 		imageAlt?: string;
 		imagePosition?: "left" | "right";
@@ -24,227 +17,81 @@ interface Props {
 }
 
 const { node } = Astro.props;
-const pos = node.imagePosition ?? "left";
-const hasCta = node.ctaLabel && node.ctaUrl;
-
 const bullets = Array.isArray(node.bullets)
 	? node.bullets
 	: typeof node.bullets === "string"
-		? (node.bullets as string).split("\n").map((s) => s.trim()).filter(Boolean)
+		? node.bullets.split("\n").map((s) => s.trim()).filter(Boolean)
 		: [];
 const stats = node.stats ?? [];
+const hasCta = node.ctaLabel && node.ctaUrl;
+const reverse = node.imagePosition === "right";
 
-// Cifra de la tarjeta: dígitos en navy, símbolo final (%) en verde.
 function splitStat(value: string) {
-	const m = value.match(/^([\d.,]+)(.*)$/);
-	return { figure: m?.[1] ?? value, suffix: m?.[2] ?? "" };
+	const m = value.trim().match(/^([+]?)([\d,.]+)(.*)$/);
+	return { prefix: m?.[1] ?? "", value: m?.[2] ?? value, suffix: m?.[3] ?? "" };
 }
 ---
 
-<section class="section">
-	<div class:list={["it-grid", "container", { "it-grid--rev": pos === "right" }]}>
-		<div class:list={["it-media", { "has-card": stats.length > 0 }]}>
-			<img src={node.image} alt={node.imageAlt || ""} loading="lazy" />
-			{node.badge && <span class="it-badge">{node.badge}</span>}
-			{
-				stats.length > 0 && (
-					<div class="it-statcard">
-						{stats.map((s) => {
-							const { figure, suffix } = splitStat(s.value);
+<section class:list={["about-split", "bg-white", { "about-split--reverse": reverse }]}>
+	<div class="about-img">
+		<img src={node.image} alt={node.imageAlt || node.heading} loading="lazy" />
+		{
+			node.badge && !stats.length && (
+				<div class="about-img__stat">
+					<div class="stat-card">
+						<div class="stat-card__item">
+							<span class="stat-card__num">{node.badge}</span>
+						</div>
+					</div>
+				</div>
+			)
+		}
+		{
+			stats.length > 0 && (
+				<div class="about-img__stat">
+					<div class="stat-card">
+						{stats.map((s, index) => {
+							const stat = splitStat(s.value);
 							return (
-								<div class="it-stat">
-									<span class="it-stat-value">
-										<span class="it-stat-figure">{figure}</span>
-										<span class="it-stat-suffix">{suffix}</span>
-									</span>
-									<span class="it-stat-label">{s.label}</span>
-								</div>
+								<>
+									{index > 0 && <div class="stat-card__divider"></div>}
+									<div class="stat-card__item">
+										<span class="stat-card__num">
+											{stat.prefix}
+											<span class="stat-num-value">{stat.value}</span>
+											<span class="stat-sym">{stat.suffix}</span>
+										</span>
+										<span class="stat-card__label">{s.label}</span>
+									</div>
+								</>
 							);
 						})}
 					</div>
-				)
-			}
-		</div>
+				</div>
+			)
+		}
+	</div>
 
-		<div class="it-content">
-			{node.eyebrow && <span class="eyebrow">{node.eyebrow}</span>}
-			<h2 class:list={["it-heading", { accent: node.accent }]}>{node.heading}</h2>
-			{node.body && <p class="it-body">{node.body}</p>}
-
-			{
-				bullets.length > 0 && (
-					<ul class="it-bullets">
-						{bullets.map((b) => (
-							<li>
-								<span class="it-check">
-									<Icon name="check" size={14} />
-								</span>
-								<span>{b}</span>
-							</li>
-						))}
-					</ul>
-				)
-			}
-
-			{
-				hasCta && (
-					<a href={node.ctaUrl} class="btn btn-primary">
-						{node.ctaLabel}
-					</a>
-				)
-			}
-		</div>
+	<div class="about-body">
+		{node.eyebrow && <p class="eyebrow">{node.eyebrow}</p>}
+		<h2 class:list={{ "text-green": node.accent }}>{node.heading}</h2>
+		{node.body && <p>{node.body}</p>}
+		{
+			bullets.length > 0 && (
+				<ul class="bullet-list">
+					{bullets.map((bullet) => (
+						<li>
+							<span class="bullet-icon" aria-hidden="true">
+								<svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M5 13L9 17L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+								</svg>
+							</span>
+							<span>{bullet}</span>
+						</li>
+					))}
+				</ul>
+			)
+		}
+		{hasCta && <a href={node.ctaUrl} class="btn btn-primary mt-24">{node.ctaLabel}</a>}
 	</div>
 </section>
-
-<style>
-	.it-grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--spacing-4xl);
-		align-items: center;
-	}
-
-	.it-grid--rev .it-media {
-		order: 2;
-	}
-
-	.it-media {
-		position: relative;
-	}
-
-	/* Deja espacio inferior para la tarjeta de stats sobrepuesta. */
-	.it-media.has-card {
-		margin-bottom: var(--spacing-2xl);
-	}
-
-	.it-media img {
-		width: 100%;
-		border-radius: var(--radius-lg);
-		box-shadow: var(--shadow-lg);
-		display: block;
-	}
-
-	.it-badge {
-		position: absolute;
-		z-index: 2;
-		top: var(--spacing-lg);
-		left: calc(-1 * var(--spacing-md));
-		background: var(--color-primary);
-		color: #fff;
-		font-weight: 800;
-		font-size: var(--font-size-lg);
-		padding: var(--spacing-sm) var(--spacing-lg);
-		border-radius: var(--radius-full);
-		box-shadow: var(--shadow);
-	}
-
-	/* Tarjeta blanca de cifras sobrepuesta al borde inferior derecho de la imagen. */
-	.it-statcard {
-		position: absolute;
-		right: calc(-1 * var(--spacing-2xl));
-		left: auto;
-		bottom: calc(-1 * var(--spacing-2xl));
-		z-index: 3;
-		display: inline-flex;
-		gap: var(--spacing-xl);
-		background: #fff;
-		border-radius: var(--radius);
-		box-shadow: var(--shadow-lg);
-		padding: var(--spacing-lg) var(--spacing-xl);
-	}
-
-	.it-statcard .it-stat + .it-stat {
-		padding-left: var(--spacing-xl);
-		border-left: 1px solid var(--color-border);
-	}
-
-	.it-stat-value {
-		display: block;
-		font-size: var(--font-size-3xl);
-		font-weight: 800;
-		line-height: 1;
-	}
-
-	.it-stat-figure {
-		color: var(--color-navy);
-	}
-
-	.it-stat-suffix {
-		color: var(--color-primary);
-	}
-
-	.it-stat-label {
-		display: block;
-		margin-top: var(--spacing-xs);
-		font-size: var(--font-size-xs);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-		color: var(--color-muted);
-	}
-
-	.it-content {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-md);
-	}
-
-	.it-heading.accent {
-		color: var(--color-primary);
-	}
-
-	.it-body {
-		color: var(--color-muted);
-		font-size: var(--font-size-lg);
-	}
-
-	.it-bullets {
-		list-style: none;
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-md);
-		margin: var(--spacing-xs) 0;
-	}
-
-	.it-bullets li {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-md);
-		color: var(--color-text);
-	}
-
-	.it-check {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 26px;
-		height: 26px;
-		flex-shrink: 0;
-		border-radius: var(--radius-full);
-		background: var(--color-primary-50);
-		color: var(--color-primary);
-	}
-
-	.it-content .btn {
-		align-self: flex-start;
-		margin-top: var(--spacing-sm);
-	}
-
-	@media (max-width: 860px) {
-		.it-grid {
-			grid-template-columns: 1fr;
-			gap: var(--spacing-2xl);
-		}
-		.it-grid--rev .it-media {
-			order: 0;
-		}
-		.it-media.has-card {
-			margin-bottom: var(--spacing-3xl);
-		}
-		.it-statcard {
-			left: var(--spacing-md);
-			right: var(--spacing-md);
-			justify-content: space-around;
-		}
-	}
-</style>

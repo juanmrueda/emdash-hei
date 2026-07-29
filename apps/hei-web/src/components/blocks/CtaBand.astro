@@ -1,17 +1,14 @@
 ---
 import Icon from "../Icon.astro";
 
-/**
- * Green call-to-action band. Two layouts:
- *  - "band": full-bleed, centered text + CTA (optional top icon)
- *  - "card": rounded green card, optionally with an image on the right
- */
 interface Props {
 	node: {
+		_key?: string;
 		layout?: "band" | "card";
 		heroCard?: boolean;
 		photoStyle?: boolean;
 		icon?: string;
+		iconImage?: string;
 		eyebrow?: string;
 		heading: string;
 		body?: string;
@@ -22,284 +19,93 @@ interface Props {
 		secondaryCtaLabel?: string;
 		secondaryCtaUrl?: string;
 		whatsapp?: boolean;
-		/** Punto focal de la imagen (object-position), ej. "center 25%". */
 		focal?: string;
 	};
 }
 
-const ICONS: Record<string, string> = {
-	sparkle: "sparkle",
-	chat: "chat",
-	shield: "shield-check",
-	plant: "plant",
-	heart: "hand-heart",
-	leaf: "leaf",
-};
-
 const { node } = Astro.props;
 const layout = node.layout ?? "band";
-const hasImage = layout === "card" && !!node.image;
 const hasPrimary = node.primaryCtaLabel && node.primaryCtaUrl;
 const hasSecondary = node.secondaryCtaLabel && node.secondaryCtaUrl;
-const twoCtas = hasPrimary && hasSecondary;
-
-// Cuerpo en párrafos; resalta un prefijo tipo "Etiqueta:" (Integra: …).
+const showBandCta = hasPrimary && !node.photoStyle;
+const bgStyle = node.image
+	? `background-image:url('${node.image}');${node.focal ? `background-position:${node.focal};` : ""}`
+	: undefined;
 const bodyLines = (node.body ?? "")
 	.split("\n")
-	.map((l) => l.trim())
+	.map((line) => line.trim())
 	.filter(Boolean);
-function labelSplit(line: string) {
-	const m = line.match(/^([^:]{1,24}):\s*(.+)$/);
-	return m ? { label: m[1], rest: m[2] } : { label: "", rest: line };
+const isHomeSplit = node._key?.startsWith("home-") || node._key === "so-cta";
+const isHomeBanner = !!node.iconImage;
+
+function splitLabel(line: string) {
+	const match = line.match(/^([^:]{1,28}):\s*(.+)$/);
+	return match ? { label: match[1], text: match[2] } : { label: "", text: line };
 }
 ---
 
 {
-	layout === "band" ? (
-		<section class:list={["cta-band", { "has-bg": !!node.image, "photo-style": node.photoStyle }]}>
-			{node.image && (
-				<img class="cta-band-bg" src={node.image} alt={node.imageAlt || ""} loading="lazy" />
-			)}
-			<div class="cta-band-inner container">
-				{node.icon && (
-					<span class="cta-icon">
-						<Icon name={ICONS[node.icon] || "sparkle"} />
-					</span>
-				)}
-				{node.eyebrow && <span class="cta-eyebrow">{node.eyebrow}</span>}
-				<h2>{node.heading}</h2>
-				{node.body && <p>{node.body}</p>}
-				{(hasPrimary || hasSecondary) && (
-					<div class="cta-actions">
-						{hasPrimary && (
-							<a href={node.primaryCtaUrl} class="btn btn-secondary btn-lg">
-								{node.primaryCtaLabel}
-							</a>
-						)}
-						{hasSecondary && (
-							<a href={node.secondaryCtaUrl} class="btn btn-ghost btn-lg">
-								{node.secondaryCtaLabel}
-							</a>
-						)}
+	node.heroCard ? (
+		<section class="salutia-heroint">
+			<div>
+				<div class="salutia-hero__body">
+					<h1>{node.heading}</h1>
+					{node.body && <p>{node.body}</p>}
+					<div class="split__btns">
+						{hasPrimary && <a href={node.primaryCtaUrl} class="btn btn-white">{node.primaryCtaLabel}</a>}
+						{hasSecondary && <a href={node.secondaryCtaUrl} class="btn btn-outline-white">{node.secondaryCtaLabel}</a>}
 					</div>
-				)}
+				</div>
+				{node.image && <div class="salutia-hero__img" style={bgStyle}></div>}
 			</div>
 		</section>
-	) : (
-		<section class:list={["section", { "section--hero-card": node.heroCard }]}>
-			<div class="container">
-				<div class:list={["cta-card", { "has-image": hasImage }]}>
-					<div class="cta-card-content">
-						{node.eyebrow && <span class="cta-eyebrow">{node.eyebrow}</span>}
-						<h2>{node.heading}</h2>
-						{bodyLines.map((line) => {
-							const { label, rest } = labelSplit(line);
-							return (
-								<p>
-									{label && <strong>{label}: </strong>}
-									{rest}
-								</p>
-							);
-						})}
-						{twoCtas ? (
-							<div class="cta-actions">
-								{/* Dos botones: principal outline, secundario blanco (WhatsApp). */}
-								<a href={node.primaryCtaUrl} class="btn btn-ghost btn-lg">
+	) : layout === "card" ? (
+		<section class={isHomeSplit ? "splithome" : "splitinternas"}>
+			<div>
+				<div class="split__body split__body--green">
+					<h2 class="text-white">{node.heading}</h2>
+					{bodyLines.map((line) => {
+						const item = splitLabel(line);
+						return (
+							<p class="text-white">
+								{item.label && <strong>{item.label}: </strong>}
+								{item.text}
+							</p>
+						);
+					})}
+					{(hasPrimary || hasSecondary) && (
+						<div class="split__btns">
+							{hasPrimary && (
+								<a href={node.primaryCtaUrl} class={hasSecondary ? "btn btn-outline-white" : "btn btn-white"}>
 									{node.primaryCtaLabel}
 								</a>
-								<a href={node.secondaryCtaUrl} class="btn btn-secondary btn-lg cta-wa">
-									{node.whatsapp && <Icon name="whatsapp" />}
+							)}
+							{hasSecondary && (
+								<a href={node.secondaryCtaUrl} class="btn btn-white" target={node.whatsapp ? "_blank" : undefined} rel={node.whatsapp ? "noopener" : undefined}>
 									{node.secondaryCtaLabel}
+									{node.whatsapp && <span class="btn__icon" aria-hidden="true"><Icon name="whatsapp" size={20} /></span>}
 								</a>
-							</div>
-						) : hasPrimary ? (
-							<div class="cta-actions">
-								<a href={node.primaryCtaUrl} class="btn btn-secondary btn-lg cta-wa">
-									{node.whatsapp && <Icon name="whatsapp" />}
-									{node.primaryCtaLabel}
-								</a>
-							</div>
-						) : null}
-					</div>
-					{hasImage && (
-						<div class="cta-card-media">
-							<img
-								src={node.image}
-								alt={node.imageAlt || ""}
-								loading="lazy"
-								style={node.focal ? `object-position: ${node.focal}` : undefined}
-							/>
+							)}
 						</div>
 					)}
 				</div>
+				{node.image && <div class="split__img" style={bgStyle}></div>}
+			</div>
+		</section>
+	) : (
+		<section class={isHomeBanner ? "sos-banner" : `cta-banner ${node.photoStyle ? "cta-banner--dark" : "cta-banner--centered"}`} style={bgStyle}>
+			<div class={isHomeBanner ? "sos-banner__content" : "cta-banner__content"}>
+				{!isHomeBanner && node.icon && <div class="cta-banner__icon"></div>}
+				{isHomeBanner && <div class="sos-banner__icon">{node.iconImage && <img src={node.iconImage} alt="" style="width:100%;height:100%;object-fit:contain;border-radius:50%;" />}</div>}
+				<h2>{node.heading}</h2>
+				{node.body && <p>{node.body}</p>}
+				{showBandCta && (
+					<a href={node.primaryCtaUrl} class="btn btn-white" target={node.whatsapp ? "_blank" : undefined} rel={node.whatsapp ? "noopener" : undefined}>
+						{node.primaryCtaLabel}
+						{node.whatsapp && <span class="btn__icon" aria-hidden="true"><Icon name="whatsapp" size={20} /></span>}
+					</a>
+				)}
 			</div>
 		</section>
 	)
 }
-
-<style>
-	.cta-band {
-		position: relative;
-		overflow: hidden;
-		background: linear-gradient(120deg, var(--color-primary), var(--color-primary-dark));
-		color: #fff;
-	}
-
-	/* Foto de fondo + filtro verde (no verde plano). */
-	.cta-band-bg {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		z-index: 0;
-	}
-
-	.cta-band.has-bg::after {
-		content: "";
-		position: absolute;
-		inset: 0;
-		z-index: 1;
-		background: linear-gradient(
-			120deg,
-			rgba(49, 214, 151, 0.92),
-			rgba(32, 189, 130, 0.94)
-		);
-	}
-
-	/* Foto visible sin filtro — texto sobre la foto directamente */
-	.cta-band.photo-style {
-		background: var(--color-navy);
-	}
-	.cta-band.photo-style.has-bg::after {
-		display: none;
-	}
-	.cta-band.photo-style .cta-band-inner {
-		text-align: start;
-		align-items: flex-start;
-	}
-
-	.cta-band-inner {
-		position: relative;
-		z-index: 2;
-		text-align: center;
-		padding-top: var(--spacing-4xl);
-		padding-bottom: var(--spacing-4xl);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: var(--spacing-md);
-	}
-
-	.cta-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 56px;
-		height: 56px;
-		border-radius: var(--radius-full);
-		background: rgba(255, 255, 255, 0.18);
-		font-size: 1.6rem;
-		margin-bottom: var(--spacing-sm);
-	}
-
-	.cta-band h2,
-	.cta-card h2 {
-		color: #fff;
-		max-width: 22ch;
-	}
-
-	.cta-card h2 {
-		font-size: var(--font-size-2xl);
-	}
-
-	.cta-band p {
-		max-width: 60ch;
-		opacity: 0.92;
-	}
-
-	.cta-eyebrow {
-		font-size: var(--font-size-sm);
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-		opacity: 0.85;
-	}
-
-	.cta-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--spacing-md);
-		justify-content: center;
-		margin-top: var(--spacing-sm);
-	}
-
-	/* Hero card: pegado al header como los otros heros */
-	.section--hero-card {
-		margin-top: -76px;
-		padding-top: calc(76px + var(--spacing-xl));
-		padding-bottom: 0;
-	}
-
-	/* Card layout */
-	.cta-card {
-		background: linear-gradient(120deg, var(--color-primary), var(--color-primary-dark));
-		border-radius: var(--radius-lg);
-		color: #fff;
-		overflow: hidden;
-		display: grid;
-		grid-template-columns: 1fr;
-	}
-
-	.cta-card.has-image {
-		grid-template-columns: 1.1fr 0.9fr;
-	}
-
-	.cta-card-content {
-		padding: var(--spacing-2xl);
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-md);
-		align-items: flex-start;
-		justify-content: center;
-	}
-
-	.cta-card.has-image .cta-actions,
-	.cta-card-content .cta-actions {
-		justify-content: flex-start;
-	}
-
-	.cta-card p {
-		opacity: 0.92;
-		max-width: 48ch;
-	}
-
-	/* Imagen absoluta: la foto NO infla la altura de la tarjeta (la dicta el
-	   contenido). Evita las tarjetas gigantes con imágenes cuadradas. */
-	.cta-card.has-image .cta-card-media {
-		position: relative;
-		min-height: 260px;
-	}
-	.cta-card-media img {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.cta-wa :global(svg) {
-		font-size: 1.2rem;
-		color: var(--color-primary);
-	}
-
-	@media (max-width: 768px) {
-		.cta-card.has-image {
-			grid-template-columns: 1fr;
-		}
-		.cta-card-media {
-			order: -1;
-			max-height: 220px;
-		}
-	}
-</style>

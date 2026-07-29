@@ -157,7 +157,12 @@ async function main() {
 
 	function walk(node, screen) {
 		if (Array.isArray(node.exportSettings) && node.exportSettings.length) {
-			marked.push({ id: node.id, name: node.name, screen, format: fmtFromExport(node.exportSettings) });
+			marked.push({
+				id: node.id,
+				name: node.name,
+				screen,
+				format: fmtFromExport(node.exportSettings),
+			});
 		}
 		if (Array.isArray(node.fills)) {
 			for (const fill of node.fills) {
@@ -185,7 +190,10 @@ async function main() {
 	// 1) Mockup por pantalla
 	if (doFrames && screens.length) {
 		console.log("→ Exportando mockups por pantalla (PNG)…");
-		const urls = await renderNodes(screens.map((s) => s.id), "png");
+		const urls = await renderNodes(
+			screens.map((s) => s.id),
+			"png",
+		);
 		for (const s of screens) {
 			const url = urls[s.id];
 			if (!url) continue;
@@ -203,7 +211,10 @@ async function main() {
 		const byFormat = {};
 		for (const m of marked) (byFormat[m.format] ||= []).push(m);
 		for (const [format, list] of Object.entries(byFormat)) {
-			const urls = await renderNodes(list.map((m) => m.id), format);
+			const urls = await renderNodes(
+				list.map((m) => m.id),
+				format,
+			);
 			const seen = new Map();
 			for (const m of list) {
 				const url = urls[m.id];

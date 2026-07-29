@@ -1,0 +1,151 @@
+---
+import { mediaUrl } from "../../lib/media";
+
+interface JobItem {
+	icon?: string;
+	iconUrl?: string;
+	image?: unknown;
+	title?: string;
+	subtitle?: string;
+	text?: string;
+	category?: string[] | string;
+	categories?: string[] | string;
+	applyUrl?: string;
+	applyLabel?: string;
+}
+
+interface Props {
+	node: {
+		_key?: string;
+		heading?: string;
+		subheading?: string;
+		items: JobItem[];
+	};
+}
+
+const ICONS: Record<string, string> = {
+	health: "/wp/iconos/salud.png",
+	transparency: "/wp/iconos/transparencia.png",
+	future: "/wp/iconos/futuro.png",
+	logistics: "/wp/iconos/ico-logistica.png",
+	network: "/wp/iconos/ico-servicio.png",
+	software: "/wp/iconos/ico-software.png",
+	shield: "/wp/iconos/transparencia.png",
+	growth: "/wp/iconos/futuro.png",
+	gauge: "/wp/iconos/ico-software.png",
+};
+
+const iconSrc = (job: JobItem) =>
+	job.iconUrl || mediaUrl(job.image) || (job.icon ? ICONS[job.icon] : undefined);
+
+const toList = (value: unknown): string[] =>
+	Array.isArray(value)
+		? (value as string[])
+		: typeof value === "string"
+			? value.split("\n").map((s) => s.trim()).filter(Boolean)
+			: [];
+
+const slugify = (value: string): string =>
+	value
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-+|-+$/g, "");
+
+const categoryLabels = (value: unknown): string[] => {
+	if (Array.isArray(value)) return value.flatMap(categoryLabels);
+	if (typeof value !== "string") return [];
+	return value.split(/[,\n|]+/).map((label) => label.trim()).filter(Boolean);
+};
+
+const getJobCategories = (job: JobItem) =>
+	categoryLabels(job.categories ?? job.category)
+		.map((label) => ({ label, slug: slugify(label) }))
+		.filter((category) => category.slug);
+
+const { node } = Astro.props;
+const items = node.items ?? [];
+const key = node._key || "jobs";
+
+const jobCategories = (() => {
+	const bySlug = new Map<string, { label: string; slug: string }>();
+	for (const job of items) {
+		for (const category of getJobCategories(job)) {
+			if (!bySlug.has(category.slug)) bySlug.set(category.slug, category);
+		}
+	}
+	return [...bySlug.values()];
+})();
+
+const jobListId = `${key}-cards`;
+---
+
+<section class="section bg-white">
+	<div class="container">
+		<div class="section-header">
+			{node.heading && <h2>{node.heading}</h2>}
+			<div class="section-header__line"></div>
+			{node.subheading && <p>{node.subheading}</p>}
+		</div>
+		{jobCategories.length > 0 && (
+			<div class="tabs tabscenter" data-hei-job-tabs data-target={jobListId}>
+				<button class="tab-btn active" type="button" data-cat="all" aria-pressed="true">Todos</button>
+				{jobCategories.map((category) => (
+					<button class="tab-btn" type="button" data-cat={category.slug} aria-pressed="false">
+						{category.label}
+					</button>
+				))}
+			</div>
+		)}
+		<div class="job-cards" id={jobListId}>
+			{items.map((job) => {
+				const categories = getJobCategories(job);
+				const categorySlugs = categories.map((c) => c.slug).join(" ");
+				const jobIcon = iconSrc(job);
+				return (
+					<div class="job-card" data-cats={categorySlugs || "all"}>
+						<div class="job-card__badge">
+							{jobIcon && <img src={jobIcon} alt="" loading="lazy" />}
+						</div>
+						{job.title && <h3 class="job-card__title">{job.title}</h3>}
+						{job.subtitle && <p class="job-card__subtitle">{job.subtitle}</p>}
+						{job.text && <p class="job-card__desc">{job.text}</p>}
+						{job.applyUrl ? (
+							<a href={job.applyUrl} class="btn btn-primary mt-24">
+								{job.applyLabel || "Quiero aplicar"}
+							</a>
+						) : (
+							<button class="btn btn-primary mt-24" disabled>Quiero aplicar</button>
+						)}
+					</div>
+				);
+			})}
+		</div>
+	</div>
+	<script is:inline>
+		(() => {
+			document.querySelectorAll("[data-hei-job-tabs]").forEach((tabsContainer) => {
+				const targetId = tabsContainer.getAttribute("data-target");
+				const cardsContainer = targetId ? document.getElementById(targetId) : null;
+				if (!cardsContainer) return;
+				tabsContainer.addEventListener("click", (event) => {
+					const button = event.target.closest(".tab-btn");
+					if (!button) return;
+					tabsContainer.querySelectorAll(".tab-btn").forEach((tab) => {
+						tab.classList.remove("active");
+						tab.setAttribute("aria-pressed", "false");
+					});
+					button.classList.add("active");
+					button.setAttribute("aria-pressed", "true");
+					const activeCategory = button.getAttribute("data-cat");
+					cardsContainer.querySelectorAll(".job-card").forEach((card) => {
+						const cats = (card.getAttribute("data-cats") || "").split(/\s+/);
+						const visible = activeCategory === "all" || cats.includes(activeCategory);
+						card.style.display = visible ? "" : "none";
+					});
+				});
+			});
+		})();
+	</script>
+</section>

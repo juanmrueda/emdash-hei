@@ -1,15 +1,10 @@
 ---
-import Icon from "../Icon.astro";
-
-/**
- * Contact-channels block (Denuncias "Reporta una situación"): an image on one
- * side and a vertical list of channels (icon + title + description).
- */
 interface Channel {
 	icon?: string;
 	title: string;
 	text: string;
 }
+
 interface Props {
 	node: {
 		eyebrow?: string;
@@ -22,146 +17,38 @@ interface Props {
 	};
 }
 
-const ICONS: Record<string, string> = {
-	phone: "phone",
-	email: "envelope",
-	chat: "chat",
-	whatsapp: "whatsapp",
-};
-
 const { node } = Astro.props;
 const items = node.items ?? [];
-const pos = node.imagePosition ?? "left";
 ---
 
-<section class="section ch-section">
+<section class="intro-section">
 	<div class="container">
-		{
-			(node.eyebrow || node.heading) && (
-				<div class="section-heading">
-					{node.eyebrow && <span class="eyebrow">{node.eyebrow}</span>}
-					{node.heading && <h2>{node.heading}</h2>}
-					<div class="heading-rule" />
-					{node.subheading && <p>{node.subheading}</p>}
-				</div>
-			)
-		}
-
-		<div class:list={["ch-grid", { "ch-grid--rev": pos === "right" }]}>
-			<div class="ch-media">
-				<div class="ch-blob" aria-hidden="true"></div>
-				<img src={node.image} alt={node.imageAlt || ""} loading="lazy" />
-			</div>
-
-			<ul class="ch-list">
-				{
-					items.map((c) => (
-						<li class="ch-item">
-							<span class="ch-icon">
-								<Icon name={ICONS[c.icon || "chat"] || "chat"} />
-							</span>
-							<div>
-								<h3>{c.title}</h3>
-								<p>{c.text}</p>
-							</div>
-						</li>
-					))
-				}
-			</ul>
-		</div>
+		{node.heading && <h2>{node.heading}</h2>}
+		<div class="section-header__line" style="margin:12px auto 20px;"></div>
+		{node.subheading && <p>{node.subheading}</p>}
 	</div>
 </section>
 
-<style>
-	.ch-section {
-		position: relative;
-		background-color: var(--color-surface, #f4f7f9);
-		background-image: repeating-linear-gradient(
-			135deg,
-			rgba(14, 27, 42, 0.035) 0,
-			rgba(14, 27, 42, 0.035) 1px,
-			transparent 1px,
-			transparent 12px
-		);
-	}
-
-	.ch-grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--spacing-4xl);
-		align-items: center;
-	}
-
-	.ch-grid--rev .ch-media {
-		order: 2;
-	}
-
-	.ch-media {
-		position: relative;
-	}
-
-	.ch-media img {
-		width: 100%;
-		border-radius: var(--radius-lg);
-		box-shadow: var(--shadow-lg);
-		position: relative;
-		z-index: 1;
-	}
-
-	.ch-blob {
-		position: absolute;
-		width: 60%;
-		height: 60%;
-		right: -6%;
-		bottom: -8%;
-		background: var(--color-primary);
-		opacity: 0.18;
-		border-radius: 48% 52% 56% 44% / 52% 48% 52% 48%;
-	}
-
-	.ch-list {
-		list-style: none;
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-xl);
-	}
-
-	.ch-item {
-		display: flex;
-		gap: var(--spacing-md);
-	}
-
-	.ch-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 48px;
-		height: 48px;
-		border-radius: var(--radius-full);
-		background: var(--color-primary-50);
-		color: var(--color-primary);
-		font-size: 1.4rem;
-		flex-shrink: 0;
-	}
-
-	.ch-item h3 {
-		font-size: var(--font-size-lg);
-		color: var(--color-primary);
-		margin-bottom: var(--spacing-xs);
-	}
-
-	.ch-item p {
-		color: var(--color-muted);
-		font-size: var(--font-size-sm);
-	}
-
-	@media (max-width: 860px) {
-		.ch-grid {
-			grid-template-columns: 1fr;
-			gap: var(--spacing-2xl);
-		}
-		.ch-grid--rev .ch-media {
-			order: 0;
-		}
-	}
-</style>
+<section class="section fondo-lineas" style="padding-top:0;">
+	<div class="canales-wrap">
+		<div class="canales-img">
+			<img src={node.image} alt={node.imageAlt || ""} loading="lazy" />
+		</div>
+		<div class="timeline timeline--channels">
+			{
+				items.map((channel) => (
+					<div class="timeline__item">
+						<div class="timeline__bullet-col">
+							<div class="timeline__bullet"></div>
+							<div class="timeline__line"></div>
+						</div>
+						<div class="timeline__content">
+							<h3>{channel.title}</h3>
+							<p>{channel.text}</p>
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>

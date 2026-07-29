@@ -1,20 +1,103 @@
-{
+﻿{
 	"$schema": "https://emdashcms.com/seed.schema.json",
 	"version": "1",
 	"meta": {
-		"name": "Grupo HEI",
-		"description": "Sitio corporativo de Grupo HEI — respaldo para marcas de salud en Guatemala.",
-		"author": "Grupo HEI"
+		"name": "Exported Seed",
+		"description": "Exported from existing EmDash database"
 	},
 	"settings": {
 		"title": "Grupo HEI",
-		"tagline": "El respaldo que conecta marcas de salud."
+		"tagline": "El respaldo que conecta marcas de salud.",
+		"brandColor": "#31d697"
 	},
 	"collections": [
 		{
+			"slug": "opportunities",
+			"label": "Oportunidades",
+			"labelSingular": "Oportunidad",
+			"supports": [
+				"drafts",
+				"revisions"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "T├¡tulo",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "category",
+					"label": "Categor├¡a",
+					"type": "select",
+					"required": true,
+					"options": {
+						"collection": "opportunity_categories"
+					}
+				},
+				{
+					"slug": "subtitle",
+					"label": "Subt├¡tulo",
+					"type": "string"
+				},
+				{
+					"slug": "description",
+					"label": "Descripci├│n",
+					"type": "text"
+				},
+				{
+					"slug": "icon",
+					"label": "├ìcono",
+					"type": "string"
+				},
+				{
+					"slug": "image",
+					"label": "Imagen / ├¡cono personalizado",
+					"type": "image",
+					"validation": {
+						"allowedMimeTypes": [
+							"image/"
+						]
+					}
+				},
+				{
+					"slug": "apply_url",
+					"label": "URL bot├│n Quiero aplicar",
+					"type": "string"
+				},
+				{
+					"slug": "position",
+					"label": "Orden",
+					"type": "integer"
+				}
+			]
+		},
+		{
+			"slug": "opportunity_categories",
+			"label": "Categor├¡as de Oportunidades",
+			"labelSingular": "Categor├¡a de Oportunidad",
+			"supports": [
+				"drafts",
+				"revisions"
+			],
+			"fields": [
+				{
+					"slug": "name",
+					"label": "Nombre",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "position",
+					"label": "Orden",
+					"type": "integer"
+				}
+			]
+		},
+		{
 			"slug": "pages",
-			"label": "Páginas",
-			"labelSingular": "Página",
+			"label": "P├íginas",
+			"labelSingular": "P├ígina",
 			"supports": [
 				"drafts",
 				"revisions",
@@ -23,7 +106,7 @@
 			"fields": [
 				{
 					"slug": "title",
-					"label": "Título",
+					"label": "T├¡tulo",
 					"type": "string",
 					"required": true
 				},
@@ -35,44 +118,31 @@
 			]
 		}
 	],
-	"menus": [
+	"taxonomies": [
 		{
-			"name": "primary",
-			"label": "Navegación principal",
-			"items": [
-				{
-					"type": "custom",
-					"label": "Home",
-					"url": "/"
-				},
-				{
-					"type": "custom",
-					"label": "Quiénes somos",
-					"url": "/quienes-somos"
-				},
-				{
-					"type": "custom",
-					"label": "Marcas",
-					"url": "/marcas"
-				},
-				{
-					"type": "custom",
-					"label": "Ética y sostenibilidad",
-					"url": "/sostenibilidad"
-				},
-				{
-					"type": "custom",
-					"label": "Trabaja con nosotros",
-					"url": "/trabaja"
-				},
-				{
-					"type": "custom",
-					"label": "Contacto",
-					"url": "/contacto"
-				}
+			"id": "tax:category",
+			"name": "category",
+			"label": "Categories",
+			"labelSingular": "Category",
+			"hierarchical": true,
+			"collections": [
+				"posts"
 			]
 		},
 		{
+			"id": "tax:tag",
+			"name": "tag",
+			"label": "Tags",
+			"labelSingular": "Tag",
+			"hierarchical": false,
+			"collections": [
+				"posts"
+			]
+		}
+	],
+	"menus": [
+		{
+			"id": "menu:footer_company",
 			"name": "footer_company",
 			"label": "Footer: Sobre Grupo HEI",
 			"items": [
@@ -88,7 +158,7 @@
 				},
 				{
 					"type": "custom",
-					"label": "Políticas de datos",
+					"label": "Pol├¡ticas de datos",
 					"url": "/politicas-de-datos"
 				},
 				{
@@ -97,24 +167,923 @@
 					"url": "/denuncias"
 				}
 			]
+		},
+		{
+			"id": "menu:primary",
+			"name": "primary",
+			"label": "Navegaci├│n principal",
+			"items": [
+				{
+					"type": "custom",
+					"label": "Home",
+					"url": "/"
+				},
+				{
+					"type": "custom",
+					"label": "Qui├®nes somos",
+					"url": "/quienes-somos"
+				},
+				{
+					"type": "custom",
+					"label": "Marcas",
+					"url": "/marcas"
+				},
+				{
+					"type": "custom",
+					"label": "├ëtica y sostenibilidad",
+					"url": "/sostenibilidad"
+				},
+				{
+					"type": "custom",
+					"label": "Trabaja con nosotros",
+					"url": "/trabaja"
+				},
+				{
+					"type": "custom",
+					"label": "Contacto",
+					"url": "/contacto"
+				}
+			]
 		}
 	],
+	"widgetAreas": [],
 	"content": {
+		"opportunities": [
+			{
+				"id": "opportunities:ejecutivo-comercial",
+				"slug": "ejecutivo-comercial",
+				"status": "published",
+				"data": {
+					"title": "Ejecutivo comercial",
+					"category": "Comercial",
+					"subtitle": "El reto",
+					"description": "Conecta marcas y clientes, construyendo relaciones de confianza en el sector salud.",
+					"icon": "network",
+					"apply_url": "#t-form",
+					"position": 2
+				}
+			},
+			{
+				"id": "opportunities:coordinacion-logistica",
+				"slug": "coordinacion-logistica",
+				"status": "published",
+				"data": {
+					"title": "Coordinaci├│n log├¡stica",
+					"category": "Log├¡stica",
+					"subtitle": "El reto",
+					"description": "Apoya la operaci├│n de almacenamiento y distribuci├│n del ecosistema con foco en eficiencia y servicio.",
+					"icon": "logistics",
+					"apply_url": "#t-form",
+					"position": 1
+				}
+			}
+		],
+		"opportunity_categories": [
+			{
+				"id": "opportunity_categories:operaciones",
+				"slug": "operaciones",
+				"status": "published",
+				"data": {
+					"name": "Operaciones",
+					"position": 5
+				}
+			},
+			{
+				"id": "opportunity_categories:tecnologia",
+				"slug": "tecnologia",
+				"status": "published",
+				"data": {
+					"name": "Tecnolog├¡a",
+					"position": 4
+				}
+			},
+			{
+				"id": "opportunity_categories:administracion",
+				"slug": "administracion",
+				"status": "published",
+				"data": {
+					"name": "Administraci├│n",
+					"position": 3
+				}
+			},
+			{
+				"id": "opportunity_categories:comercial",
+				"slug": "comercial",
+				"status": "published",
+				"data": {
+					"name": "Comercial",
+					"position": 2
+				}
+			},
+			{
+				"id": "opportunity_categories:logistica",
+				"slug": "logistica",
+				"status": "published",
+				"data": {
+					"name": "Log├¡stica",
+					"position": 1
+				}
+			}
+		],
 		"pages": [
 			{
-				"id": "home",
+				"id": "pages:politicas-de-datos",
+				"slug": "politicas-de-datos",
+				"status": "published",
+				"data": {
+					"title": "Pol├¡ticas de Datos",
+					"content": [
+						{
+							"_type": "hei.hero",
+							"_key": "pd-hero",
+							"headline": "Pol├¡ticas de protecci├│n de datos",
+							"subheadline": "En Grupo HEI nos comprometemos a proteger la informaci├│n personal de nuestros usuarios, clientes y colaboradores conforme a la legislaci├│n guatemalteca.",
+							"variant": "solid",
+							"overlay": false
+						},
+						{
+							"_type": "hei.imageText",
+							"_key": "pd-privacy",
+							"eyebrow": "Privacidad",
+							"heading": "Pol├¡tica de privacidad",
+							"body": "Grupo HEI recopila y utiliza informaci├│n personal ├║nicamente para los fines establecidos en esta pol├¡tica. Nos comprometemos a no vender, compartir ni distribuir informaci├│n personal a terceros sin consentimiento expreso del titular, salvo en los casos previstos por la ley.",
+							"image": "/wp/imagen/contactanos.jpg",
+							"imageAlt": "Protecci├│n de datos",
+							"imagePosition": "left"
+						},
+						{
+							"_type": "hei.imageText",
+							"_key": "pd-rights",
+							"eyebrow": "Derechos",
+							"heading": "Tus derechos como titular",
+							"body": "Como titular de datos personales, tienes derecho a acceder, rectificar, solicitar la eliminaci├│n de tus datos, oponerte a su tratamiento y solicitar la portabilidad de la informaci├│n. Puedes ejercer estos derechos contactando a nuestro equipo.",
+							"image": "/wp/imagen/atencion-cliente.jpg",
+							"imageAlt": "Derechos del titular",
+							"imagePosition": "right"
+						},
+						{
+							"_type": "hei.ctaBand",
+							"_key": "pd-cta",
+							"layout": "band",
+							"icon": "shield",
+							"heading": "┬┐Tienes dudas sobre tus datos?",
+							"body": "Si necesitas ejercer tus derechos o tienes preguntas sobre c├│mo manejamos tu informaci├│n, cont├íctanos.",
+							"primaryCtaLabel": "Cont├íctanos",
+							"primaryCtaUrl": "/contacto"
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:meliora",
+				"slug": "meliora",
+				"status": "published",
+				"data": {
+					"title": "Meliora",
+					"content": [
+						{
+							"_type": "hei.ctaBand",
+							"_key": "meliora-hero",
+							"layout": "card",
+							"heading": "Optimizaci├│n continua para el sector salud",
+							"body": "Meliora representa la l├¡nea de crecimiento dentro del ecosistema de salud, enfocada en eficiencia, calidad y estandarizaci├│n de procesos.",
+							"image": "/wp/imagen/workoffice.jpg",
+							"imageAlt": "Meliora operaci├│n",
+							"primaryCtaLabel": "Conocer soluciones",
+							"primaryCtaUrl": "#soluciones",
+							"secondaryCtaLabel": "Contactar Meliora",
+							"secondaryCtaUrl": "/contacto",
+							"heroCard": true
+						},
+						{
+							"_type": "hei.cards",
+							"_key": "meliora-features",
+							"id": "soluciones",
+							"heading": "Soluciones estrat├®gicas",
+							"subheading": "Meliora optimiza procesos operativos y genera valor estrat├®gico para las marcas del ecosistema de salud.",
+							"columns": 2,
+							"align": "center",
+							"items": [
+								{
+									"icon": "gauge",
+									"title": "Eficiencia operativa",
+									"text": "Optimizaci├│n continua de procesos para maximizar resultados."
+								},
+								{
+									"icon": "shield",
+									"title": "Calidad y est├índares",
+									"text": "Estandarizaci├│n de la cadena log├¡stica con altos est├índares de calidad."
+								},
+								{
+									"icon": "software",
+									"title": "Software especializado",
+									"text": "Herramientas dise├▒adas para generar visibilidad y control."
+								},
+								{
+									"icon": "growth",
+									"title": "Valor estrat├®gico",
+									"text": "Soluciones dise├▒adas para impulsar el crecimiento sostenible."
+								}
+							]
+						},
+						{
+							"_type": "hei.ctaBand",
+							"_key": "meliora-cta",
+							"layout": "band",
+							"icon": "sparkle",
+							"heading": "Transforma tu operaci├│n con Meliora",
+							"body": "Descubre c├│mo Meliora puede optimizar tus procesos y generar valor estrat├®gico para tu marca.",
+							"primaryCtaLabel": "Contactar Meliora",
+							"primaryCtaUrl": "/contacto"
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:cendis",
+				"slug": "cendis",
+				"status": "published",
+				"data": {
+					"title": "CENDIS",
+					"content": [
+						{
+							"layout": "card",
+							"icon": "heart",
+							"heading": "┬┐Necesitas productos m├®dicos o farmac├®uticos?",
+							"body": "CENDIS tiene el portafolio y la infraestructura para respaldar tu operaci├│n en Guatemala.",
+							"primaryCtaLabel": "Contactar CENDIS",
+							"primaryCtaUrl": "/contacto",
+							"_type": "hei.ctaBand",
+							"_key": "sq3s2k5h3",
+							"id": ""
+						},
+						{
+							"heading": "Menos fricci├│n, m├ís control operativo",
+							"align": "center",
+							"items": [
+								{
+									"icon": "",
+									"image": "",
+									"title": "gfdhdgh",
+									"text": "fdg fdghd fghd fghd fgh ",
+									"color": "",
+									"gradientColor": ""
+								}
+							],
+							"layout": "service",
+							"_type": "hei.cards",
+							"_key": "3mjboc7hg",
+							"id": ""
+						},
+						{
+							"eyebrow": "Nuestra esencia",
+							"heading": "M├ís de 55 a├▒os conectando salud",
+							"accent": true,
+							"body": "CENDIS es la columna vertebral operativa de Grupo HEI. Desde su fundaci├│n en 1968, ha sido el motor que permite el acceso a productos m├®dicos y farmac├®uticos en todo Guatemala.",
+							"image": "/wp/imagen/quienes-somos.jpg",
+							"imageAlt": "Equipo CENDIS",
+							"imagePosition": "right",
+							"badge": "1968",
+							"stats": [
+								{
+									"value": "+55",
+									"label": "A├▒os de trayectoria"
+								},
+								{
+									"value": "100%",
+									"label": "Cobertura nacional"
+								}
+							],
+							"_type": "hei.imageText",
+							"_key": "sl5i85qxp",
+							"id": ""
+						},
+						{
+							"heading": "Portafolio y operaci├│n",
+							"subheading": "CENDIS ofrece un portafolio amplio de productos m├®dicos y farmac├®uticos con distribuci├│n eficiente en todo el pa├¡s.",
+							"columns": 3,
+							"align": "center",
+							"items": [
+								{
+									"icon": "health",
+									"title": "Productos m├®dicos",
+									"text": "Amplio cat├ílogo de insumos y equipos m├®dicos para el sector salud."
+								},
+								{
+									"icon": "logistics",
+									"title": "Distribuci├│n nacional",
+									"text": "Cobertura completa en Guatemala con log├¡stica eficiente y confiable."
+								},
+								{
+									"icon": "shield",
+									"title": "Trayectoria comprobada",
+									"text": "M├ís de 55 a├▒os sirviendo al sector salud con est├índares de calidad."
+								}
+							],
+							"_type": "hei.cards",
+							"_key": "t1qzo5cl4",
+							"id": "portafolio"
+						},
+						{
+							"_type": "block",
+							"_key": "nr66gc91y",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "6oqdurrnw",
+									"text": ""
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:denuncias",
+				"slug": "denuncias",
+				"status": "published",
+				"data": {
+					"title": "Denuncias",
+					"content": [
+						{
+							"headline": "La confianza tambi├®n se protege",
+							"highlight": "",
+							"subheadline": "Grupo HEI habilita un canal para reportar situaciones que puedan afectar la ├®tica, la transparencia y la integridad del ecosistema.",
+							"image": "/wp/imagen/denuncias-banner.jpg",
+							"imageAlt": "Personas en oficina",
+							"variant": "image",
+							"focal": "center top",
+							"_type": "hei.hero",
+							"_key": "d9669mpen",
+							"id": ""
+						},
+						{
+							"heading": "Reporta una situaci├│n",
+							"subheading": "Comparte la informaci├│n disponible para que el equipo responsable pueda revisar el caso seg├║n las pol├¡ticas internas.",
+							"image": "/wp/imagen/denuncia.jpg",
+							"imageAlt": "Asesora de Grupo HEI",
+							"imagePosition": "left",
+							"items": [
+								{
+									"icon": "phone",
+									"title": "L├¡nea telef├│nica",
+									"text": "Comun├¡cate de manera directa y confidencial. Tu reporte ser├í atendido con absoluta reserva y el debido profesionalismo."
+								},
+								{
+									"icon": "email",
+									"title": "Correo electr├│nico",
+									"text": "Env├¡a tu caso detallando los hechos de forma segura, con protocolos de confidencialidad e identidad protegida."
+								},
+								{
+									"icon": "chat",
+									"title": "Chat",
+									"text": "Inicia una conversaci├│n guiada dentro de un entorno protegido. Una alternativa ├ígil para reportar cuidando tu identidad."
+								}
+							],
+							"_type": "hei.channels",
+							"_key": "3m3dc752r",
+							"id": ""
+						},
+						{
+							"layout": "card",
+							"heading": "Tu voz es fundamental para mantener nuestra transparencia",
+							"body": "Si prefieres una comunicaci├│n directa o necesitas aclarar dudas sobre el proceso, nuestro equipo est├í disponible para guiarte de forma segura.",
+							"image": "/wp/imagen/denuncias_hei.jpg",
+							"imageAlt": "Conversaci├│n profesional",
+							"primaryCtaLabel": "Cont├íctanos",
+							"primaryCtaUrl": "/contacto",
+							"secondaryCtaLabel": "V├¡a WhatsApp",
+							"secondaryCtaUrl": "https://wa.me/50200000000",
+							"whatsapp": true,
+							"_type": "hei.ctaBand",
+							"_key": "u7n9homg2",
+							"id": ""
+						},
+						{
+							"_type": "block",
+							"_key": "br2bpkm51",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "wmwunen4s",
+									"text": ""
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:contacto",
+				"slug": "contacto",
+				"status": "published",
+				"data": {
+					"title": "Contacto",
+					"content": [
+						{
+							"headline": "V├¡nculo de confianza",
+							"highlight": "",
+							"subheadline": "Canal para solicitudes de alianzas, proveedur├¡a, nuevos negocios y asuntos corporativos, forjando relaciones ganar-ganar.",
+							"image": "/_emdash/api/media/file/01KYQRKC5BWMJEEM9YQ9ESRFEP.jpg",
+							"imageAlt": "Ejecutiva sonriendo",
+							"variant": "image",
+							"focal": "center top",
+							"_type": "hei.hero",
+							"_key": "aq76ejm4j",
+							"id": ""
+						},
+						{
+							"eyebrow": "",
+							"heading": "Estamos a un clic de distancia",
+							"body": "D├®janos tus datos o dudas en este espacio. Escuchamos activamente las necesidades para dar la orientaci├│n institucional requerida.",
+							"formId": "formulario-de-contacto",
+							"image": "/_emdash/api/media/file/01KYQRNF97V06GNYRWN0X0HYPK.jpg",
+							"imageAlt": "Atenci├│n telef├│nica",
+							"imagePosition": "left",
+							"surface": true,
+							"_type": "hei.formSection",
+							"_key": "83391lfsb",
+							"id": ""
+						},
+						{
+							"layout": "band",
+							"icon": "chat",
+							"heading": "Respuestas ├ígiles y transparentes con el respaldo del grupo",
+							"body": "",
+							"primaryCtaLabel": "V├¡a WhatsApp",
+							"primaryCtaUrl": "https://wa.me/50200000000",
+							"whatsapp": true,
+							"image": "/wp/imagen/contacto-bg-banner.jpg",
+							"imageAlt": "Ejecutiva atendiendo llamada",
+							"focal": "center top",
+							"iconImage": "/_emdash/api/media/file/01KYQ7MKT0BDJF1BRMJW82MZ7P.png",
+							"_type": "hei.ctaBand",
+							"_key": "ha32d3sv0",
+							"id": ""
+						},
+						{
+							"_type": "block",
+							"_key": "rx3sylf15",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "i2big1z1f",
+									"text": ""
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:trabaja",
+				"slug": "trabaja",
+				"status": "published",
+				"data": {
+					"title": "Trabaja con nosotros",
+					"content": [
+						{
+							"headline": "├Ünete a un ecosistema de salud ├¡ntegro",
+							"highlight": "",
+							"subheadline": "Grupo HEI suma a personas que aportan al sistema con alta integridad, ├®tica y visi├│n de crecimiento.",
+							"image": "/_emdash/api/media/file/01KYQQTFFGBJGY20SZ8ENEZNS6.jpg",
+							"imageAlt": "Saludo profesional",
+							"variant": "image",
+							"_type": "hei.hero",
+							"_key": "8tnpdwdu3",
+							"id": ""
+						},
+						{
+							"heading": "Personas que hacen posible el sistema",
+							"subheading": "Cada marca integra talentos comprometidos con el respeto, la integridad y el impacto positivo en el sector salud.",
+							"columns": 2,
+							"align": "left",
+							"items": [
+								{
+									"title": "Cultura",
+									"titleColor": "green",
+									"text": "Fomentamos un entorno laboral donde se respeta la dignidad, forjando un clima muy inclusivo, diverso, sin discriminaci├│n y de gran crecimiento grupal."
+								},
+								{
+									"title": "Valores",
+									"titleColor": "green",
+									"bullets": "Empat├¡a\nIntegridad\nExcelencia\nTransformaci├│n\nConciencia",
+									"text": ""
+								}
+							],
+							"image": "/_emdash/api/media/file/01KYQQXGC1456RH99Y1J99P8SB.jpg",
+							"_type": "hei.cultura",
+							"_key": "ae3jj7b1u",
+							"id": ""
+						},
+						{
+							"heading": "Oportunidades disponibles",
+							"subheading": "Explora las plazas activas del grupo corporativo.",
+							"columns": 2,
+							"align": "center",
+							"_type": "hei.oportunidades",
+							"_key": "b601lulin",
+							"id": ""
+						},
+						{
+							"heading": "Comparte tu perfil",
+							"body": "",
+							"formId": "trabaja-con-nosotros",
+							"image": "/wp/imagen/trabajo-contacto.jpg",
+							"imageAlt": "Escritorio de trabajo",
+							"imagePosition": "right",
+							"surface": true,
+							"_type": "hei.formSection",
+							"_key": "i7s52oeit",
+							"id": ""
+						},
+						{
+							"_type": "block",
+							"_key": "9h3w8v261",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "9se715b6j",
+									"text": ""
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:sostenibilidad",
+				"slug": "sostenibilidad",
+				"status": "published",
+				"data": {
+					"title": "Sostenibilidad",
+					"content": [
+						{
+							"headline": "Confianza para crecer a largo plazo",
+							"highlight": "",
+							"subheadline": "Grupo HEI forja su crecimiento sostenible operando con total transparencia, integridad ├®tica y clara visi├│n a futuro.",
+							"image": "/_emdash/api/media/file/01KYQQDEC6NCJXR386STEETTZZ.jpg",
+							"imageAlt": "Compa├▒eros de trabajo",
+							"variant": "image",
+							"_type": "hei.hero",
+							"_key": "azeezvjiz",
+							"id": ""
+						},
+						{
+							"heading": "Tres ejes",
+							"columns": 3,
+							"align": "center",
+							"items": [
+								{
+									"icon": "/_emdash/api/media/file/01KYQQF39M49ZG1PNQG08AGW1P.png",
+									"title": "Salud",
+									"subtitle": "Transformar los accesos.",
+									"text": "Impulsamos la transformaci├│n del acceso a la salud para que cada vez m├ís personas disfruten de una vida muy plena."
+								},
+								{
+									"icon": "/_emdash/api/media/file/01KYQQG8EHN08N2C9QP83FTHV7.png",
+									"title": "Transparencia",
+									"subtitle": "├ëtica y cumplimiento.",
+									"text": "La ├®tica es el firme fundamento de nuestra reputaci├│n, guiando decisiones con estricta responsabilidad."
+								},
+								{
+									"icon": "/_emdash/api/media/file/01KYQQH6CYZDPRX8E79HQXR9E7.png",
+									"title": "Futuro",
+									"subtitle": "Impacto socioambiental.",
+									"text": "Medimos y gestionamos los impactos socioambientales creando gran valor compartido a largo plazo."
+								}
+							],
+							"_type": "hei.tresejes",
+							"_key": "8w0jcix8z",
+							"id": ""
+						},
+						{
+							"layout": "card",
+							"heading": "La sostenibilidad se demuestra con acciones.",
+							"body": "Grupo HEI fortalece su crecimiento con decisiones responsables, relaciones transparentes y una visi├│n de largo plazo.",
+							"image": "/_emdash/api/media/file/01KYQQJV2RJGPM9YJMCQCPDVTM.jpg",
+							"imageAlt": "Ponente en un evento",
+							"primaryCtaLabel": "Contactar al grupo",
+							"primaryCtaUrl": "/contacto",
+							"focal": "center top",
+							"_type": "hei.ctaBand",
+							"_key": "sxaz1o2v2",
+							"id": ""
+						},
+						{
+							"_type": "block",
+							"_key": "cdpezs3ya",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "xwpm0sq13",
+									"text": ""
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:salutia",
+				"slug": "salutia",
+				"status": "published",
+				"data": {
+					"title": "Salutia",
+					"content": [
+						{
+							"layout": "card",
+							"heading": "Soluci├│n B2B para laboratorios",
+							"body": "Salutia apoya a laboratorios y farmac├®uticas que necesitan operar con mayor control sin montar toda la infraestructura propia.",
+							"image": "/_emdash/api/media/file/01KYQNTJ67QEVT62T7D2AEVRNR.jpg",
+							"imageAlt": "Log├¡stica Salutia",
+							"primaryCtaLabel": "Ver soluciones",
+							"primaryCtaUrl": "#soluciones",
+							"secondaryCtaLabel": "Hablar con Salutia",
+							"secondaryCtaUrl": "/contacto",
+							"heroCard": true,
+							"_type": "hei.ctaBand",
+							"_key": "03tjhp26r",
+							"id": ""
+						},
+						{
+							"heading": "Menos fricci├│n, m├ís control operativo",
+							"subheading": "Un laboratorio no siempre necesita crear infraestructura propia para crecer. Salutia ofrece apoyo especializado para operar con mayor claridad, control y velocidad.",
+							"columns": 3,
+							"align": "center",
+							"items": [
+								{
+									"icon": "/_emdash/api/media/file/01KYQNX45D8G41F3W5D0C575RN.png",
+									"title": "Log├¡stica",
+									"text": "Soporte para cada proceso de almacenamiento, control y distribuci├│n."
+								},
+								{
+									"icon": "/_emdash/api/media/file/01KYQNYH9TV8VJY0DBC2ZVFV98.png",
+									"title": "Red de servicio",
+									"text": "Apoyo para conectar la operaci├│n con canales y necesidades del mercado."
+								},
+								{
+									"icon": "/_emdash/api/media/file/01KYQNZ6Y5NVFMJNAP4R7T21JE.png",
+									"title": "Software",
+									"text": "Herramientas para visibilidad, seguimiento y control de la operaci├│n."
+								}
+							],
+							"_type": "hei.cards",
+							"_key": "uttygfied",
+							"id": "soluciones"
+						},
+						{
+							"heading": "Una soluci├│n B2B dentro de Grupo HEI",
+							"subheading": "Salutia combina enfoque especializado con el respaldo de un ecosistema corporativo vinculado al sector salud.",
+							"columns": 3,
+							"align": "center",
+							"items": [],
+							"surface": false,
+							"_type": "hei.cards",
+							"_key": "beukxjokk",
+							"id": ""
+						},
+						{
+							"heading": "Conversemos sobre tu operaci├│n",
+							"body": "Cu├®ntanos sobre tu laboratorio o farmac├®utica y armamos la mejor ruta para tu equipo de ventas.",
+							"formId": "formulario-salutia",
+							"image": "/_emdash/api/media/file/01KYQP46GKN3VCV7E91FM775D7.jpg",
+							"imageAlt": "Cient├¡ficas en laboratorio",
+							"imagePosition": "right",
+							"surface": true,
+							"_type": "hei.formSection",
+							"_key": "edv9x5v1c",
+							"id": ""
+						},
+						{
+							"layout": "band",
+							"icon": "plant",
+							"heading": "Simplificamos la operaci├│n log├¡stica en el sector salud",
+							"body": "Facilite el crecimiento de su empresa sin incurrir en los costos de una infraestructura propia. Ofrecemos herramientas tecnol├│gicas, redes de conectividad y soporte experto para asegurar una gesti├│n fluida, eficiente y con total control.",
+							"primaryCtaLabel": "Hablar con Salutia",
+							"primaryCtaUrl": "/contacto",
+							"image": "/_emdash/api/media/file/01KYQPT54125Z9HWK5W4GW761X.jpg",
+							"imageAlt": "Doctor y paciente",
+							"photoStyle": true,
+							"_type": "hei.ctaBand",
+							"_key": "v2pjolt42",
+							"id": ""
+						},
+						{
+							"_type": "block",
+							"_key": "sshsvgsse",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "iw663ie2z",
+									"text": ""
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:marcas",
+				"slug": "marcas",
+				"status": "published",
+				"data": {
+					"title": "Marcas",
+					"content": [
+						{
+							"headline": "Cada marca cumple un rol",
+							"highlight": "",
+							"subheadline": "Grupo HEI conecta unidades especializadas bajo una misma estructura corporativa.",
+							"image": "/wp/imagen/marcas-banner.jpg",
+							"imageAlt": "Profesional revisando informaci├│n",
+							"variant": "image",
+							"focal": "center top",
+							"_type": "hei.hero",
+							"_key": "4ct9mukzk",
+							"id": ""
+						},
+						{
+							"heading": "Un portafolio con foco y respaldo.",
+							"subheading": "El ecosistema se presenta con marcas claras, roles definidos y una ruta simple para entender que aporta cada una.",
+							"items": [
+								{
+									"name": "cendis",
+									"heading": "Base hist├│rica y operativa",
+									"bullets": "Productos m├®dicos y farmac├®uticos\nPortafolio amplio\nCobertura nacional\nTrayectoria desde 1968",
+									"ctaLabel": "Ir a CENDIS",
+									"ctaUrl": "/cendis",
+									"logo": "/wp/logos/cendis.png",
+									"text": "CENDIS distribuye y comercializa productos m├®dicos y farmac├®uticos en Guatemala. Su trayectoria, cobertura y portafolio la convierten en la base operativa del ecosistema."
+								},
+								{
+									"name": "meliora",
+									"heading": "Marca del ecosistema",
+									"bullets": "Optimizaci├│n continua de procesos operativos\nEficiencia y calidad\nEstandarizaci├│n de la cadena log├¡stica\nSoluciones dise├▒adas para generar valor estrat├®gico",
+									"ctaLabel": "Conocer Meliora",
+									"ctaUrl": "/meliora",
+									"logo": "/wp/logos/meliora.png",
+									"text": "Meliora forma parte de Grupo HEI y representa una l├¡nea de crecimiento dentro del ecosistema de salud."
+								},
+								{
+									"name": "Salutia",
+									"heading": "Soluci├│n B2B para laboratorios",
+									"bullets": "Log├¡stica\nServicio de red\nSoftware\nConfianza",
+									"ctaLabel": "Conocer Salutia",
+									"ctaUrl": "/salutia",
+									"logo": "/wp/logos/salutia.png",
+									"text": "Salutia apoya a laboratorios y farmac├®uticas que necesitan operar con mayor control sin montar toda la infraestructura propia."
+								}
+							],
+							"_type": "hei.brands",
+							"_key": "3u2yphrnm",
+							"id": ""
+						},
+						{
+							"_type": "block",
+							"_key": "mttw1zyqm",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "wh323sftc",
+									"text": ""
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:quienes-somos",
+				"slug": "quienes-somos",
+				"status": "published",
+				"data": {
+					"title": "Qui├®nes somos",
+					"content": [
+						{
+							"headline": "Integraci├│n con visi├│n y ├®tica",
+							"highlight": "",
+							"subheadline": "Grupo HEI nace para ordenar, conectar y fortalecer marcas con una misma visi├│n de salud, cumplimiento ├®tico y valor.",
+							"image": "/_emdash/api/media/file/01KYQ7X46YWF1HEE5GMR3J2EAE.jpg",
+							"imageAlt": "Personas de Grupo HEI",
+							"variant": "image",
+							"focal": "center 25%",
+							"_type": "hei.hero",
+							"_key": "zc9t47729",
+							"id": ""
+						},
+						{
+							"heading": "Nuestra Historia",
+							"image": "/_emdash/api/media/file/01KYQ80SX3ZCVB769J1PBWXYXG.jpg",
+							"imageAlt": "Historia de Grupo HEI",
+							"badge": "1968",
+							"items": [
+								{
+									"title": "Origen",
+									"text": "Un gran legado de integridad y resiliencia. Grupo HEI se consolida sobre la trayectoria ├®tica de CENDIS, empresa l├¡der vinculada desde 1968 a distribuir productos m├®dicos y farmac├®uticos en Guatemala."
+								},
+								{
+									"title": "Nuestro prop├│sito",
+									"text": "Integramos talentos que operaban de manera aislada. Hoy, el grupo otorga un respaldo corporativo ├®tico a todas sus marcas, uniendo equipos para ofrecer a pacientes y clientes plataformas m├ís s├│lidas."
+								}
+							],
+							"_type": "hei.timeline",
+							"_key": "e5hf94f8z",
+							"id": ""
+						},
+						{
+							"layout": "card",
+							"heading": "Un ecosistema dise├▒ado para transformar",
+							"body": "Grupo HEI preserva la esencia de sus marcas. Las gu├¡a, respalda y proporciona gran estructura ├®tica para que crezcan.",
+							"image": "/_emdash/api/media/file/01KYQ83D16QAQSH2S9ZWCDZ4PD.jpg",
+							"imageAlt": "Atenci├│n al cliente",
+							"primaryCtaLabel": "Ver marcas",
+							"primaryCtaUrl": "/marcas",
+							"focal": "center 20%",
+							"_type": "hei.ctaBand",
+							"_key": "esot7bdls",
+							"id": ""
+						},
+						{
+							"heading": "Pilares",
+							"columns": 2,
+							"align": "left",
+							"items": [
+								{
+									"icon": "/_emdash/api/media/file/01KYQ85R7QC5FRWZZNBHBHYQM4.png",
+									"title": "Integraci├│n",
+									"color": "white",
+									"span": "wide",
+									"decoration": true,
+									"text": "Una cultura que integra ├®tica, marcas, talento y control."
+								},
+								{
+									"icon": "/_emdash/api/media/file/01KYQ86VZD8C3FPVQ4P70RCZJT.png",
+									"title": "Confianza",
+									"color": "#0066b3",
+									"span": "narrow",
+									"text": "Un modelo firme basado en la transparencia, ├®tica total y v├¡nculos a largo plazo."
+								},
+								{
+									"icon": "/_emdash/api/media/file/01KYQ89RG9NQZYYS48QAC32CBM.png",
+									"title": "Capacidad",
+									"color": "#31d697",
+									"span": "narrow",
+									"text": "Un grupo muy resiliente con gran experiencia y excelencia en soluciones de salud.",
+									"gradientColor": "",
+									"decoration": false,
+									"textColor": "#ffffff"
+								},
+								{
+									"icon": "/_emdash/api/media/file/01KYQ8AYMKG7JPWMASJCWTN03S.png",
+									"title": "Crecimiento",
+									"color": "",
+									"span": "wide",
+									"image": "/_emdash/api/media/file/01KYQ8CKRFBZN93J8PR4VVCZCX.jpg",
+									"text": "Una visi├│n que genera salud, fomenta servicios y crea nuevas oportunidades.",
+									"gradientColor": "#31D697"
+								}
+							],
+							"headingColor": "green",
+							"subheading": "Impulsamos la transformaci├│n del acceso a la salud bajo valores ├®ticos integrando log├¡stica responsable, tecnolog├¡a de vanguardia y operaciones altamente sostenibles.",
+							"bento": true,
+							"_type": "hei.pilares",
+							"_key": "4xryw4g72",
+							"id": ""
+						},
+						{
+							"_type": "block",
+							"_key": "s4xav79ys",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "p0b01b6bk",
+									"text": ""
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:home",
 				"slug": "home",
 				"status": "published",
 				"data": {
 					"title": "Home",
 					"content": [
 						{
-							"_type": "hei.hero",
-							"_key": "home-hero",
-							"headline": "El respaldo que conecta marcas de salud.",
-							"highlight": "conecta",
-							"subheadline": "Grupo HEI integra distribución, logística, software y servicio para que las marcas del sector salud crezcan con una base sólida y especializada.",
-							"image": "/img/home-hero.png",
+							"headline": "├ëtica y respaldo uniendo marcas de salud",
+							"highlight": "uniendo",
+							"subheadline": "Grupo HEI une s├│lida trayectoria, infraestructura y riguroso cumplimiento para potenciar marcas ├®ticas del sector salud.",
+							"image": "/_emdash/api/media/file/01KYQ69ZNRA23JMNCF9SMDA4YA.jpg",
 							"imageAlt": "Equipo de Grupo HEI colaborando",
 							"variant": "image",
 							"primaryCtaLabel": "Conoce Grupo HEI",
@@ -122,23 +1091,18 @@
 							"secondaryCtaLabel": "Nuestras marcas",
 							"secondaryCtaUrl": "/marcas",
 							"overlay": false,
-							"full": true
+							"full": true,
+							"_type": "hei.hero",
+							"_key": "d8argtqwq",
+							"id": ""
 						},
 						{
-							"_type": "hei.imageText",
-							"_key": "home-base",
-							"eyebrow": "Trayectoria",
 							"heading": "Una base construida desde 1968",
-							"body": "El ecosistema se apoya en la experiencia de CENDIS, una operación vinculada con distribución y acceso a productos médicos y farmacéuticos en Guatemala.",
-							"bullets": [
-								"Red de distribución estratégica.",
-								"Tecnología avanzada aplicada a la gestión de salud.",
-								"Eficiencia y optimización de procesos."
-							],
-							"image": "/img/home-base.png",
+							"body": "El ecosistema nace de la trayectoria de CENDIS, operaci├│n forjada con integridad para distribuir y facilitar acceso a soluciones de salud en Guatemala.",
+							"bullets": "Red de distribuci├│n responsable.\nMejora continua aplicada a la gesti├│n de la salud.\nEficiencia ├®tica y procesos ├│ptimos.",
+							"image": "/_emdash/api/media/file/01KYQ6BVXPWX612AMKDZJ39BSK.jpg",
 							"imageAlt": "Profesionales de salud",
 							"imagePosition": "left",
-							"badge": "1968",
 							"stats": [
 								{
 									"value": "100%",
@@ -146,579 +1110,102 @@
 								},
 								{
 									"value": "95%",
-									"label": "Satisfacción del cliente"
+									"label": "Satisfacci├│n del cliente"
 								}
 							],
-							"ctaLabel": "Conócenos",
+							"ctaLabel": "Con├│cenos",
 							"ctaUrl": "/quienes-somos",
-							"accent": true
+							"accent": true,
+							"_type": "hei.imageText",
+							"_key": "0j0xwplgl",
+							"id": ""
 						},
 						{
-							"_type": "hei.stats",
-							"_key": "home-stats",
 							"variant": "big",
 							"items": [
 								{
-									"value": "+55",
-									"label": "Años de trayectoria",
-									"img": "/img/icons/trayectoria.png"
+									"value": "+58",
+									"label": "A├▒os de trayectoria",
+									"img": "/wp/iconos/trayectoria.png"
 								},
 								{
 									"value": "+700",
 									"label": "Productos",
-									"img": "/img/icons/productos.png"
+									"img": "/wp/iconos/productos.png"
 								},
 								{
 									"value": "+70",
-									"label": "Categorías",
-									"img": "/img/icons/categorias.png"
+									"label": "Categor├¡as",
+									"img": "/wp/iconos/categoria.png"
 								}
-							]
+							],
+							"_type": "hei.stats",
+							"_key": "fuif8rz69",
+							"id": ""
 						},
 						{
-							"_type": "hei.ctaBand",
-							"_key": "home-valor",
 							"layout": "card",
-							"heading": "Cómo Grupo HEI crea valor",
-							"body": "Integra: Ordena marcas, capacidades y recursos bajo una misma visión corporativa.\nRespalda: Da soporte institucional, operativo y de cumplimiento a cada unidad del ecosistema.\nEscala: Abre camino para nuevas soluciones, alianzas y oportunidades de crecimiento.",
-							"image": "/img/home-valor.png",
+							"heading": "C├│mo Grupo HEI crea valor",
+							"body": "Integra: Une talentos, marcas y capacidades operativas con visi├│n y ├®tica grupal.\nRespalda: Da firme soporte institucional, regulatorio y operativo a todo el ecosistema de salud.\nEscala: Impulsa el acceso a la salud, nuevas alianzas y un crecimiento muy sostenible.",
+							"image": "/_emdash/api/media/file/01KYQ7KJAAFPCXKXA7VNJ5QH57.jpg",
 							"imageAlt": "Ejecutiva de Grupo HEI",
-							"primaryCtaLabel": "Contáctanos",
+							"primaryCtaLabel": "Cont├íctanos",
 							"primaryCtaUrl": "/contacto",
-							"secondaryCtaLabel": "Vía WhatsApp",
+							"secondaryCtaLabel": "V├¡a WhatsApp",
 							"secondaryCtaUrl": "https://wa.me/50200000000",
-							"whatsapp": true
+							"whatsapp": true,
+							"_type": "hei.ctaBand",
+							"_key": "unwgayjcb",
+							"id": ""
 						},
 						{
-							"_type": "hei.logoCloud",
-							"_key": "home-logos",
 							"eyebrow": "Tres marcas, una misma estructura",
 							"items": [
 								{
 									"name": "cendis",
 									"url": "/marcas",
-									"logo": "/logos/cendis.png"
+									"logo": "/wp/logos/cendis.png"
 								},
 								{
 									"name": "meliora",
 									"url": "/marcas",
-									"logo": "/logos/meliora.png"
+									"logo": "/wp/logos/meliora.png"
 								},
 								{
 									"name": "Salutia",
 									"url": "/salutia",
-									"logo": "/logos/salutia.png"
-								}
-							]
-						},
-						{
-							"_type": "hei.ctaBand",
-							"_key": "home-cta",
-							"layout": "band",
-							"icon": "leaf",
-							"heading": "Crecimiento con responsabilidad",
-							"body": "La confianza también se construye con transparencia, cumplimiento y decisiones sostenibles.",
-							"primaryCtaLabel": "Ver compromiso",
-							"primaryCtaUrl": "/sostenibilidad",
-							"image": "/img/band-crecimiento.png",
-							"imageAlt": ""
-						}
-					]
-				}
-			},
-			{
-				"id": "quienes-somos",
-				"slug": "quienes-somos",
-				"status": "published",
-				"data": {
-					"title": "Quiénes somos",
-					"content": [
-						{
-							"_type": "hei.hero",
-							"_key": "q-hero",
-							"headline": "Un grupo creado para integrar",
-							"highlight": "integrar",
-							"subheadline": "Grupo HEI articula marcas, sistemas y servicios para respaldar a quienes hacen posible la salud en Guatemala.",
-							"image": "/img/quienes-hero.png",
-							"imageAlt": "Personas de Grupo HEI",
-							"variant": "image",
-							"focal": "center 25%"
-						},
-						{
-							"_type": "hei.timeline",
-							"_key": "q-historia",
-							"heading": "Nuestra Historia",
-							"image": "/img/quienes-historia.png",
-							"imageAlt": "Historia de Grupo HEI",
-							"badge": "1968",
-							"items": [
-								{
-									"title": "Origen",
-									"text": "Una historia que parte de CENDIS. La trayectoria de Grupo HEI se apoya en la experiencia de CENDIS, sentando las bases del ecosistema con la distribución de productos médicos y farmacéuticos en Guatemala."
-								},
-								{
-									"title": "Qué hace Grupo HEI",
-									"text": "Integra capacidades que dieron vida a más marcas. El grupo da orden y proyección a una marca: equipos especializados y una plataforma más clara para clientes, aliados y nuevos proyectos."
-								}
-							]
-						},
-						{
-							"_type": "hei.ctaBand",
-							"_key": "q-eco",
-							"layout": "card",
-							"heading": "Un ecosistema preparado para evolucionar",
-							"body": "Cada marca aporta una capacidad distinta. Las sumamos para responder con respaldo, agilidad y una visión integral del sector salud.",
-							"image": "/img/quienes-eco.png",
-							"imageAlt": "Atención al cliente",
-							"primaryCtaLabel": "Ver marcas",
-							"primaryCtaUrl": "/marcas",
-							"focal": "center 20%"
-						},
-						{
-							"_type": "hei.cards",
-							"_key": "q-pilares",
-							"heading": "Pilares",
-							"columns": 2,
-							"align": "left",
-							"items": [
-								{
-									"icon": "bulb",
-									"title": "Integración",
-									"color": "white",
-									"span": "wide",
-									"decoration": true,
-									"text": "Una estructura que conecta marcas, recursos y decisiones."
-								},
-								{
-									"icon": "shield",
-									"title": "Confianza",
-									"color": "blue",
-									"span": "narrow",
-									"text": "Una forma de operar con foco en cumplimiento, ética y relaciones de largo plazo."
-								},
-								{
-									"icon": "handshake",
-									"title": "Capacidad",
-									"color": "green",
-									"span": "narrow",
-									"text": "Un ecosistema con experiencia en salud, distribución y soluciones para laboratorios."
-								},
-								{
-									"icon": "gauge",
-									"title": "Crecimiento",
-									"color": "green",
-									"span": "wide",
-									"image": "/img/pilar-crecimiento.png",
-									"text": "Una visión que permite crear nuevas marcas, servicios y oportunidades."
+									"logo": "/wp/logos/salutia.png"
 								}
 							],
-							"headingColor": "green",
-							"subheading": "Guiamos la evolución del sector a través de principios claros que articulan soluciones logísticas avanzadas, tecnología inteligente y un modelo operativo escalable.",
-							"bento": true
-						}
-					]
-				}
-			},
-			{
-				"id": "marcas",
-				"slug": "marcas",
-				"status": "published",
-				"data": {
-					"title": "Marcas",
-					"content": [
-						{
-							"_type": "hei.hero",
-							"_key": "m-hero",
-							"headline": "Cada marca cumple un rol",
-							"highlight": "rol",
-							"subheadline": "Grupo HEI conecta marcas especializadas bajo una misma estructura corporativa, con foco y respaldo compartido.",
-							"image": "/img/marcas-hero.png",
-							"imageAlt": "Profesional revisando información",
-							"variant": "image",
-							"focal": "center top"
+							"_type": "hei.logoCloud",
+							"_key": "3clejs98q",
+							"id": ""
 						},
 						{
-							"_type": "hei.brands",
-							"_key": "m-portfolio",
-							"heading": "Un portafolio con foco y respaldo.",
-							"subheading": "El ecosistema se presenta con marcas claras, roles definidos y una ruta simple para entender qué aporta cada una.",
-							"items": [
-								{
-									"name": "cendis",
-									"eyebrow": "Base histórica y operativa",
-									"heading": "Base histórica y operativa",
-									"bullets": [
-										"Productos médicos y farmacéuticos",
-										"Portafolio amplio",
-										"Cobertura nacional",
-										"Trayectoria desde 1968"
-									],
-									"ctaLabel": "Ir a cendis",
-									"ctaUrl": "/contacto",
-									"logo": "/logos/cendis.png"
-								},
-								{
-									"name": "meliora",
-									"eyebrow": "Marca del ecosistema",
-									"heading": "Marca del ecosistema",
-									"bullets": [
-										"Optimización continua de procesos operativos",
-										"Eficiencia y calidad",
-										"Estandarización de la cadena logística",
-										"Soluciones diseñadas para generar valor estratégico"
-									],
-									"ctaLabel": "Conoce meliora",
-									"ctaUrl": "/contacto",
-									"logo": "/logos/meliora.png"
-								},
-								{
-									"name": "Salutia",
-									"eyebrow": "Solución B2B para laboratorios",
-									"heading": "Solución B2B para laboratorios",
-									"bullets": [
-										"Logística",
-										"Red de servicio",
-										"Software",
-										"Confianza"
-									],
-									"ctaLabel": "Conoce Salutia",
-									"ctaUrl": "/salutia",
-									"logo": "/logos/salutia.png"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "salutia",
-				"slug": "salutia",
-				"status": "published",
-				"data": {
-					"title": "Salutia",
-					"content": [
-						{
-							"_type": "hei.ctaBand",
-							"_key": "s-hero",
-							"layout": "card",
-							"heading": "Opera sin montar toda la estructura",
-							"body": "Salutia ayuda a laboratorios y farmacéuticas a resolver logística, red de servicio y software con respaldo del ecosistema Grupo HEI.",
-							"image": "/img/salutia-form.png",
-							"imageAlt": "Logística Salutia",
-							"primaryCtaLabel": "Ver soluciones",
-							"primaryCtaUrl": "#soluciones",
-							"secondaryCtaLabel": "Hablar con Salutia",
-							"secondaryCtaUrl": "/contacto",
-							"heroCard": true
-						},
-						{
-							"_type": "hei.cards",
-							"_key": "s-features",
-							"id": "soluciones",
-							"heading": "Menos fricción, más control operativo",
-							"subheading": "Un laboratorio no necesita montar toda la infraestructura propia para crecer. Salutia aporta la operación para que cada marca opere con mayor control.",
-							"columns": 3,
-							"align": "center",
-							"items": [
-								{
-									"icon": "logistics",
-									"title": "Logística",
-									"text": "Soporte para cada proceso de almacenamiento, control y distribución."
-								},
-								{
-									"icon": "network",
-									"title": "Red de servicio",
-									"text": "Apoyo para contactar a comercios y conectar con la demanda."
-								},
-								{
-									"icon": "software",
-									"title": "Software",
-									"text": "Herramientas para visibilidad, seguimiento y control de la operación."
-								}
-							]
-						},
-						{
-							"_type": "hei.cards",
-							"_key": "s-b2b-heading",
-							"heading": "Una solución B2B dentro de Grupo HEI",
-							"subheading": "Salutia combina enfoque especializado con el respaldo de un ecosistema corporativo vinculado al sector salud.",
-							"columns": 3,
-							"align": "center",
-							"items": [],
-							"surface": false
-						},
-						{
-							"_type": "hei.formSection",
-							"_key": "s-form",
-							"heading": "Conversemos sobre tu operación",
-							"body": "Cuéntanos sobre tu laboratorio o farmacéutica y armamos la mejor ruta para tu equipo de ventas.",
-							"formId": "salutia-operacion",
-							"image": "/img/salutia-b2b.jpg",
-							"imageAlt": "Científicas en laboratorio",
-							"imagePosition": "right",
-							"surface": true
-						},
-						{
-							"_type": "hei.ctaBand",
-							"_key": "s-cta",
 							"layout": "band",
-							"icon": "plant",
-							"heading": "Simplificamos la operación logística en el sector salud",
-							"body": "Con Salutia, las marcas crecen apoyadas en la infraestructura y el respaldo de Grupo HEI.",
-							"primaryCtaLabel": "Hablar con Salutia",
-							"primaryCtaUrl": "/contacto",
-							"image": "/img/salutia-cta.jpg",
-							"imageAlt": "Doctor y paciente",
-							"photoStyle": true
-						}
-					]
-				}
-			},
-			{
-				"id": "sostenibilidad",
-				"slug": "sostenibilidad",
-				"status": "published",
-				"data": {
-					"title": "Sostenibilidad",
-					"content": [
-						{
-							"_type": "hei.hero",
-							"_key": "so-hero",
-							"headline": "Confianza para crecer a largo plazo",
-							"highlight": "largo plazo",
-							"subheadline": "Grupo HEI entiende la sostenibilidad como una forma de operar con responsabilidad, transparencia y visión de futuro.",
-							"image": "/img/sostenibilidad-hero.png",
-							"imageAlt": "Familia en la naturaleza",
-							"variant": "image"
-						},
-						{
-							"_type": "hei.cards",
-							"_key": "so-ejes",
-							"heading": "Tres ejes",
-							"columns": 3,
-							"align": "center",
-							"items": [
-								{
-									"icon": "health",
-									"title": "Salud",
-									"text": "Impacto desde el acceso. El ecosistema se vincula con una necesidad esencial: acercar soluciones de salud a más personas y organizaciones."
-								},
-								{
-									"icon": "transparency",
-									"title": "Transparencia",
-									"text": "Gobierno y cumplimiento. Relaciones responsables y una cultura que protege la confianza en cada proceso."
-								},
-								{
-									"icon": "future",
-									"title": "Futuro",
-									"text": "Decisiones sostenibles. Crecimiento con criterio, cuidando las relaciones y construyendo valor a largo plazo."
-								}
-							]
-						},
-						{
+							"icon": "leaf",
+							"iconImage": "/_emdash/api/media/file/01KYQ7MKT0BDJF1BRMJW82MZ7P.png",
+							"heading": "Crecimiento con responsabilidad",
+							"body": "La confianza tambi├®n se construye con transparencia, cumplimiento y decisiones sostenibles.",
+							"primaryCtaLabel": "Ver compromiso",
+							"primaryCtaUrl": "/sostenibilidad",
+							"image": "/wp/imagen/workofficeBN.jpg",
+							"imageAlt": "",
 							"_type": "hei.ctaBand",
-							"_key": "so-cta",
-							"layout": "card",
-							"heading": "La sostenibilidad se demuestra con acciones.",
-							"body": "Grupo HEI fortalece su crecimiento con decisiones responsables, relaciones transparentes y una visión de largo plazo.",
-							"image": "/img/sostenibilidad-accion.png",
-							"imageAlt": "Ponente en un evento",
-							"primaryCtaLabel": "Contactar al grupo",
-							"primaryCtaUrl": "/contacto",
-							"focal": "center top"
-						}
-					]
-				}
-			},
-			{
-				"id": "trabaja",
-				"slug": "trabaja",
-				"status": "published",
-				"data": {
-					"title": "Trabaja con nosotros",
-					"content": [
-						{
-							"_type": "hei.hero",
-							"_key": "t-hero",
-							"headline": "Crece dentro de un ecosistema de salud",
-							"highlight": "ecosistema de salud",
-							"subheadline": "Grupo HEI suma personas que aportan al sistema con propósito, responsabilidad y visión de crecimiento.",
-							"image": "/img/trabaja-hero.png",
-							"imageAlt": "Saludo profesional",
-							"variant": "image"
+							"_key": "wd67k20ot",
+							"id": ""
 						},
 						{
-							"_type": "hei.cards",
-							"_key": "t-cultura",
-							"heading": "Equipos que hacen posible el sistema",
-							"subheading": "Cada marca y cada servicio se sostienen en personas comprometidas con la salud y con el trabajo bien hecho.",
-							"columns": 2,
-							"align": "center",
-							"items": [
+							"_type": "block",
+							"_key": "p9gkx3h0n",
+							"style": "normal",
+							"children": [
 								{
-									"image": "/img/home-base.png",
-									"imageTop": true,
-									"imageOnly": true,
-									"rowSpan": true,
-									"title": ""
-								},
-								{
-									"icon": "heart",
-									"title": "Cultura",
-									"titleColor": "green",
-									"text": "Equipos que hacen posible el sistema. Cada marca y cada servicio se sostienen en personas comprometidas con la calidad y el servicio."
-								},
-								{
-									"icon": "trust",
-									"title": "Valores",
-									"titleColor": "green",
-									"bullets": [
-										"Responsabilidad",
-										"Aprendizaje",
-										"Servicio",
-										"Cumplimiento",
-										"Colaboración"
-									]
+									"_type": "span",
+									"_key": "6b0nbhstx",
+									"text": ""
 								}
 							]
-						},
-						{
-							"_type": "hei.cards",
-							"_key": "t-oportunidades",
-							"heading": "Oportunidades disponibles",
-							"subheading": "Conoce las vacantes activas de Grupo HEI y sus marcas.",
-							"columns": 2,
-							"align": "center",
-							"items": [
-								{
-									"icon": "logistics",
-									"title": "Coordinación logística",
-									"text": "Apoya la operación de almacenamiento y distribución del ecosistema con foco en eficiencia y servicio."
-								},
-								{
-									"icon": "network",
-									"title": "Ejecutivo comercial",
-									"text": "Conecta marcas y clientes, construyendo relaciones de confianza en el sector salud."
-								}
-							]
-						},
-						{
-							"_type": "hei.formSection",
-							"_key": "t-form",
-							"heading": "Comparte tu perfil",
-							"body": "Déjanos tus datos y tu hoja de vida. Si surge una oportunidad acorde a tu perfil, te contactaremos.",
-							"formId": "trabaja-perfil",
-							"image": "/img/trabaja-perfil.png",
-							"imageAlt": "Escritorio de trabajo",
-							"imagePosition": "right"
-						}
-					]
-				}
-			},
-			{
-				"id": "contacto",
-				"slug": "contacto",
-				"status": "published",
-				"data": {
-					"title": "Contacto",
-					"content": [
-						{
-							"_type": "hei.hero",
-							"_key": "c-hero",
-							"headline": "Conecta con Grupo HEI",
-							"highlight": "Grupo HEI",
-							"subheadline": "Este canal dirige solicitudes de alianzas, proveeduría, nuevos negocios y asuntos corporativos al equipo correspondiente.",
-							"image": "/img/contacto-hero.png",
-							"imageAlt": "Ejecutiva sonriendo",
-							"variant": "image",
-							"focal": "center top"
-						},
-						{
-							"_type": "hei.formSection",
-							"_key": "c-form",
-							"eyebrow": "Contacto",
-							"heading": "Estamos a un clic de distancia",
-							"body": "Déjanos tus datos, dudas o comentarios en este espacio. Estamos listos para escucharte y ofrecerte la solución administrativa que necesitas hoy.",
-							"formId": "contacto",
-							"image": "/img/contacto-form.png",
-							"imageAlt": "Atención telefónica",
-							"imagePosition": "left",
-							"surface": true
-						},
-						{
-							"_type": "hei.ctaBand",
-							"_key": "c-cta",
-							"layout": "band",
-							"icon": "chat",
-							"heading": "Respuestas inmediatas con el respaldo de nuestro ecosistema",
-							"body": "Escríbenos para recibir asesoría técnica y comercial sin complicaciones. Protegemos la confidencialidad de tus datos mientras te ofrecemos soluciones a la medida.",
-							"primaryCtaLabel": "Vía WhatsApp",
-							"primaryCtaUrl": "https://wa.me/50200000000",
-							"whatsapp": true,
-							"image": "/img/contacto-form.png",
-							"imageAlt": "Ejecutiva atendiendo llamada",
-							"focal": "center top"
-						}
-					]
-				}
-			},
-			{
-				"id": "denuncias",
-				"slug": "denuncias",
-				"status": "published",
-				"data": {
-					"title": "Denuncias",
-					"content": [
-						{
-							"_type": "hei.hero",
-							"_key": "d-hero",
-							"headline": "La confianza también se protege",
-							"highlight": "se protege",
-							"subheadline": "Grupo HEI habilita un canal para reportar situaciones que puedan afectar la ética, la transparencia y la integridad del ecosistema.",
-							"image": "/img/denuncias-hero.png",
-							"imageAlt": "Personas en oficina",
-							"variant": "image",
-							"focal": "center top"
-						},
-						{
-							"_type": "hei.channels",
-							"_key": "d-canales",
-							"heading": "Reporta una situación",
-							"subheading": "Comparte la información disponible para que el equipo responsable pueda revisar el caso según las políticas internas.",
-							"image": "/img/denuncias-canales.png",
-							"imageAlt": "Asesora de Grupo HEI",
-							"imagePosition": "left",
-							"items": [
-								{
-									"icon": "phone",
-									"title": "Línea telefónica",
-									"text": "Comunícate de manera directa y confidencial. Tu reporte será atendido con absoluta reserva y el debido profesionalismo."
-								},
-								{
-									"icon": "email",
-									"title": "Correo electrónico",
-									"text": "Envía tu caso detallando los hechos de forma segura, con protocolos de confidencialidad e identidad protegida."
-								},
-								{
-									"icon": "chat",
-									"title": "Chat",
-									"text": "Inicia una conversación guiada dentro de un entorno protegido. Una alternativa ágil para reportar cuidando tu identidad."
-								}
-							]
-						},
-						{
-							"_type": "hei.ctaBand",
-							"_key": "d-cta",
-							"layout": "card",
-							"heading": "Tu voz es fundamental para mantener nuestra transparencia",
-							"body": "Si prefieres una comunicación directa o necesitas aclarar dudas sobre el proceso, nuestro equipo está disponible para guiarte de forma segura.",
-							"image": "/img/denuncias-voz.png",
-							"imageAlt": "Conversación profesional",
-							"primaryCtaLabel": "Contáctanos",
-							"primaryCtaUrl": "/contacto",
-							"secondaryCtaLabel": "Vía WhatsApp",
-							"secondaryCtaUrl": "https://wa.me/50200000000",
-							"whatsapp": true
 						}
 					]
 				}

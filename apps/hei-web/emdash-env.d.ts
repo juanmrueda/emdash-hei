@@ -5,6 +5,36 @@
 
 import type { ContentBylineCredit, PortableTextBlock } from "emdash";
 
+export interface Oportunidad {
+  id: string;
+  slug: string | null;
+  status: string;
+  title: string;
+  category: string;
+  subtitle?: string;
+  description?: string;
+  icon?: string;
+  image?: { id: string; src?: string; alt?: string; width?: number; height?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> };
+  apply_url?: string;
+  position?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+}
+
+export interface CategoríaDeOportunidad {
+  id: string;
+  slug: string | null;
+  status: string;
+  name: string;
+  position?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+}
+
 export interface Página {
   id: string;
   slug: string | null;
@@ -19,6 +49,8 @@ export interface Página {
 
 declare module "emdash" {
   interface EmDashCollections {
+    opportunities: Oportunidad;
+    opportunity_categories: CategoríaDeOportunidad;
     pages: Página;
   }
 }

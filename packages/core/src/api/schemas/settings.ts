@@ -37,6 +37,7 @@ export const settingsUpdateBody = z
 	.object({
 		title: z.string().optional(),
 		tagline: z.string().optional(),
+		brandColor: z.string().optional(),
 		logo: mediaReferenceInput.optional(),
 		favicon: mediaReferenceInput.optional(),
 		url: z.union([httpUrl, z.literal("")]).optional(),
@@ -83,6 +84,7 @@ export const siteSettingsSchema = z
 	.object({
 		title: z.string().optional(),
 		tagline: z.string().optional(),
+		brandColor: z.string().optional(),
 		logo: mediaReferenceResponse.optional(),
 		favicon: mediaReferenceResponse.optional(),
 		url: z.string().optional(),

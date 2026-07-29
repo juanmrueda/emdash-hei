@@ -10,24 +10,22 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "astro build && wrangler deploy",
+    "start": "node ./dist/server/entry.mjs",
     "typecheck": "astro check"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "catalog:",
+    "@astrojs/node": "catalog:",
     "@astrojs/react": "catalog:",
-    "@cloudflare/kumo": "catalog:",
-    "@emdash-cms/cloudflare": "workspace:*",
+    "@emdash-cms/plugin-email-smtp": "workspace:^",
     "@emdash-cms/plugin-forms": "workspace:*",
     "@phosphor-icons/react": "catalog:",
     "astro": "catalog:",
     "emdash": "workspace:*",
+    "nodemailer": "^6.10.1",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
-    "@astrojs/check": "catalog:",
-    "@cloudflare/workers-types": "catalog:",
-    "wrangler": "catalog:"
+    "@astrojs/check": "catalog:"
   }
 }
