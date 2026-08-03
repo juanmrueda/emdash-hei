@@ -16,7 +16,6 @@
   "dependencies": {
     "@astrojs/node": "catalog:",
     "@astrojs/react": "catalog:",
-    "@emdash-cms/plugin-email-smtp": "workspace:^",
     "@emdash-cms/plugin-forms": "workspace:*",
     "@phosphor-icons/react": "catalog:",
     "astro": "catalog:",
