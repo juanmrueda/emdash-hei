@@ -586,7 +586,7 @@
 							"headline": "Vínculo de confianza",
 							"highlight": "",
 							"subheadline": "Canal para solicitudes de alianzas, proveeduría, nuevos negocios y asuntos corporativos, forjando relaciones ganar-ganar.",
-							"image": "/_emdash/api/media/file/01KYQRKC5BWMJEEM9YQ9ESRFEP.jpg",
+							"image": "/wp/media/01KYQRKC5BWMJEEM9YQ9ESRFEP.jpg",
 							"imageAlt": "Ejecutiva sonriendo",
 							"variant": "image",
 							"focal": "center top",
@@ -599,7 +599,7 @@
 							"heading": "Estamos a un clic de distancia",
 							"body": "Déjanos tus datos o dudas en este espacio. Escuchamos activamente las necesidades para dar la orientación institucional requerida.",
 							"formId": "formulario-de-contacto",
-							"image": "/_emdash/api/media/file/01KYQRNF97V06GNYRWN0X0HYPK.jpg",
+							"image": "/wp/media/01KYQRNF97V06GNYRWN0X0HYPK.jpg",
 							"imageAlt": "Atención telefónica",
 							"imagePosition": "left",
 							"surface": true,
@@ -618,7 +618,7 @@
 							"image": "/wp/imagen/contacto-bg-banner.jpg",
 							"imageAlt": "Ejecutiva atendiendo llamada",
 							"focal": "center top",
-							"iconImage": "/_emdash/api/media/file/01KYQ7MKT0BDJF1BRMJW82MZ7P.png",
+							"iconImage": "/wp/media/01KYQ7MKT0BDJF1BRMJW82MZ7P.png",
 							"_type": "hei.ctaBand",
 							"_key": "ha32d3sv0",
 							"id": ""
@@ -649,7 +649,7 @@
 							"headline": "Únete a un ecosistema de salud íntegro",
 							"highlight": "",
 							"subheadline": "Grupo HEI suma a personas que aportan al sistema con alta integridad, ética y visión de crecimiento.",
-							"image": "/_emdash/api/media/file/01KYQQTFFGBJGY20SZ8ENEZNS6.jpg",
+							"image": "/wp/media/01KYQQTFFGBJGY20SZ8ENEZNS6.jpg",
 							"imageAlt": "Saludo profesional",
 							"variant": "image",
 							"_type": "hei.hero",
@@ -674,7 +674,7 @@
 									"text": ""
 								}
 							],
-							"image": "/_emdash/api/media/file/01KYQQXGC1456RH99Y1J99P8SB.jpg",
+							"image": "/wp/media/01KYQQXGC1456RH99Y1J99P8SB.jpg",
 							"_type": "hei.cultura",
 							"_key": "ae3jj7b1u",
 							"id": ""
@@ -726,7 +726,7 @@
 							"headline": "Confianza para crecer a largo plazo",
 							"highlight": "",
 							"subheadline": "Grupo HEI forja su crecimiento sostenible operando con total transparencia, integridad ética y clara visión a futuro.",
-							"image": "/_emdash/api/media/file/01KYQQDEC6NCJXR386STEETTZZ.jpg",
+							"image": "/wp/media/01KYQQDEC6NCJXR386STEETTZZ.jpg",
 							"imageAlt": "Compañeros de trabajo",
 							"variant": "image",
 							"_type": "hei.hero",
@@ -739,19 +739,19 @@
 							"align": "center",
 							"items": [
 								{
-									"icon": "/_emdash/api/media/file/01KYQQF39M49ZG1PNQG08AGW1P.png",
+									"icon": "/wp/media/01KYQQF39M49ZG1PNQG08AGW1P.png",
 									"title": "Salud",
 									"subtitle": "Transformar los accesos.",
 									"text": "Impulsamos la transformación del acceso a la salud para que cada vez más personas disfruten de una vida muy plena."
 								},
 								{
-									"icon": "/_emdash/api/media/file/01KYQQG8EHN08N2C9QP83FTHV7.png",
+									"icon": "/wp/media/01KYQQG8EHN08N2C9QP83FTHV7.png",
 									"title": "Transparencia",
 									"subtitle": "Ética y cumplimiento.",
 									"text": "La ética es el firme fundamento de nuestra reputación, guiando decisiones con estricta responsabilidad."
 								},
 								{
-									"icon": "/_emdash/api/media/file/01KYQQH6CYZDPRX8E79HQXR9E7.png",
+									"icon": "/wp/media/01KYQQH6CYZDPRX8E79HQXR9E7.png",
 									"title": "Futuro",
 									"subtitle": "Impacto socioambiental.",
 									"text": "Medimos y gestionamos los impactos socioambientales creando gran valor compartido a largo plazo."
@@ -765,7 +765,7 @@
 							"layout": "card",
 							"heading": "La sostenibilidad se demuestra con acciones.",
 							"body": "Grupo HEI fortalece su crecimiento con decisiones responsables, relaciones transparentes y una visión de largo plazo.",
-							"image": "/_emdash/api/media/file/01KYQQJV2RJGPM9YJMCQCPDVTM.jpg",
+							"image": "/wp/media/01KYQQJV2RJGPM9YJMCQCPDVTM.jpg",
 							"imageAlt": "Ponente en un evento",
 							"primaryCtaLabel": "Contactar al grupo",
 							"primaryCtaUrl": "/contacto",
@@ -800,7 +800,7 @@
 							"layout": "card",
 							"heading": "Solución B2B para laboratorios",
 							"body": "Salutia apoya a laboratorios y farmacéuticas que necesitan operar con mayor control sin montar toda la infraestructura propia.",
-							"image": "/_emdash/api/media/file/01KYQNTJ67QEVT62T7D2AEVRNR.jpg",
+							"image": "/wp/media/01KYQNTJ67QEVT62T7D2AEVRNR.jpg",
 							"imageAlt": "Logística Salutia",
 							"primaryCtaLabel": "Ver soluciones",
 							"primaryCtaUrl": "#soluciones",
@@ -818,17 +818,17 @@
 							"align": "center",
 							"items": [
 								{
-									"icon": "/_emdash/api/media/file/01KYQNX45D8G41F3W5D0C575RN.png",
+									"icon": "/wp/media/01KYQNX45D8G41F3W5D0C575RN.png",
 									"title": "Logística",
 									"text": "Soporte para cada proceso de almacenamiento, control y distribución."
 								},
 								{
-									"icon": "/_emdash/api/media/file/01KYQNYH9TV8VJY0DBC2ZVFV98.png",
+									"icon": "/wp/media/01KYQNYH9TV8VJY0DBC2ZVFV98.png",
 									"title": "Red de servicio",
 									"text": "Apoyo para conectar la operación con canales y necesidades del mercado."
 								},
 								{
-									"icon": "/_emdash/api/media/file/01KYQNZ6Y5NVFMJNAP4R7T21JE.png",
+									"icon": "/wp/media/01KYQNZ6Y5NVFMJNAP4R7T21JE.png",
 									"title": "Software",
 									"text": "Herramientas para visibilidad, seguimiento y control de la operación."
 								}
@@ -852,7 +852,7 @@
 							"heading": "Conversemos sobre tu operación",
 							"body": "Cuéntanos sobre tu laboratorio o farmacéutica y armamos la mejor ruta para tu equipo de ventas.",
 							"formId": "formulario-salutia",
-							"image": "/_emdash/api/media/file/01KYQP46GKN3VCV7E91FM775D7.jpg",
+							"image": "/wp/media/01KYQP46GKN3VCV7E91FM775D7.jpg",
 							"imageAlt": "Científicas en laboratorio",
 							"imagePosition": "right",
 							"surface": true,
@@ -867,7 +867,7 @@
 							"body": "Facilite el crecimiento de su empresa sin incurrir en los costos de una infraestructura propia. Ofrecemos herramientas tecnológicas, redes de conectividad y soporte experto para asegurar una gestión fluida, eficiente y con total control.",
 							"primaryCtaLabel": "Hablar con Salutia",
 							"primaryCtaUrl": "/contacto",
-							"image": "/_emdash/api/media/file/01KYQPT54125Z9HWK5W4GW761X.jpg",
+							"image": "/wp/media/01KYQPT54125Z9HWK5W4GW761X.jpg",
 							"imageAlt": "Doctor y paciente",
 							"photoStyle": true,
 							"_type": "hei.ctaBand",
@@ -970,7 +970,7 @@
 							"headline": "Integración con visión y ética",
 							"highlight": "",
 							"subheadline": "Grupo HEI nace para ordenar, conectar y fortalecer marcas con una misma visión de salud, cumplimiento ético y valor.",
-							"image": "/_emdash/api/media/file/01KYQ7X46YWF1HEE5GMR3J2EAE.jpg",
+							"image": "/wp/media/01KYQ7X46YWF1HEE5GMR3J2EAE.jpg",
 							"imageAlt": "Personas de Grupo HEI",
 							"variant": "image",
 							"focal": "center 25%",
@@ -980,7 +980,7 @@
 						},
 						{
 							"heading": "Nuestra Historia",
-							"image": "/_emdash/api/media/file/01KYQ80SX3ZCVB769J1PBWXYXG.jpg",
+							"image": "/wp/media/01KYQ80SX3ZCVB769J1PBWXYXG.jpg",
 							"imageAlt": "Historia de Grupo HEI",
 							"badge": "1968",
 							"items": [
@@ -1001,7 +1001,7 @@
 							"layout": "card",
 							"heading": "Un ecosistema diseñado para transformar",
 							"body": "Grupo HEI preserva la esencia de sus marcas. Las guía, respalda y proporciona gran estructura ética para que crezcan.",
-							"image": "/_emdash/api/media/file/01KYQ83D16QAQSH2S9ZWCDZ4PD.jpg",
+							"image": "/wp/media/01KYQ83D16QAQSH2S9ZWCDZ4PD.jpg",
 							"imageAlt": "Atención al cliente",
 							"primaryCtaLabel": "Ver marcas",
 							"primaryCtaUrl": "/marcas",
@@ -1016,7 +1016,7 @@
 							"align": "left",
 							"items": [
 								{
-									"icon": "/_emdash/api/media/file/01KYQ85R7QC5FRWZZNBHBHYQM4.png",
+									"icon": "/wp/media/01KYQ85R7QC5FRWZZNBHBHYQM4.png",
 									"title": "Integración",
 									"color": "white",
 									"span": "wide",
@@ -1024,14 +1024,14 @@
 									"text": "Una cultura que integra ética, marcas, talento y control."
 								},
 								{
-									"icon": "/_emdash/api/media/file/01KYQ86VZD8C3FPVQ4P70RCZJT.png",
+									"icon": "/wp/media/01KYQ86VZD8C3FPVQ4P70RCZJT.png",
 									"title": "Confianza",
 									"color": "#0066b3",
 									"span": "narrow",
 									"text": "Un modelo firme basado en la transparencia, ética total y vínculos a largo plazo."
 								},
 								{
-									"icon": "/_emdash/api/media/file/01KYQ89RG9NQZYYS48QAC32CBM.png",
+									"icon": "/wp/media/01KYQ89RG9NQZYYS48QAC32CBM.png",
 									"title": "Capacidad",
 									"color": "#31d697",
 									"span": "narrow",
@@ -1041,11 +1041,11 @@
 									"textColor": "#ffffff"
 								},
 								{
-									"icon": "/_emdash/api/media/file/01KYQ8AYMKG7JPWMASJCWTN03S.png",
+									"icon": "/wp/media/01KYQ8AYMKG7JPWMASJCWTN03S.png",
 									"title": "Crecimiento",
 									"color": "",
 									"span": "wide",
-									"image": "/_emdash/api/media/file/01KYQ8CKRFBZN93J8PR4VVCZCX.jpg",
+									"image": "/wp/media/01KYQ8CKRFBZN93J8PR4VVCZCX.jpg",
 									"text": "Una visión que genera salud, fomenta servicios y crea nuevas oportunidades.",
 									"gradientColor": "#31D697"
 								}
@@ -1083,7 +1083,7 @@
 							"headline": "Ética y respaldo uniendo marcas de salud",
 							"highlight": "uniendo",
 							"subheadline": "Grupo HEI une sólida trayectoria, infraestructura y riguroso cumplimiento para potenciar marcas éticas del sector salud.",
-							"image": "/_emdash/api/media/file/01KYQ69ZNRA23JMNCF9SMDA4YA.jpg",
+							"image": "/wp/media/01KYQ69ZNRA23JMNCF9SMDA4YA.jpg",
 							"imageAlt": "Equipo de Grupo HEI colaborando",
 							"variant": "image",
 							"primaryCtaLabel": "Conoce Grupo HEI",
@@ -1100,7 +1100,7 @@
 							"heading": "Una base construida desde 1968",
 							"body": "El ecosistema nace de la trayectoria de CENDIS, operación forjada con integridad para distribuir y facilitar acceso a soluciones de salud en Guatemala.",
 							"bullets": "Red de distribución responsable.\nMejora continua aplicada a la gestión de la salud.\nEficiencia ética y procesos óptimos.",
-							"image": "/_emdash/api/media/file/01KYQ6BVXPWX612AMKDZJ39BSK.jpg",
+							"image": "/wp/media/01KYQ6BVXPWX612AMKDZJ39BSK.jpg",
 							"imageAlt": "Profesionales de salud",
 							"imagePosition": "left",
 							"stats": [
@@ -1147,7 +1147,7 @@
 							"layout": "card",
 							"heading": "Cómo Grupo HEI crea valor",
 							"body": "Integra: Une talentos, marcas y capacidades operativas con visión y ética grupal.\nRespalda: Da firme soporte institucional, regulatorio y operativo a todo el ecosistema de salud.\nEscala: Impulsa el acceso a la salud, nuevas alianzas y un crecimiento muy sostenible.",
-							"image": "/_emdash/api/media/file/01KYQ7KJAAFPCXKXA7VNJ5QH57.jpg",
+							"image": "/wp/media/01KYQ7KJAAFPCXKXA7VNJ5QH57.jpg",
 							"imageAlt": "Ejecutiva de Grupo HEI",
 							"primaryCtaLabel": "Contáctanos",
 							"primaryCtaUrl": "/contacto",
@@ -1184,7 +1184,7 @@
 						{
 							"layout": "band",
 							"icon": "leaf",
-							"iconImage": "/_emdash/api/media/file/01KYQ7MKT0BDJF1BRMJW82MZ7P.png",
+							"iconImage": "/wp/media/01KYQ7MKT0BDJF1BRMJW82MZ7P.png",
 							"heading": "Crecimiento con responsabilidad",
 							"body": "La confianza también se construye con transparencia, cumplimiento y decisiones sostenibles.",
 							"primaryCtaLabel": "Ver compromiso",

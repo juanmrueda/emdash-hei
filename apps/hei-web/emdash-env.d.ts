@@ -47,10 +47,25 @@ export interface Página {
   bylines?: ContentBylineCredit[];
 }
 
+export interface Post {
+  id: string;
+  slug: string | null;
+  status: string;
+  title: string;
+  featured_image?: { id: string; src?: string; alt?: string; width?: number; height?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> };
+  content?: PortableTextBlock[];
+  excerpt?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+}
+
 declare module "emdash" {
   interface EmDashCollections {
     opportunities: Oportunidad;
     opportunity_categories: CategoríaDeOportunidad;
     pages: Página;
+    posts: Post;
   }
 }
