@@ -7,7 +7,7 @@ import { createViteConfig } from "../../../src/astro/integration/vite-config.js"
 
 describe("createViteConfig admin aliasing", () => {
 	const monorepoDemoRoot = new URL("../../../../../demos/simple/", import.meta.url);
-	const externalProjectRoot = new URL("file:///workspace/emdash-site/");
+	const externalProjectRoot = new URL("../../../../../../external-emdash-site/", import.meta.url);
 	const siblingProjectRoot = new URL("../../../../../../emdash-site/", import.meta.url);
 	const adminSourcePattern = /[/\\]packages[/\\]admin[/\\]src$/;
 	const adminDistPattern = /[/\\]packages[/\\]admin[/\\]dist$/;
@@ -79,7 +79,7 @@ describe("createViteConfig admin aliasing", () => {
 });
 
 describe("createViteConfig use-sync-external-store shim aliasing", () => {
-	const externalProjectRoot = new URL("file:///workspace/emdash-site/");
+	const externalProjectRoot = new URL("../../../../../../external-emdash-site/", import.meta.url);
 
 	function buildConfig(adapter: string) {
 		return createViteConfig(
@@ -96,44 +96,70 @@ describe("createViteConfig use-sync-external-store shim aliasing", () => {
 		);
 	}
 
-	function getAlias(config: ReturnType<typeof createViteConfig>, find: string) {
+	function aliasFindMatches(actual: unknown, expected: string | RegExp) {
+		if (typeof expected === "string") return actual === expected;
+		return (
+			actual instanceof RegExp &&
+			actual.source === expected.source &&
+			actual.flags === expected.flags
+		);
+	}
+
+	function getAlias(config: ReturnType<typeof createViteConfig>, find: string | RegExp) {
 		const aliases = Array.isArray(config.resolve?.alias) ? config.resolve.alias : [];
 		return aliases.find(
 			(alias) =>
-				typeof alias === "object" && alias !== null && "find" in alias && alias.find === find,
+				typeof alias === "object" &&
+				alias !== null &&
+				"find" in alias &&
+				aliasFindMatches(alias.find, find),
 		);
 	}
 
 	// Regression: with pnpm + React 18+, @tiptap/react pulls in
 	// `use-sync-external-store/shim` (CJS). Vite can't pre-bundle from the
 	// virtual store, so browsers get raw CJS and InlinePortableTextEditor
-	// fails to hydrate. The aliases redirect the shim to the main package,
-	// which delegates to React's built-in hook on React >=18.
+	// fails to hydrate. The aliases redirect the shim to React itself, which
+	// exports the built-in hook on React >=18 and avoids the package's React 19
+	// dev-only error.
 	for (const adapter of ["@astrojs/node", "@astrojs/cloudflare"] as const) {
-		it(`redirects use-sync-external-store/shim to the main package on ${adapter}`, () => {
+		it(`redirects use-sync-external-store/shim entries on ${adapter}`, () => {
 			const config = buildConfig(adapter);
 
-			const indexAlias = getAlias(config, "use-sync-external-store/shim/index.js");
-			const shimAlias = getAlias(config, "use-sync-external-store/shim");
+			const withSelectorAlias = getAlias(
+				config,
+				/^use-sync-external-store\/shim\/with-selector(?:\.js)?$/,
+			);
+			const indexAlias = getAlias(config, /^use-sync-external-store\/shim\/index\.js$/);
+			const shimAlias = getAlias(config, /^use-sync-external-store\/shim$/);
 
-			expect(indexAlias).toMatchObject({ replacement: "use-sync-external-store" });
-			expect(shimAlias).toMatchObject({ replacement: "use-sync-external-store" });
+			expect(withSelectorAlias).toMatchObject({
+				replacement: "use-sync-external-store/with-selector",
+			});
+			expect(indexAlias).toMatchObject({ replacement: "react" });
+			expect(shimAlias).toMatchObject({ replacement: "react" });
 		});
 
 		it(`lists the more-specific shim alias before the directory alias on ${adapter}`, () => {
 			const config = buildConfig(adapter);
 			const aliases = Array.isArray(config.resolve?.alias) ? config.resolve.alias : [];
 
-			const findIndex = (find: string) =>
+			const findIndex = (find: string | RegExp) =>
 				aliases.findIndex(
 					(alias) =>
-						typeof alias === "object" && alias !== null && "find" in alias && alias.find === find,
+						typeof alias === "object" &&
+						alias !== null &&
+						"find" in alias &&
+						aliasFindMatches(alias.find, find),
 				);
 
-			const indexIdx = findIndex("use-sync-external-store/shim/index.js");
-			const shimIdx = findIndex("use-sync-external-store/shim");
+			const withSelectorIdx = findIndex(/^use-sync-external-store\/shim\/with-selector(?:\.js)?$/);
+			const indexIdx = findIndex(/^use-sync-external-store\/shim\/index\.js$/);
+			const shimIdx = findIndex(/^use-sync-external-store\/shim$/);
 
+			expect(withSelectorIdx).toBeGreaterThanOrEqual(0);
 			expect(indexIdx).toBeGreaterThanOrEqual(0);
+			expect(indexIdx).toBeGreaterThan(withSelectorIdx);
 			expect(shimIdx).toBeGreaterThan(indexIdx);
 		});
 	}

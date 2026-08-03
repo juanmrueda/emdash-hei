@@ -1257,25 +1257,71 @@ function FieldRenderer({
 			);
 
 		case "select": {
-			const selectOptions = Array.isArray(field.options) ? field.options : [];
+			const collectionRef =
+				field.options && typeof field.options === "object" && !Array.isArray(field.options)
+					? (field.options as Record<string, unknown>).collection
+					: undefined;
+			const [dynamicOptions, setDynamicOptions] = React.useState<
+				Array<{ value: string; label: string }> | undefined
+			>(undefined);
+			const [loading, setLoading] = React.useState(false);
+			const refSlug = typeof collectionRef === "string" ? collectionRef : undefined;
+
+			React.useEffect(() => {
+				if (!refSlug) return;
+				const controller = new AbortController();
+				setLoading(true);
+				(async () => {
+					try {
+						const res = await fetch(`/_emdash/api/content/${refSlug}?limit=100`, {
+							signal: controller.signal,
+						});
+						if (res.ok) {
+							const body = (await res.json()) as {
+								data?: { items?: Array<{ slug: string; data: Record<string, unknown> }> };
+							};
+							const items = body.data?.items ?? [];
+							setDynamicOptions(
+								items.map((entry) => ({
+									value: (entry.data.name as string) || entry.slug,
+									label: (entry.data.name as string) || entry.slug,
+								})),
+							);
+						}
+					} catch {
+						// ignore
+					} finally {
+						if (!controller.signal.aborted) setLoading(false);
+					}
+				})();
+				return () => controller.abort();
+			}, [refSlug]);
+
+			const options = dynamicOptions ?? (Array.isArray(field.options) ? field.options : []);
 			const selectItems: Record<string, string> = {};
-			for (const opt of selectOptions) {
+			for (const opt of options) {
 				selectItems[opt.value] = opt.label;
 			}
 			return (
-				<Select
-					id={id}
-					label={label}
-					value={typeof value === "string" ? value : ""}
-					onValueChange={(v) => handleChange(v ?? "")}
-					items={selectItems}
-				>
-					{selectOptions.map((opt) => (
-						<Select.Option key={opt.value} value={opt.value}>
-							{opt.label}
-						</Select.Option>
-					))}
-				</Select>
+				<>
+					{loading && refSlug ? (
+						<div className="flex h-10 items-center px-3 text-sm text-kumo-subtle">{t`Loading...`}</div>
+					) : (
+						<Select
+							id={id}
+							label={label}
+							value={typeof value === "string" ? value : ""}
+							onValueChange={(v) => handleChange(v ?? "")}
+							items={selectItems}
+						>
+							{options.map((opt) => (
+								<Select.Option key={opt.value} value={opt.value}>
+									{opt.label}
+								</Select.Option>
+							))}
+						</Select>
+					)}
+				</>
 			);
 		}
 
@@ -1322,7 +1368,9 @@ function FieldRenderer({
 		case "image": {
 			// value is either an ImageFieldValue object, a legacy string URL, or undefined
 			const imageValue =
-				value != null && typeof value === "object" ? (value as ImageFieldValue) : undefined;
+				value != null && (typeof value === "object" || typeof value === "string")
+					? (value as ImageFieldValue | string)
+					: undefined;
 			return (
 				<ImageFieldRenderer
 					id={id}

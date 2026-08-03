@@ -5,7 +5,7 @@
  * sending a test email through the full pipeline.
  */
 
-import { Button, Input, Loader } from "@cloudflare/kumo";
+import { Button, Input, Loader, Select } from "@cloudflare/kumo";
 import { useLingui } from "@lingui/react/macro";
 import {
 	CheckCircle,
@@ -14,12 +14,13 @@ import {
 	PlugsConnected,
 	WarningCircle,
 } from "@phosphor-icons/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
 
 import {
 	fetchEmailSettings,
 	sendTestEmail,
+	setEmailProvider,
 	type EmailSettings as EmailSettingsData,
 } from "../../lib/api/email-settings.js";
 import { getMutationError } from "../DialogError.js";
@@ -59,6 +60,22 @@ export function EmailSettings() {
 			setStatus({
 				type: "error",
 				message: getMutationError(error) || t`Failed to send test email`,
+			});
+		},
+	});
+
+	const queryClient = useQueryClient();
+	const EMAIL_DELIVER_HOOK = "email:deliver" as const;
+
+	const selectProviderMutation = useMutation({
+		mutationFn: (pluginId: string) => setEmailProvider(EMAIL_DELIVER_HOOK, pluginId),
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ["email-settings"] });
+		},
+		onError: (error) => {
+			setStatus({
+				type: "error",
+				message: getMutationError(error) || t`Failed to set email provider`,
 			});
 		},
 	});
@@ -125,7 +142,11 @@ export function EmailSettings() {
 					<h2 className="text-lg font-semibold">{t`Email Pipeline`}</h2>
 				</div>
 
-				<PipelineStatus settings={settings} />
+				<PipelineStatus
+					settings={settings}
+					onSelectProvider={(pluginId) => selectProviderMutation.mutate(pluginId)}
+					selectProviderPending={selectProviderMutation.isPending}
+				/>
 			</div>
 
 			{/* Test email */}
@@ -163,28 +184,53 @@ export function EmailSettings() {
 // Pipeline status display
 // =============================================================================
 
-function PipelineStatus({ settings }: { settings: EmailSettingsData | undefined }) {
+function PipelineStatus({
+	settings,
+	onSelectProvider,
+	selectProviderPending,
+}: {
+	settings: EmailSettingsData | undefined;
+	onSelectProvider: (pluginId: string) => void;
+	selectProviderPending: boolean;
+}) {
 	const { t } = useLingui();
 
 	if (!settings) return null;
 
+	const providerItems = settings.providers.map((p) => ({
+		value: p.pluginId,
+		label: p.pluginId,
+	}));
+
 	if (!settings.available) {
 		return (
-			<div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4">
-				<div className="flex items-start gap-3">
-					<WarningCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-					<div>
-						<p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-							{t`No email provider configured`}
-						</p>
-						<p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-							{t`Install and activate an email provider plugin to enable email features like invitations, magic links, and password recovery.`}
-						</p>
-						<p className="text-sm text-amber-700 dark:text-amber-300 mt-2">
-							{t`Without an email provider, invite links must be shared manually.`}
-						</p>
+			<div className="space-y-4">
+				<div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4">
+					<div className="flex items-start gap-3">
+						<WarningCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+						<div className="flex-1">
+							<p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+								{t`No email provider configured`}
+							</p>
+							<p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+								{t`Select an email provider below to enable email features.`}
+							</p>
+						</div>
 					</div>
 				</div>
+
+				{providerItems.length > 0 && (
+					<div>
+						<Select
+							label={t`Email Provider`}
+							items={providerItems}
+							value=""
+							onValueChange={(value) => value && onSelectProvider(value)}
+							placeholder={t`Select a provider...`}
+							disabled={selectProviderPending}
+						/>
+					</div>
+				)}
 			</div>
 		);
 	}
@@ -194,16 +240,28 @@ function PipelineStatus({ settings }: { settings: EmailSettingsData | undefined 
 			{/* Provider */}
 			<div className="flex items-center gap-3 p-3 rounded-md bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
 				<CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
-				<div>
+				<div className="flex-1 min-w-0">
 					<p className="text-sm font-medium text-green-800 dark:text-green-200">
 						{t`Email provider active`}
 					</p>
-					<p className="text-sm text-green-700 dark:text-green-300">
-						{t`Provider:`}{" "}
-						<code className="rounded bg-green-100 dark:bg-green-900/40 px-1.5 py-0.5 text-xs">
-							{settings.selectedProviderId || "default"}
-						</code>
-					</p>
+					{providerItems.length > 1 ? (
+						<div className="mt-2">
+							<Select
+								label={t`Provider`}
+								items={providerItems}
+								value={settings.selectedProviderId || ""}
+								onValueChange={(value) => value && onSelectProvider(value)}
+								disabled={selectProviderPending}
+							/>
+						</div>
+					) : (
+						<p className="text-sm text-green-700 dark:text-green-300">
+							{t`Provider:`}{" "}
+							<code className="rounded bg-green-100 dark:bg-green-900/40 px-1.5 py-0.5 text-xs">
+								{settings.selectedProviderId || "default"}
+							</code>
+						</p>
+					)}
 				</div>
 			</div>
 
@@ -224,16 +282,6 @@ function PipelineStatus({ settings }: { settings: EmailSettingsData | undefined 
 							{t`After send:`} {settings.middleware.afterSend.join(", ")}
 						</p>
 					)}
-				</div>
-			)}
-
-			{/* Available providers (if multiple) */}
-			{settings.providers.length > 1 && (
-				<div className="p-3 rounded-md bg-kumo-tint/50 border">
-					<p className="text-sm font-medium mb-1">{t`Available Providers`}</p>
-					<p className="text-sm text-kumo-subtle">
-						{settings.providers.map((p) => p.pluginId).join(", ")}
-					</p>
 				</div>
 			)}
 		</div>

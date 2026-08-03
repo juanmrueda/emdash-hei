@@ -8,7 +8,7 @@
 import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import type { AstroConfig } from "astro";
 import type { Plugin } from "vite";
@@ -58,6 +58,11 @@ import {
 } from "./virtual-modules.js";
 
 const LOCALE_MESSAGES_RE = /[/\\]([a-z]{2}(?:-[A-Z]{2})?)[/\\]messages\.mjs$/;
+
+function normalizeVitePath(path: string): string {
+	return path.replace(/\\/g, "/");
+}
+
 /**
  * Vite plugin that compiles Lingui macros in admin source files.
  * Only active in dev mode when the admin package is aliased to source for HMR.
@@ -68,6 +73,17 @@ function linguiMacroPlugin(adminSourcePath: string, adminDistPath: string): Plug
 	// Resolve @babel/core from admin's devDependencies, not core's.
 	const adminRequire = createRequire(resolve(adminDistPath, "index.js"));
 	const babelCorePath = adminRequire.resolve("@babel/core");
+	const babelCoreUrl = pathToFileURL(babelCorePath).href;
+	const normalizedAdminSourcePath = normalizeVitePath(adminSourcePath);
+
+	function isAdminSourceId(id: string | undefined): boolean {
+		if (!id) return false;
+		const normalizedId = normalizeVitePath(id).replace(/^\/@fs\//, "");
+		return (
+			normalizedId === normalizedAdminSourcePath ||
+			normalizedId.startsWith(`${normalizedAdminSourcePath}/`)
+		);
+	}
 
 	return {
 		name: "emdash-lingui-macro",
@@ -76,15 +92,15 @@ function linguiMacroPlugin(adminSourcePath: string, adminDistPath: string): Plug
 			// Redirect relative locale catalog imports (e.g. ./de/messages.mjs) from
 			// within admin source to the compiled dist/locales/ directory, since
 			// lingui compile only runs during build — not in dev watch mode.
-			if (!importer?.startsWith(adminSourcePath)) return;
+			if (!isAdminSourceId(importer)) return;
 			const match = id.match(LOCALE_MESSAGES_RE);
 			if (match?.[1]) {
-				return resolve(adminDistPath, "locales", match[1], "messages.mjs");
+				return normalizeVitePath(resolve(adminDistPath, "locales", match[1], "messages.mjs"));
 			}
 		},
 		async transform(code, id) {
-			if (!id.startsWith(adminSourcePath) || !code.includes("@lingui")) return;
-			const { transformAsync } = (await import(babelCorePath)) as typeof import("@babel/core");
+			if (!isAdminSourceId(id) || !code.includes("@lingui")) return;
+			const { transformAsync } = (await import(babelCoreUrl)) as typeof import("@babel/core");
 			const result = await transformAsync(code, {
 				filename: id,
 				plugins: ["@lingui/babel-plugin-lingui-macro"],
@@ -337,13 +353,18 @@ export function createViteConfig(
 				// served raw `module.exports` and hydration fails with
 				// `SyntaxError: ... does not provide an export named
 				// 'useSyncExternalStore'`. Redirect both shim entry points to the
-				// main `use-sync-external-store` package, which on React >=18
-				// (our peer-dep floor) delegates to React's built-in hook.
+				// `with-selector` goes to the package's non-shim selector entry; the
+				// plain shim entries go to React itself, which exposes the built-in hook
+				// on React >=18 (our peer-dep floor) and avoids the React 19 dev error.
 				{
-					find: "use-sync-external-store/shim/index.js",
-					replacement: "use-sync-external-store",
+					find: /^use-sync-external-store\/shim\/with-selector(?:\.js)?$/,
+					replacement: "use-sync-external-store/with-selector",
 				},
-				{ find: "use-sync-external-store/shim", replacement: "use-sync-external-store" },
+				{
+					find: /^use-sync-external-store\/shim\/index\.js$/,
+					replacement: "react",
+				},
+				{ find: /^use-sync-external-store\/shim$/, replacement: "react" },
 			],
 		},
 		// eslint-disable-next-line typescript/no-unsafe-type-assertion -- Monorepo has both vite 6 (docs) and vite 7 (core). tsgo resolves correctly.

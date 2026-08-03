@@ -31,6 +31,21 @@ export async function fetchEmailSettings(): Promise<EmailSettings> {
 	return parseApiResponse<EmailSettings>(res, "Failed to fetch email settings");
 }
 
+export async function setEmailProvider(
+	hookName: string,
+	pluginId: string | null,
+): Promise<{ hookName: string; selectedPluginId: string | null }> {
+	const res = await apiFetch(`${API_BASE}/admin/hooks/exclusive/${hookName}`, {
+		method: "PUT",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ pluginId }),
+	});
+	return parseApiResponse<{ hookName: string; selectedPluginId: string | null }>(
+		res,
+		"Failed to set email provider",
+	);
+}
+
 export async function sendTestEmail(to: string): Promise<{ success: boolean; message: string }> {
 	const res = await apiFetch(`${API_BASE}/settings/email`, {
 		method: "POST",

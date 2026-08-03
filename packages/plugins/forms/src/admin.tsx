@@ -744,6 +744,18 @@ function FieldRow({
 							onCheckedChange={(checked) => onChange({ required: checked })}
 						/>
 					</div>
+					<div className="grid grid-cols-2 gap-2">
+						<Input
+							label="Placeholder"
+							value={field.placeholder || ""}
+							onChange={(e) => onChange({ placeholder: e.target.value })}
+						/>
+						<Input
+							label="Help text"
+							value={field.helpText || ""}
+							onChange={(e) => onChange({ helpText: e.target.value })}
+						/>
+					</div>
 				</div>
 				<div className="flex items-center gap-0.5 pt-6">
 					<Button
