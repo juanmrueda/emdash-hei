@@ -23,7 +23,7 @@ export interface Oportunidad {
   bylines?: ContentBylineCredit[];
 }
 
-export interface Categor├¡aDeOportunidad {
+export interface CategoríaDeOportunidad {
   id: string;
   slug: string | null;
   status: string;
@@ -35,7 +35,7 @@ export interface Categor├¡aDeOportunidad {
   bylines?: ContentBylineCredit[];
 }
 
-export interface P├ígina {
+export interface Página {
   id: string;
   slug: string | null;
   status: string;
@@ -50,7 +50,7 @@ export interface P├ígina {
 declare module "emdash" {
   interface EmDashCollections {
     opportunities: Oportunidad;
-    opportunity_categories: Categor├¡aDeOportunidad;
-    pages: P├ígina;
+    opportunity_categories: CategoríaDeOportunidad;
+    pages: Página;
   }
 }
