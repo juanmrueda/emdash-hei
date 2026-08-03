@@ -20,13 +20,12 @@ en el frontmatter de `src/components/blocks/<Bloque>.astro`. Todo el contenido v
 - Páginas server-rendered (`output: "server"`); sin `getStaticPaths()` para contenido del CMS.
 - `Astro.cache.set(cacheHint)` en páginas que consultan contenido.
 - Tras tocar `package.json` → `pnpm install`; tras tocar `astro.config.mjs` → reiniciar dev.
-- Indentación con tabs (oxfmt); UI en español.
-- Re-tematizar = `src/styles/theme.css`. Verde de marca: **#31D697**.
-- Editar contenido/imágenes en `seed.json` requiere re-sembrar el D1 local
-  (borra `apps/hei-web/.wrangler/` → reinicia dev → pega el `dev-bypass`).
-- Assets reales en `public/logos` y `public/img`; bajarlos con `scripts/figma-export.mjs`
-  (ver ONBOARDING). Avance 1:1: Home ✅ y Quiénes somos ✅; faltan 6 pantallas, datos de
-  contacto, formularios y deploy (ver MAP.md → "Estado / avance").
+- Indentación con tabs (oxfmt); UI en español. Verde de marca: **#31D697** (`src/styles/theme.css`).
+- **Otro agente trabaja este repo desde otra máquina → `git pull` ANTES de empezar.** Idealmente ramas + PR, no push directo a `main`.
+- Stack local: **Node + SQLite** (adapter `@astrojs/node`); BD en `apps/hei-web/.persistent-data/emdash.db`. Deploy → Azure (`startup.sh`).
+- **Re-sembrar contenido**: borra `.persistent-data/emdash.db` **y** `node_modules/.vite` (Vite cachea el seed inlineado; si no lo borras, sigue sirviendo el seed viejo) → reinicia dev → pega `dev-bypass`. Las carpetas `.persistent-data/` y `uploads/` deben existir (`mkdir -p`).
+- **`seed/seed.json` = UTF-8 SIN BOM.** No lo edites por PowerShell `Out-File`/`Set-Content` sin `-Encoding utf8`: mete BOM (→ cae al seed default vacío) o mojibake en los acentos (é→├®). Repara con round-trip iconv-lite cp850.
+- **Imágenes**: `public/wp/*`, `public/img/*`, `public/logos/*` viajan con el repo. Las de la **biblioteca de medios** (`/_emdash/api/media/file/<id>`) viven en `uploads/` (gitignoreado) → **no viajan**; hay que commitearlas o usar `$media` en el seed.
 - CI: los workflows de emdash fueron eliminados (fork solo del sitio). No esperes Actions.
 
 ## Comandos
