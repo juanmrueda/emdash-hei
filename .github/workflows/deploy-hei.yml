@@ -39,3 +39,19 @@ jobs:
           tags: |
             ghcr.io/juanmrueda/hei-web:latest
             ghcr.io/juanmrueda/hei-web:${{ github.sha }}
+
+      # Avisa a Azure que jale la imagen recien publicada, para no tener que
+      # correr `az webapp restart` a mano en cada cambio. El webhook sale de:
+      #   az webapp deployment container config -n grupohei-web -g hei-rg --enable-cd true
+      # y se guarda como el secret AZURE_WEBHOOK del repo. Sin el secret, este
+      # paso no falla: solo avisa que el deploy queda manual.
+      - name: Desplegar en Azure
+        env:
+          HOOK: ${{ secrets.AZURE_WEBHOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "Sin AZURE_WEBHOOK: omitiendo. Corre 'az webapp restart -n grupohei-web -g hei-rg' para desplegar."
+            exit 0
+          fi
+          curl -fsSL -X POST "$HOOK" > /dev/null
+          echo "Azure notificado: jalando ghcr.io/juanmrueda/hei-web:latest"
