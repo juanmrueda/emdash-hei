@@ -440,6 +440,9 @@ importers:
       nodemailer:
         specifier: ^6.10.1
         version: 6.10.1
+      pg:
+        specifier: ^8.13.1
+        version: 8.18.0
       react:
         specifier: 'catalog:'
         version: 19.2.4

@@ -5,7 +5,7 @@ import react from "@astrojs/react";
 import { formsPlugin } from "@emdash-cms/plugin-forms";
 import { defineConfig, fontProviders } from "astro/config";
 import emdash, { local, s3 } from "emdash/astro";
-import { sqlite } from "emdash/db";
+import { postgres, sqlite } from "emdash/db";
 
 // Resolve core routes to source during dev so client bundles don't pull
 // server-only compiled `dist` artifacts (which contain Node `process` usage).
@@ -46,7 +46,14 @@ export default defineConfig({
 	integrations: [
 		react(),
 		emdash({
-			database: sqlite({ url: process.env.DATABASE_PATH || "file:./.persistent-data/emdash.db" }),
+			// El adaptador se elige en build (la config se serializa al bundle); la
+			// cadena de conexión la resuelve el adaptador en runtime desde el entorno
+			// (DATABASE_URL / DATABASE_PATH), para no hornear credenciales.
+			// La imagen Docker compila con DB_DRIVER=postgres; dev local sigue en SQLite.
+			database:
+				process.env.DB_DRIVER === "postgres"
+					? postgres({ connectionString: process.env.DATABASE_URL })
+					: sqlite({ url: process.env.DATABASE_PATH || "file:./.persistent-data/emdash.db" }),
 			storage,
 			plugins: [
 				{

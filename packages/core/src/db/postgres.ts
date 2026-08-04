@@ -14,8 +14,12 @@ import type { PostgresConfig } from "./adapters.js";
  * Create a PostgreSQL dialect from config
  */
 export function createDialect(config: PostgresConfig): PostgresDialect {
+	// La config del sitio se serializa en tiempo de build, así que una credencial
+	// puesta ahí quedaría horneada en el bundle (y en la imagen Docker). Leer
+	// DATABASE_URL aquí — en el adaptador de runtime — permite inyectarla como
+	// variable de entorno del contenedor, sin secretos en el artefacto.
 	const pool = new Pool({
-		connectionString: config.connectionString,
+		connectionString: process.env.DATABASE_URL || config.connectionString,
 		host: config.host,
 		port: config.port,
 		database: config.database,

@@ -16,6 +16,9 @@ RUN sed -i '/slidev/d' pnpm-workspace.yaml || true
 RUN pnpm install --frozen-lockfile
 
 RUN pnpm run build
+# El adaptador de BD se serializa al bundle en build; la cadena de conexión NO
+# (la lee el adaptador en runtime desde DATABASE_URL), así que aquí no hay secretos.
+ENV DB_DRIVER=postgres
 RUN pnpm --filter @grupo-hei/web build
 
 # pnpm deploy arma un node_modules autocontenido; el build (dist) y el seed

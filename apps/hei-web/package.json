@@ -23,6 +23,7 @@
     "better-sqlite3": "catalog:",
     "emdash": "workspace:*",
     "nodemailer": "^6.10.1",
+    "pg": "^8.13.1",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
