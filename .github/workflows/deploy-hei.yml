@@ -1,0 +1,41 @@
+name: Build hei-web image
+
+# Construye la imagen Docker del sitio Grupo HEI y la publica en GHCR
+# (ghcr.io/juanmrueda/hei-web). Corre en GitHub (nube), sin Docker local.
+# Azure App Service for Containers jala esa imagen.
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - "apps/hei-web/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/deploy-hei.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/hei-web/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/juanmrueda/hei-web:latest
+            ghcr.io/juanmrueda/hei-web:${{ github.sha }}
