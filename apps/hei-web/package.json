@@ -20,6 +20,7 @@
     "@emdash-cms/plugin-forms": "workspace:*",
     "@phosphor-icons/react": "catalog:",
     "astro": "catalog:",
+    "better-sqlite3": "catalog:",
     "emdash": "workspace:*",
     "nodemailer": "^6.10.1",
     "react": "catalog:",
