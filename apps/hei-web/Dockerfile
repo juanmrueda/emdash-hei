@@ -37,5 +37,14 @@ ENV NODE_ENV=production \
     PORT=8080 \
     DATABASE_PATH=/home/data/emdash.db
 
+# En Azure App Service, el share persistente (WEBSITES_ENABLE_APP_SERVICE_STORAGE)
+# se monta sobre /home EN RUNTIME, tapando el `mkdir -p /home/data` de build-time.
+# better-sqlite3 crea el archivo de la BD pero NO el directorio, así que hay que
+# crearlo DESPUÉS del mount. Este script lo hace justo antes de arrancar el server.
+# Se ejecuta como un solo token (sin operadores de shell ni comillas), evitando los
+# problemas al pasar startup commands por Azure/cmd.
+RUN printf '#!/bin/sh\nset -e\nmkdir -p /home/data /home/uploads\nexec node /app/dist/server/entry.mjs\n' > /app/start.sh \
+ && chmod +x /app/start.sh
+
 EXPOSE 8080
-CMD ["node", "./dist/server/entry.mjs"]
+CMD ["/app/start.sh"]
