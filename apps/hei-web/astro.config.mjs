@@ -2,6 +2,7 @@ import { fileURLToPath } from "url";
 
 import node from "@astrojs/node";
 import react from "@astrojs/react";
+import { emailSmtpPlugin } from "@emdash-cms/plugin-email-smtp";
 import { formsPlugin } from "@emdash-cms/plugin-forms";
 import { defineConfig, fontProviders } from "astro/config";
 import emdash, { local, s3 } from "emdash/astro";
@@ -62,10 +63,9 @@ export default defineConfig({
 					entrypoint: new URL("./src/plugins/hei-blocks/index.ts", import.meta.url).href,
 				},
 				formsPlugin(),
-				// TODO: re-agregar emailSmtpPlugin() cuando el package
-				// @emdash-cms/plugin-email-smtp esté en el repo (quedó sin subir;
-				// rompía install/build). Sin él, los formularios guardan envíos
-				// pero no envían notificación por email.
+				// Las credenciales SMTP no viven aquí: el plugin las lee de su KV y
+				// se capturan desde el admin en Settings > Email.
+				emailSmtpPlugin(),
 			],
 		}),
 	],
