@@ -7,7 +7,7 @@
  * @see PLUGIN-SYSTEM.md § Plugin Storage > Full API Reference
  */
 
-import type { Kysely } from "kysely";
+import type { Expression, Kysely, SqlBool } from "kysely";
 import { sql } from "kysely";
 
 import {
@@ -26,6 +26,36 @@ import type {
 import { withTransaction } from "../transaction.js";
 import type { Database } from "../types.js";
 import { encodeCursor, decodeCursor } from "./types.js";
+
+/**
+ * Turn a `buildWhereClause` result into a Kysely boolean expression.
+ *
+ * `buildWhereClause` emits positional `?` placeholders, so the string is split
+ * on them and reassembled with `sql` templates that bind each param safely.
+ *
+ * The expression is handed to `.where()` as-is rather than compared against 1.
+ * Kysely emits a raw fragment unparenthesized, so `eb(expr, "=", 1)` produced
+ * `data->>'slug' = $1 = 1`: SQLite parses that chain left-associatively (it
+ * types booleans as 0/1), but Postgres rejects it as a syntax error.
+ */
+function whereClauseToExpression(whereResult: {
+	sql: string;
+	params: unknown[];
+}): Expression<SqlBool> {
+	const parts: ReturnType<typeof sql>[] = [];
+	let paramIndex = 0;
+	const sqlParts = whereResult.sql.split("?");
+	for (let i = 0; i < sqlParts.length; i++) {
+		if (i > 0) {
+			parts.push(sql`${whereResult.params[paramIndex++]}`);
+		}
+		if (sqlParts[i]) {
+			parts.push(sql.raw(sqlParts[i]));
+		}
+	}
+	// eslint-disable-next-line typescript/no-unsafe-type-assertion -- raw fragment is a boolean predicate by construction
+	return sql.join(parts, sql.raw("")) as unknown as Expression<SqlBool>;
+}
 
 /**
  * Plugin Storage Repository
@@ -211,19 +241,7 @@ export class PluginStorageRepository<T = unknown> implements StorageCollection<T
 		// Add JSON extraction WHERE conditions
 		const whereResult = buildWhereClause(this.db, where);
 		if (whereResult.sql) {
-			// Use sql template to add the raw WHERE conditions with params
-			const whereSqlParts: ReturnType<typeof sql>[] = [];
-			let paramIndex = 0;
-			const sqlParts = whereResult.sql.split("?");
-			for (let i = 0; i < sqlParts.length; i++) {
-				if (i > 0) {
-					whereSqlParts.push(sql`${whereResult.params[paramIndex++]}`);
-				}
-				if (sqlParts[i]) {
-					whereSqlParts.push(sql.raw(sqlParts[i]));
-				}
-			}
-			query = query.where(({ eb }) => eb(sql.join(whereSqlParts, sql.raw("")), "=", sql.raw("1")));
+			query = query.where(whereClauseToExpression(whereResult));
 		}
 
 		// Handle cursor-based pagination — throws on invalid cursor.
@@ -289,21 +307,7 @@ export class PluginStorageRepository<T = unknown> implements StorageCollection<T
 		if (where && Object.keys(where).length > 0) {
 			const whereResult = buildWhereClause(this.db, where);
 			if (whereResult.sql) {
-				// Use sql template to add the raw WHERE conditions with params
-				const whereSqlParts: ReturnType<typeof sql>[] = [];
-				let paramIndex = 0;
-				const sqlParts = whereResult.sql.split("?");
-				for (let i = 0; i < sqlParts.length; i++) {
-					if (i > 0) {
-						whereSqlParts.push(sql`${whereResult.params[paramIndex++]}`);
-					}
-					if (sqlParts[i]) {
-						whereSqlParts.push(sql.raw(sqlParts[i]));
-					}
-				}
-				query = query.where(({ eb }) =>
-					eb(sql.join(whereSqlParts, sql.raw("")), "=", sql.raw("1")),
-				);
+				query = query.where(whereClauseToExpression(whereResult));
 			}
 		}
 
