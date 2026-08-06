@@ -49,10 +49,23 @@ export const POST: APIRoute = async ({ request, locals }) => {
 		// Use stored site URL to prevent Host header spoofing in invite emails
 		const baseUrl = await getSiteBaseUrl(emdash.db, request);
 
-		// Build email sender from the plugin pipeline (if available)
+		// Build email sender from the plugin pipeline (if available).
+		//
+		// A provider that is registered but not yet usable — the SMTP plugin
+		// reports itself available before anyone fills in Settings > Email —
+		// must not sink the whole invite. `createInvite` persists the token
+		// before it sends, so the invitation is already valid when delivery
+		// fails; swallow the send error and fall through to the copy-link
+		// response the no-provider case already returns.
+		let emailError: unknown;
 		const emailSend = emdash.email?.isAvailable()
-			? (message: { to: string; subject: string; text: string; html?: string }) =>
-					emdash.email!.send(message, "system")
+			? async (message: { to: string; subject: string; text: string; html?: string }) => {
+					try {
+						await emdash.email!.send(message, "system");
+					} catch (error) {
+						emailError = error;
+					}
+				}
 			: undefined;
 
 		const result = await createInvite(
@@ -67,7 +80,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 			user.id,
 		);
 
-		if (emailSend) {
+		if (emailSend && !emailError) {
 			// Email was sent
 			return apiSuccess({
 				success: true,
@@ -75,11 +88,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
 			});
 		}
 
-		// No email provider — return the invite URL for manual sharing
+		if (emailError) {
+			console.error("[INVITE_EMAIL_FAILED] Invite created but not delivered:", emailError);
+		}
+
+		// No email provider, or delivery failed — return the invite URL for manual sharing
 		return apiSuccess(
 			{
 				success: true,
-				message: "Invite created. No email provider configured — share the link manually.",
+				message: emailError
+					? "Invite created, but the email could not be sent — share the link manually."
+					: "Invite created. No email provider configured — share the link manually.",
 				inviteUrl: result.url,
 			},
 			200,
