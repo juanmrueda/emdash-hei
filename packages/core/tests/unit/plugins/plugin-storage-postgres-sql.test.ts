@@ -77,4 +77,15 @@ describe("plugin storage where-clause SQL shape", () => {
 		expect(sql()).toContain("->>");
 		expect(sql()).not.toContain("json_extract");
 	});
+
+	it("casts the text column before applying ->>", async () => {
+		// `_plugin_storage.data` is declared `text`, and Postgres only defines
+		// `->>` for json/jsonb — without the cast every query dies with
+		// `operator does not exist: text ->> unknown`.
+		const { db, sql } = compilingDb("postgres");
+		await repoFor(db).query({ where: { slug: "formulario-de-contacto" } });
+
+		expect(sql()).toContain("(data::jsonb)->>");
+		expect(sql()).not.toMatch(/(?<!\)|b)\bdata->>/);
+	});
 });
