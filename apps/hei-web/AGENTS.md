@@ -1,7 +1,9 @@
 # AGENTS — Sitio Grupo HEI (`apps/hei-web`)
 
 Sitio corporativo de **Grupo HEI** (salud, Guatemala, español) construido sobre el CMS **emdash**
-(Astro + Cloudflare). Este repo es además el código fuente de emdash; el sitio solo lo consume.
+(Astro + Node). Este repo es además el código fuente de emdash; el sitio solo lo consume.
+
+**Despliegue → Azure App Service + Postgres. Ver [DEPLOYMENT.md](./DEPLOYMENT.md).**
 
 ## 👉 Empieza aquí (no leas todo el monorepo)
 
@@ -22,11 +24,12 @@ en el frontmatter de `src/components/blocks/<Bloque>.astro`. Todo el contenido v
 - Tras tocar `package.json` → `pnpm install`; tras tocar `astro.config.mjs` → reiniciar dev.
 - Indentación con tabs (oxfmt); UI en español. Verde de marca: **#31D697** (`src/styles/theme.css`).
 - **Otro agente trabaja este repo desde otra máquina → `git pull` ANTES de empezar.** Idealmente ramas + PR, no push directo a `main`.
-- Stack local: **Node + SQLite** (adapter `@astrojs/node`); BD en `apps/hei-web/.persistent-data/emdash.db`. Deploy → Azure (`startup.sh`).
+- Stack local: **Node + SQLite** (adapter `@astrojs/node`); BD en `apps/hei-web/.persistent-data/emdash.db`. En producción, **Postgres** (el driver se fija en build con `DB_DRIVER`).
+- Deploy: imagen Docker → GHCR → Azure App Service; arranca con `docker-start.sh`. **No es Cloudflare**; el `wrangler.jsonc` es residuo y nada lo referencia. Detalle y trampas en [DEPLOYMENT.md](./DEPLOYMENT.md).
 - **Re-sembrar contenido**: borra `.persistent-data/emdash.db` **y** `node_modules/.vite` (Vite cachea el seed inlineado; si no lo borras, sigue sirviendo el seed viejo) → reinicia dev → pega `dev-bypass`. Las carpetas `.persistent-data/` y `uploads/` deben existir (`mkdir -p`).
 - **`seed/seed.json` = UTF-8 SIN BOM.** No lo edites por PowerShell `Out-File`/`Set-Content` sin `-Encoding utf8`: mete BOM (→ cae al seed default vacío) o mojibake en los acentos (é→├®). Repara con round-trip iconv-lite cp850.
 - **Imágenes**: `public/wp/*`, `public/img/*`, `public/logos/*` viajan con el repo. Las de la **biblioteca de medios** (`/_emdash/api/media/file/<id>`) viven en `uploads/` (gitignoreado) → **no viajan**; hay que commitearlas o usar `$media` en el seed.
-- CI: los workflows de emdash fueron eliminados (fork solo del sitio). No esperes Actions.
+- CI: los workflows de emdash fueron eliminados (fork solo del sitio). Queda uno propio, `deploy-hei.yml`, que construye y publica la imagen. **No corre tests ni typecheck.**
 
 ## Comandos
 

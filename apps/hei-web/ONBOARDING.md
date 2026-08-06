@@ -56,11 +56,12 @@ curl "http://localhost:4321/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin
 ```
 
 (Endpoint solo-dev: corre migraciones, crea admin de desarrollo, aplica `seed/seed.json`
-**con contenido** y marca el setup como completo.) El D1 local persiste en
-`apps/hei-web/.wrangler/state`, así que solo se hace una vez por base de datos local.
+**con contenido** y marca el setup como completo.) La BD local es SQLite y persiste en
+`apps/hei-web/.persistent-data/emdash.db`, así que solo se hace una vez por base de datos local.
 
-Si editas `seed/seed.json` y quieres re-aplicarlo, borra `apps/hei-web/.wrangler/` y repite, o
-edita el contenido directamente en el admin.
+Si editas `seed/seed.json` y quieres re-aplicarlo, borra `apps/hei-web/.persistent-data/` **y**
+`node_modules/.vite` (Vite cachea el seed inlineado) y repite, o edita el contenido directamente
+en el admin.
 
 ## Gotchas que rompen el build (no repetir)
 
@@ -83,8 +84,8 @@ edita el contenido directamente en el admin.
   ForEach-Object { $u="http://localhost:4321/$_"; "$u -> " + (Invoke-WebRequest $u -UseBasicParsing).StatusCode }
 ```
 
-Para inspeccionar el contenido guardado en el D1 local (Node 24 trae `node:sqlite`):
-ver `apps/hei-web/.wrangler/state/v3/d1/.../*.sqlite`, tabla `ec_pages` (columnas tipadas:
+Para inspeccionar el contenido guardado en la BD local (Node 24 trae `node:sqlite`):
+ver `apps/hei-web/.persistent-data/emdash.db`, tabla `ec_pages` (columnas tipadas:
 `title`, `content`, `slug`, `status`, `locale`).
 
 ## Assets y revisión 1:1 contra Figma
@@ -111,21 +112,25 @@ ver `apps/hei-web/.wrangler/state/v3/d1/.../*.sqlite`, tabla `ec_pages` (columna
 
 1. **Pase 1:1 de 6 pantallas**: Home ✅ y Quiénes somos ✅ ya están afinados; faltan Marcas,
    Salutia, Sostenibilidad, Trabaja, Contacto y Denuncias.
-2. **Formularios**: crear en el admin los forms `contacto`, `salutia-operacion`, `trabaja-perfil`;
-   notificaciones por email (faltan correos destino del cliente) + Turnstile (anti-spam). Los
-   bloques `hei.formSection` ya los referencian por slug.
+2. **Formularios**: crear en el admin `formulario-de-contacto`, `formulario-salutia` y
+   `trabaja-con-nosotros` (esos slugs exactos son los que referencian los bloques
+   `hei.formSection`); notificaciones por email (faltan correos destino del cliente) +
+   Turnstile (anti-spam).
 3. **Datos de contacto reales** (dirección, teléfono, WhatsApp `wa.me/...`) en `Base.astro` y `seed.json`.
    (Logos y fotos reales **ya están** en `public/`.)
-4. **Deploy** a Cloudflare (D1 + R2; los plugins sandbox requieren cuenta de pago, o comentar
-   `worker_loaders` en `wrangler.jsonc`). Definir: contenido por admin vs seed (ver más abajo).
+4. **Migración a la infraestructura del cliente** y conexión del dominio propio.
 
-> **CI / GitHub Actions**: los workflows heredados de emdash fueron eliminados (este fork solo
-> hospea el sitio HEI). Si necesitas CI/deploy, agrega un workflow propio en `.github/workflows/`.
+> **CI / GitHub Actions**: los workflows heredados de emdash fueron eliminados. Queda uno propio,
+> `deploy-hei.yml`, que construye la imagen Docker y la publica en GHCR. No corre tests ni
+> typecheck, y el reinicio de Azure todavía es manual.
 
 > **Modelo de contenido en producción**: el `seed.json` solo siembra una BD vacía. En prod el
-> contenido vive en D1 y se edita por el admin; re-deployar NO lo sobrescribe (no se puede "borrar
-> y re-sembrar" como en local sin perder datos/forms). Decidir antes de deployar: contenido por
-> admin (recomendado) o mantener seed como fuente.
+> contenido vive en Postgres y se edita por el admin; re-deployar NO lo sobrescribe (no se puede
+> "borrar y re-sembrar" como en local sin perder datos/forms). El modelo vigente es **contenido
+> por admin**.
+
+> **Despliegue**: el sitio corre en **Azure App Service**, no en Cloudflare. Variables de entorno,
+> flujo y trampas conocidas en [DEPLOYMENT.md](./DEPLOYMENT.md). Léelo antes de tocar producción.
 
 ## Convenciones
 

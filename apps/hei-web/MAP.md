@@ -7,8 +7,11 @@ lo que aparece aquí y en [ONBOARDING.md](./ONBOARDING.md).
 ## Qué es
 
 Sitio corporativo de **Grupo HEI** (sector salud, Guatemala, en español), construido **sobre
-el CMS emdash** (Astro + Cloudflare D1/R2/Workers). El contenido se administra desde el panel
-del CMS en `/_emdash/admin`. Diseño original en Figma: `../../assets/hei-design/*.png`.
+el CMS emdash** (Astro + Node, SQLite en local y Postgres en producción). El contenido se
+administra desde el panel del CMS en `/_emdash/admin`. Diseño original en Figma:
+`../../assets/hei-design/*.png`.
+
+> **Despliegue**: Azure App Service, no Cloudflare. Ver [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 ## Arquitectura en una frase
 
@@ -26,7 +29,9 @@ Petición → src/pages/<slug>.astro → getEmDashEntry("pages", slug)
 ```
 apps/hei-web/
 ├─ astro.config.mjs            # Integración emdash + plugins (hei-blocks, forms) + fuente Inter
-├─ wrangler.jsonc             # Bindings Cloudflare: DB (D1), MEDIA (R2), LOADER
+├─ Dockerfile                 # Imagen de producción (build multistage) → GHCR → Azure
+├─ docker-start.sh            # Arranque del contenedor: prepara uploads y lanza el server
+├─ wrangler.jsonc             # ⚠️ RESIDUO de la etapa Cloudflare. Nada lo referencia; borrable
 ├─ package.json               # name @grupo-hei/web; script dev = astro dev; seed → seed/seed.json
 ├─ seed/seed.json             # ★ TODO el contenido: settings, menús y las 8 páginas en bloques
 ├─ public/
@@ -91,7 +96,10 @@ Base global lista: assets reales (logos hei/Salutia/cendis/meliora + fotos en `p
 verde de marca **#31D697**, header oscuro translúcido (logo blanco, subrayado del activo,
 ¡HABLEMOS!), footer redondeado, heros **sin filtro** (banner + radius; Home con `full` = alto sin
 radius). Los workflows de CI heredados de emdash fueron **eliminados** (este fork solo hospeda el
-sitio); el deploy apunta al subdominio **grupohei.ipalmera.com** (Cloudflare Workers).
+sitio); queda `deploy-hei.yml`, que publica la imagen Docker.
+
+El sitio está **en producción en Azure**: https://grupohei-web.azurewebsites.net — sin dominio
+propio todavía. La migración a la infraestructura del cliente está pendiente.
 
 Pase 1:1 contra Figma, por pantalla:
 
@@ -118,20 +126,29 @@ Pase 1:1 contra Figma, por pantalla:
 | `Icon.astro`        | `thumbs-up` SVG añadido                                                                                                                         |
 | `Base.astro`        | `parentMap` para marcar Marcas activo cuando se está en `/salutia`                                                                              |
 
-## Formularios creados en el admin
+## Formularios
 
-| Slug                | Página      | Campos principales                                                                                  |
-| ------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
-| `trabaja-perfil`    | `/trabaja`  | Nombre, Email, Teléfono, Área interés, LinkedIn, CV (file)                                          |
-| `contacto`          | `/contacto` | Nombre, Empresa, Cargo, Email, Motivo (select), Teléfono, Mensaje                                   |
-| `salutia-operacion` | `/salutia`  | Lab/Farma, País, Tipo productos, Necesidad, Volumen, Nombre contacto, Cargo, Correo corp., Teléfono |
+Los bloques `hei.formSection` del seed los referencian por slug. **El slug tiene que coincidir
+exactamente**: si no, la página no da error — renderiza el área del formulario vacía.
+
+| Slug esperado por el seed | Página      | Campos principales                                                                                  |
+| ------------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| `trabaja-con-nosotros`    | `/trabaja`  | Nombre, Email, Teléfono, Área interés, LinkedIn, CV (file)                                          |
+| `formulario-de-contacto`  | `/contacto` | Nombre, Empresa, Cargo, Email, Motivo (select), Teléfono, Mensaje                                   |
+| `formulario-salutia`      | `/salutia`  | Lab/Farma, País, Tipo productos, Necesidad, Volumen, Nombre contacto, Cargo, Correo corp., Teléfono |
+
+⚠️ **No viajan con el seed**: `seed.json` no exporta `_plugin_storage`, así que en un entorno
+nuevo hay que recrearlos desde el admin. Ver [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 Pendiente transversal:
 
 - **Datos de contacto reales** (dirección, teléfono, WhatsApp `wa.me/...`): placeholders en
   `Base.astro` y `seed.json`.
 - **Correos destino** de los 3 formularios: configurar en el admin (Settings de cada form).
-- **Deploy** a `grupohei.ipalmera.com`: D1 + R2 en Cloudflare, `wrangler login`, seed inicial en producción.
+- **Dominio propio**: hoy el sitio vive en `grupohei-web.azurewebsites.net`. Al conectar el
+  definitivo hay que actualizar `EMDASH_SITE_URL` **y** las dos opciones de URL en la BD, o los
+  passkeys y las invitaciones dejan de funcionar (ver [DEPLOYMENT.md](./DEPLOYMENT.md)).
+- **Migración a la infraestructura del cliente**: pendiente.
 
 > Cómo correr y revisar: ver [ONBOARDING.md](./ONBOARDING.md). El sitio en local: `localhost:4322`.
 > El **método 1:1**: recortar el Figma de `assets/hei-design/<Pantalla> _ Desktop.png` con `sharp`
